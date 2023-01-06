@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="985.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+    <children>
+        <VBox>
+            <HBox>
+                <VBox>
+                    <Button fx:id="keinfuegen" layoutX="17.0" layoutY="77.0" mnemonicParsing="false" onAction="#kucheneinfuegen" prefHeight="25.0" prefWidth="117.0" text="Kuchen einfügen">
+                        <VBox.margin>
+                            <Insets top="10.0" />
+                        </VBox.margin></Button>
+                    <Button fx:id="heinfuegen" layoutX="17.0" layoutY="41.0" mnemonicParsing="false" onAction="#herstellereinfuegen" text="Hersteller einfügen">
+                        <VBox.margin>
+                            <Insets top="15.0" />
+                        </VBox.margin></Button>
+                    <Button fx:id="kloeschen" layoutX="17.0" layoutY="113.0" mnemonicParsing="false" onAction="#kuchenloeschen" prefHeight="25.0" prefWidth="117.0" text="Kuchen löschen">
+                        <VBox.margin>
+                            <Insets top="15.0" />
+                        </VBox.margin></Button>
+                    <Button fx:id="kedit" layoutX="17.0" layoutY="149.0" mnemonicParsing="false" onAction="#setInspektionsdatum" prefHeight="25.0" prefWidth="117.0" text="Ändern">
+                        <VBox.margin>
+                            <Insets top="15.0" />
+                        </VBox.margin></Button>
+                    <Button fx:id="save" layoutX="17.0" layoutY="185.0" mnemonicParsing="false" onAction="#speicherKuchen" prefHeight="25.0" prefWidth="117.0" text="Speichern">
+                        <VBox.margin>
+                            <Insets top="15.0" />
+                        </VBox.margin></Button>
+                    <HBox.margin>
+                        <Insets left="17.0" top="18.0" />
+                    </HBox.margin>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <HBox.margin>
+                        <Insets left="300.0" />
+                    </HBox.margin>
+                    <children>
+                        <TableView fx:id="allergenetable" minWidth="140.0" prefHeight="200.0" prefWidth="140.0">
+                            <columns>
+                                <TableColumn fx:id="allergene" prefWidth="138.6666361093521" text="Allergene" />
+                            </columns>
+                            <VBox.margin>
+                                <Insets left="200.0" top="28.0" />
+                            </VBox.margin>
+                        </TableView>
+                    </children>
+                </VBox>
+                <VBox fillWidth="false" prefHeight="206.0" prefWidth="167.0">
+                    <Label layoutX="813.0" layoutY="22.0" text="Hersteller">
+                        <VBox.margin>
+                            <Insets left="30.0" />
+                        </VBox.margin></Label>
+                    <TableView fx:id="herstellertable" layoutX="811.0" layoutY="41.0" minWidth="140.0" prefHeight="188.0" prefWidth="140.0">
+                        <columns>
+                            <TableColumn fx:id="name" prefWidth="152.6666669845581" text="Name" />
+                        </columns>
+                        <VBox.margin>
+                            <Insets left="30.0" />
+                        </VBox.margin>
+                    </TableView>
+                    <HBox.margin>
+                        <Insets top="10.0" />
+                    </HBox.margin>
+                    <padding>
+                        <Insets left="10.0" />
+                    </padding>
+                </VBox>
+                <VBox.margin>
+                    <Insets />
+                </VBox.margin>
+            </HBox>
+            <VBox>
+                <Label layoutX="17.0" layoutY="233.0" text="Kuchen" />
+                <TableView fx:id="kuchentable" layoutX="16.0" layoutY="250.0" prefHeight="113.0" prefWidth="851.0">
+                    <columns>
+                        <TableColumn fx:id="fachnummer" maxWidth="46.99999809265137" minWidth="46.99999809265137" prefWidth="46.99999809265137" text="F-Nr." />
+                        <TableColumn fx:id="kremsorte" maxWidth="133.33332443237305" minWidth="57.00000762939453" prefWidth="105.33334732055664" text="Sorte" />
+                        <TableColumn fx:id="hersteller" maxWidth="165.3332977294922" minWidth="34.66668701171875" prefWidth="119.33332824707031" text="Hersteller" />
+                        <TableColumn fx:id="haltbarkeit" maxWidth="146.66664123535156" minWidth="32.66661071777344" prefWidth="99.99996948242188" text="Haltbarkeit" />
+                        <TableColumn fx:id="preis" maxWidth="144.3333740234375" minWidth="24.0" prefWidth="83.99996948242188" text="Preis" />
+                        <TableColumn fx:id="naehrwert" maxWidth="170.00003051757812" minWidth="36.3333740234375" prefWidth="97.66668701171875" text="Naehrwert" />
+                        <TableColumn fx:id="einfuegedatum" maxWidth="233.66665649414062" minWidth="113.33331298828125" prefWidth="174.33331298828125" text="Einfügedatum" />
+                        <TableColumn fx:id="inspektionsdatum" maxWidth="235.33331298828125" minWidth="130.66668701171875" prefWidth="230.3333740234375" text="Inspektionsdatum" />
+                    </columns>
+                </TableView>
+                <VBox.margin>
+                    <Insets left="15.0" top="35.0" />
+                </VBox.margin>
+            </VBox>
+        </VBox>
+    </children>
+</Pane>
