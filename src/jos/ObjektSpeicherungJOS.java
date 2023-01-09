@@ -1,6 +1,6 @@
 package jos;
 
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
 import java.io.*;
 
@@ -19,15 +19,5 @@ public class ObjektSpeicherungJOS {
         }
     }
 
-    public static Verwaltung reloadAutomt() {
-        try (FileInputStream inputStream =new FileInputStream(filenameAutomat)){
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            return (Verwaltung) objectInputStream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
+
 }

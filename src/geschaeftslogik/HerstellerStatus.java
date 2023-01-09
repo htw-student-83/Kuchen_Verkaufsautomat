@@ -1,7 +1,6 @@
 package geschaeftslogik;
 
-public enum Status {
+public enum HerstellerStatus {
     Hersteller_unbekannt,
     Hersteller_bekannt,
-    Keine_Fehler_gefunden
 }

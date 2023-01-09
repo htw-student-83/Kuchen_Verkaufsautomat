@@ -1,6 +1,8 @@
+package geschaeftslogiktest;
+
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Obstkuchen;
 import geschaeftslogik.verkaufsobjekt.Obsttorte;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -25,9 +28,10 @@ public class geschaeftslogikTest {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
         vw.insertH(hersteller1);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                1.49, 400, Allergene.Gluten, "Erdbeere");
-        assertEquals(1, vw.getKuchenlistsize());
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1, 3.44,386,
+                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+        List<Kuchen> result = vw.readKuchen();
+        assertNotNull(result);
     }
 
 
@@ -39,11 +43,11 @@ public class geschaeftslogikTest {
         Hersteller hersteller2 = new Hersteller("hersteller2");
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),  3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller2,Duration.ofDays(25), 4.20, 300,
-                Allergene.Gluten, "Banane");
-        assertEquals(2, vw.getKuchenlistsize());
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1, 2.44,344,
+                Duration.ofDays(23),Allergene.Gluten,"Erdbeere");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller2,1.34,333,
+                Duration.ofDays(25), Allergene.Gluten, "Banane");
+        assertEquals(2, vw.getKuchenlisteSize());
     }
 
     @Test
@@ -58,11 +62,11 @@ public class geschaeftslogikTest {
         Mockito.when(hersteller2.getName()).thenReturn("hersteller");
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(33), 3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller2, Duration.ofDays(12), 4.20, 300,
-                Allergene.Gluten, "Banane");
-        assertEquals(2, vw.getKuchenlistsize());
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,2.56,233,
+                Duration.ofDays(33), Allergene.Gluten, "Erdbeere");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller2,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        assertEquals(2, vw.getKuchenlisteSize());
     }
 
 
@@ -72,13 +76,14 @@ public class geschaeftslogikTest {
         Verwaltung vw = Mockito.spy(Verwaltung.class);
         Hersteller hersteller1 = new Hersteller("Hersteller");
         vw.insertH(hersteller1);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1,Duration.ofDays(13), 3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        verify(vw).insert(Kuchentyp.Kremkuchen, hersteller1,Duration.ofDays(30), 3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        verify(vw).getCurrentFachnummerAndIncrement();
-        Assertions.assertEquals(1, vw.getKuchenlistsize());
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        verify(vw).insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        Assertions.assertEquals(1, vw.getKuchenlisteSize());
     }
+
+
 
     @Test
     @DisplayName("Zuweisung eines Einfuegedatums")
@@ -86,11 +91,10 @@ public class geschaeftslogikTest {
         Verwaltung vw = Mockito.spy(Verwaltung.class);
         Hersteller hersteller1 = new Hersteller("Hersteller");
         vw.insertH(hersteller1);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(11), 3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        verify(vw).insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23), 3.99, 400,
-                Allergene.Gluten, "Erdbeere");
-        verify(vw).getDatum();
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        verify(vw).insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
     }
 
 
@@ -101,11 +105,10 @@ public class geschaeftslogikTest {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
         vw.insertH(hersteller1);
-        boolean result1 = vw.insert(Kuchentyp.Kremkuchen, hersteller1,
-                Duration.ofDays(43), 1.34, 400,
-                Allergene.Gluten, "Banane");
-        boolean result2 = vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(13), 3.23,
-                420, Allergene.Gluten, "Banane");
+        boolean result1 = vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        boolean result2 =  vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         assertTrue(result1);
         assertTrue(result2);
     }
@@ -117,8 +120,8 @@ public class geschaeftslogikTest {
         Verwaltung vw = new Verwaltung();
         Kuchen k = mock(Kuchen.class);
         Hersteller hersteller1 = new Hersteller("hersteller1");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1,Duration.ofDays(23),3.50,400,
-                Allergene.Gluten, "Erdbeere");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         Duration haltbarkeit = k.getHaltbarkeit();
         assertNotNull(haltbarkeit);
         fail();
@@ -131,8 +134,8 @@ public class geschaeftslogikTest {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
         vw.insertH(hersteller1);
-        vw.insert(Kuchentyp.Obstkuchen, hersteller1,Duration.ofDays(23),3.50,
-                400, Allergene.Gluten, "Schokos");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         Kuchen obstkuchen = mock(Obstkuchen.class);
         assertInstanceOf(Kuchen.class,obstkuchen);
     }
@@ -143,8 +146,8 @@ public class geschaeftslogikTest {
     public void insert7() {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
-        vw.insert(Kuchentyp.Obsttorte, hersteller1, Duration.ofDays(23),3.50,400,
-                Allergene.Gluten, "Schokos");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         Kuchen obsttorte = mock(Obsttorte.class);
         assertInstanceOf(Kuchen.class,obsttorte);
     }
@@ -158,11 +161,11 @@ public class geschaeftslogikTest {
         Hersteller hersteller2 = new Hersteller("hersteller2");
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23), 8.99, 299,
-                Allergene.Gluten, "Erdbeere");
-        vw.insert(Kuchentyp.Obstkuchen, hersteller2, Duration.ofDays(23), 4.20, 300,
-                Allergene.Gluten, "Banane");
-        assertEquals(2, vw.getKuchenlistsize());
+        vw.insert(Kuchentyp.Kremkuchen, hersteller2,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller2,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        assertEquals(2, vw.getKuchenlisteSize());
     }
 
 
@@ -174,10 +177,10 @@ public class geschaeftslogikTest {
         Hersteller hersteller1 = new Hersteller("hersteller1");
         Hersteller hersteller2 = new Hersteller("hersteller2");
         vw.insertH(hersteller1);
-        boolean isValid = vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                8.99, 299, Allergene.Gluten, "Erdbeere");
-        boolean isValid2 = vw.insert(Kuchentyp.Obstkuchen, hersteller2, Duration.ofDays(23),
-                4.20, 300, Allergene.Gluten, "Banane");
+        boolean isValid =  vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
+        boolean isValid2 =  vw.insert(Kuchentyp.Kremkuchen, hersteller2,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         assertTrue(isValid);
         assertFalse(isValid2);
     }
@@ -193,12 +196,12 @@ public class geschaeftslogikTest {
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
         vw.insertH(hersteller3);
-        boolean isValid = vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                8.99, 299, Allergene.Gluten, "Erdbeere");
-        boolean isValid2 = vw.insert(Kuchentyp.Obstkuchen, hersteller2, Duration.ofDays(23),
-                4.20, 300, Allergene.Gluten, "Banane");
-        boolean isValid3 = vw.insert(Kuchentyp.Obsttorte, hersteller3, Duration.ofDays(23),
-                1.20, 100, Allergene.Erdnuss, "Nuss");
+        boolean isValid = vw.insert(Kuchentyp.Kremkuchen, hersteller1, 1.34,344,
+                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+        boolean isValid2 = vw.insert(Kuchentyp.Obstkuchen, hersteller2,1.22,133,
+                Duration.ofDays(23), Allergene.Gluten, "Banane");
+        boolean isValid3 = vw.insert(Kuchentyp.Obsttorte, hersteller3,4.56,455,
+                Duration.ofDays(23), Allergene.Erdnuss, "Apfel-Sahne");
         assertTrue(isValid);
         assertTrue(isValid2);
         assertTrue(isValid3);
@@ -215,18 +218,30 @@ public class geschaeftslogikTest {
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
         vw.insertH(hersteller3);
-        boolean isValid = vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                8.99, 299, Allergene.Gluten, "Erdbeere");
-        boolean isValid2 = vw.insert(Kuchentyp.Obstkuchen, hersteller2, Duration.ofDays(23),
-                4.20, 300, Allergene.Gluten, "Banane");
-        boolean isValid3 = vw.insert(Kuchentyp.Obsttorte, hersteller3, Duration.ofDays(23),
-                1.20, 100, Allergene.Erdnuss, "Nuss");
-        boolean isValid4 = vw.insert(Kuchentyp.Obsttorte, hersteller2, Duration.ofDays(23),
-                5.20, 340, Allergene.Erdnuss, "Kirsch");
+        boolean isValid =vw.insert(Kuchentyp.Kremkuchen, hersteller1, 1.34,344,
+                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+        boolean isValid2 = vw.insert(Kuchentyp.Obstkuchen, hersteller2,1.22,133,
+                Duration.ofDays(23), Allergene.Gluten, "Banane");
+        boolean isValid3 = vw.insert(Kuchentyp.Obsttorte, hersteller3,4.56,455,
+                Duration.ofDays(23), Allergene.Erdnuss, "Apfel-Sahne");
+        boolean isValid4 = vw.insert(Kuchentyp.Obsttorte, hersteller2,3.444,444,
+                Duration.ofDays(23), Allergene.Erdnuss, "Kirsch");
         assertTrue(isValid);
         assertTrue(isValid2);
         assertTrue(isValid3);
         assertFalse(isValid4);
+    }
+
+    @Test
+    @DisplayName("Ein Kuchen mit einem Allergen wird eingefügt.")
+    public void insert12() {
+        Verwaltung vw = new Verwaltung();
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        vw.insertH(hersteller1);
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1, 1.34,344,
+                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+        int groesse = vw.getAllergenenListeSize();
+        Assertions.assertEquals(1, groesse);
     }
 
 
@@ -245,8 +260,8 @@ public class geschaeftslogikTest {
     public void read2() {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                3.44,400, Allergene.Gluten, "Kirsch");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         List result = vw.readKuchen();
         assertNotNull(result);
     }
@@ -259,12 +274,12 @@ public class geschaeftslogikTest {
         Hersteller hersteller1 = new Hersteller("hersteller1");
         Hersteller hersteller2 = new Hersteller("hersteller2");
         Hersteller hersteller3 = new Hersteller("hersteller3");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                2.22,400, Allergene.Gluten, "Erdbeere");
-        vw.insert(Kuchentyp.Obstkuchen, hersteller2, Duration.ofDays(23),
-                3.45,250, Allergene.Gluten, "Birne");
-        vw.insert(Kuchentyp.Obsttorte, hersteller3, Duration.ofDays(23),
-                3.59,300, Allergene.Gluten, "Schoko-Vanille");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,3.77, 290,
+                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+        vw.insert(Kuchentyp.Obstkuchen, hersteller2,2.21,350,
+                Duration.ofDays(23), Allergene.Gluten, "Birne");
+        vw.insert(Kuchentyp.Obsttorte, hersteller3,4.32,230,
+                Duration.ofDays(23), Allergene.Gluten, "Schoko-Vanille");
         List result = vw.readKuchen();
         assertNotNull(result);
     }
@@ -275,10 +290,10 @@ public class geschaeftslogikTest {
     public void delete()  {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
-        vw.insert(Kuchentyp.Kremkuchen, hersteller1, Duration.ofDays(23),
-                3.59,400, Allergene.Gluten, "Erdbeere");
+        vw.insert(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), Allergene.Gluten, "Banane");
         vw.delete(1);
-        assertEquals(0, vw.getKuchenlistsize());
+        assertEquals(0, vw.getKuchenlisteSize());
     }
 
     /***********************Herstellertests**************************/
@@ -289,7 +304,7 @@ public class geschaeftslogikTest {
         Verwaltung vw = new Verwaltung();
         Hersteller hersteller1 = new Hersteller("hersteller1");
         vw.insertH(hersteller1);
-        assertEquals(1, vw.getHerstellerlistsize());
+        assertEquals(1, vw.getHerstellersetSize());
     }
 
 
@@ -313,7 +328,7 @@ public class geschaeftslogikTest {
         Hersteller hersteller2 = new Hersteller("hersteller2");
         vw.insertH(hersteller1);
         vw.insertH(hersteller2);
-        assertEquals(2, vw.getHerstellerlistsize());
+        assertEquals(2, vw.getHerstellersetSize());
     }
 
 
@@ -335,6 +350,6 @@ public class geschaeftslogikTest {
         Hersteller hersteller1 = new Hersteller("hersteller1");
         vw.insertH(hersteller1);
         vw.deleteHersteller("hersteller1");
-        assertEquals(0, vw.getHerstellerlistsize());
+        assertEquals(0, vw.getHerstellersetSize());
     }
 }

@@ -1,5 +1,5 @@
 package netzwerk.udp;
-
+/*
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.Verwaltung;
@@ -199,3 +199,5 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 }
+
+ */

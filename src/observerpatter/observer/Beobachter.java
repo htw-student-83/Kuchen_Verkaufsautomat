@@ -1,7 +1,7 @@
 package observerpatter.observer;
 
 import geschaeftslogik.Kuchenautomat;
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -16,11 +16,11 @@ public class Beobachter implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        int aktuellerZustandlistekuchen = this.model.getKuchenlistsize();
+        //int aktuellerZustandlistekuchen = this.model.getKuchenlistsize();
 
         // - Prozentualer Anteil der Kuchen in der Liste ermitteln
-        if(aktuellerZustandlistekuchen==automat.getKapazity()){
+        //if(aktuellerZustandlistekuchen==automat.getKapazity()){
             System.out.println("Jetzt sind mehr als 90% der Kapazitaet erreicht.");
-        }
+        //}
     }
 }

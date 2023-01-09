@@ -1,6 +1,6 @@
 package vertrag;
 
-public interface ISubjekt {
+public interface Subjekt {
 
     /**
      * Registriert den Beobachter.

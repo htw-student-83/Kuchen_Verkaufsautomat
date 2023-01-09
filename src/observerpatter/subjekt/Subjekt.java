@@ -1,13 +1,12 @@
 package observerpatter.subjekt;
 
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Beobachter;
-import vertrag.ISubjekt;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class Subjekt implements ISubjekt {
+public class Subjekt implements vertrag.Subjekt {
 
     private Verwaltung verwaltung;
     public List<Beobachter> beobachterList = new LinkedList<>();
@@ -16,8 +15,8 @@ public class Subjekt implements ISubjekt {
 
     public Subjekt(Verwaltung verwaltung){
         this.verwaltung = verwaltung;
-        this.zustandKuchenliste = verwaltung.getKuchenlistsize();
-        this.zustandHerstellerliste = verwaltung.getHerstellerlistsize();
+        //this.zustandKuchenliste = verwaltung.getKuchenlistsize();
+        //this.zustandHerstellerliste = verwaltung.getHerstellerlistsize();
     }
 
     @Override

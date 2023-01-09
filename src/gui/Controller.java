@@ -1,10 +1,12 @@
 package gui;
-/*
+
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,7 +19,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import vertrag.Allergene;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
@@ -101,13 +102,15 @@ public class Controller implements Initializable {
             }
         }
     }
-
+/*
     @FXML
     private void allergeneeinfuegen(ActionEvent actionEvent, Allergene allergene) {
         if(!allergenelist.contains(allergene)){
             allergenelist.add(allergene);
         }
     }
+
+ */
 
 
     @FXML
@@ -127,66 +130,54 @@ public class Controller implements Initializable {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField typ = new TextField();
-        TextField sorte = new TextField();
-        TextField hersteller = new TextField();
-        TextField allergene = new TextField();
-        TextField haltbarkeit = new TextField();
-        TextField preis = new TextField();
-        TextField naehrwert = new TextField();
+        TextField daten = new TextField();
 
-        grid.add(new Label("Typ:"), 0, 0);
-        grid.add(typ, 1, 0);
-        grid.add(new Label("Sorte:"), 0, 1);
-        grid.add(sorte, 1, 1);
-        grid.add(new Label("Hersteller:"), 0, 2);
-        grid.add(hersteller, 1, 2);
-        grid.add(new Label("Allergene:"), 0, 3);
-        grid.add(allergene, 1, 3);
-        grid.add(new Label("Haltbarkeit:"), 0, 4);
-        grid.add(haltbarkeit, 1, 4);
-        grid.add(new Label("Preis:"), 0, 5);
-        grid.add(preis, 1, 5);
-        grid.add(new Label("Naehrwert:"), 0, 6);
-        grid.add(naehrwert, 1, 6);
+        grid.add(new Label("Kuchen: "), 0, 0);
+        grid.add(daten, 1, 0);
 
         // Enable/Disable login button depending on whether a username was entered.
         Node confirmbutton = dialog.getDialogPane().lookupButton(confirmbuttonTyp);
         confirmbutton.setDisable(false);
 
         // Do some validation (using the Java 8 lambda syntax).
-        typ.textProperty().addListener((observable, oldValue, newValue) -> {
+        daten.textProperty().addListener((observable, oldValue, newValue) -> {
             confirmbutton.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
 
         // Request focus on the username field by default.
-        Platform.runLater(typ::requestFocus);
+        Platform.runLater(daten::requestFocus);
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
-
-        String newHersteller = hersteller.getText();
-        Hersteller newhersteller = new Hersteller(newHersteller);
-
-        double userinputPreis = Double.parseDouble(preis.getText());
-        Duration haltbarkeitkuchen = Duration.valueOf(haltbarkeit.getText());
+        String dataKuchen = daten.getText();
+        String[] data = dataKuchen.split(" ");
+        String typ = data[0];
+        Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
+        String kuchenhersteller = data[1];
+        String preis = data[2];
+        double kuchenpreis = Double.parseDouble(preis);
+        String naehrwert = data[3];
+        int kuchennaehrwert = Integer.parseInt(naehrwert);
+        String haltbarkeit = data[4];
+        int kuchenhaltbarkeit = Integer.parseInt(haltbarkeit);
+        String kuchenallergene = data[5];
+        Allergene allergen = Allergene.valueOf(kuchenallergene);
+        String kuchensorte = data[6];
+        Hersteller newhersteller = new Hersteller(kuchenhersteller);
 
         dialog.getDialogPane().setContent(grid);
 
-        Kuchentyp userInputtyp = Kuchentyp.valueOf(typ.getText());
-
         //Die Einfüg-Methode der GL soll verwendet werden nicht die Bestandteile der Methode!!!!
-        this.model.insert(userInputtyp, newhersteller,,
-                userinputPreis, Integer.parseInt(naehrwert.getText()),
-                Allergene.valueOf(allergene.getText()), sorte.getText());
+        this.model.insert(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
+                Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
         List<Kuchen> kuchen = this.model.readKuchen();
         //TODO Wie kann nur jeweils ein Objekt von Kuchen geladen werden?
         kuchenlist.addAll(kuchen);
-        if(!allergenelist.contains(Allergene.valueOf(allergene.getText()))){
-            allergenelist.add(Allergene.valueOf(allergene.getText()));
-        }
+        this.model.insertA(allergen);
+        allergenelist.add(allergen);
         System.out.println("Listengroeße Allergene: " + allergenelist.size());
+        System.out.println("Listengröße Kuchen: " + kuchenlist.size());
     }
 
 
@@ -218,6 +209,11 @@ public class Controller implements Initializable {
 
     @FXML
     private void speicherKuchen(ActionEvent event){
+        //A radio button with an empty string for its label
+        RadioButton rb1 = new RadioButton();
+        //Setting a text label
+        rb1.setText("Home");
+/*
         kuchentable.getItems().iterator();
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Kuchen speichern");
@@ -226,7 +222,6 @@ public class Controller implements Initializable {
         if (result.isPresent()){
 
         }
+ */
     }
 }
-
- */

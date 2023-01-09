@@ -25,7 +25,7 @@
                         <VBox.margin>
                             <Insets top="15.0" />
                         </VBox.margin></Button>
-                    <Button fx:id="save" layoutX="17.0" layoutY="185.0" mnemonicParsing="false" onAction="#speicherKuchen" prefHeight="25.0" prefWidth="117.0" text="Speichern">
+                    <Button fx:id="save" layoutX="17.0" layoutY="185.0" mnemonicParsing="false" onAction="#speicherKuchen" prefHeight="25.0" prefWidth="117.0" text="Persistenz">
                         <VBox.margin>
                             <Insets top="15.0" />
                         </VBox.margin></Button>

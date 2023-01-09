@@ -48,55 +48,45 @@ public abstract class Kuchen implements Obsttorte, Serializable {
     public Hersteller getHersteller() {
         return this.hersteller;
     }
-
-    public void setHersteller(Hersteller herstellername) {
+    protected void setHersteller(Hersteller herstellername) {
         this.hersteller = herstellername;
     }
-
     public Collection<Allergene> getAllergene() {
         return Collections.singleton(this.allergene);
     }
-
-    public void setAllergene(Allergene allergene){
+    protected void setAllergene(Allergene allergene){
         this.allergene = allergene;
     }
-
     public int getNaehrwert() {
         return this.naehrwert;
     }
-
-    public void setNaehrwert(int naehrwert) {this.naehrwert = naehrwert;}
-
+    protected void setNaehrwert(int naehrwert) {this.naehrwert = naehrwert;}
     public Duration getHaltbarkeit() {
         return this.haltbarkeit;
     }
-
-    public void setHaltbarkeit(Duration haltbarkiet){this.haltbarkeit = haltbarkeit;}
-
+    protected void setHaltbarkeit(Duration haltbarkiet){this.haltbarkeit = haltbarkeit;}
     public BigDecimal getPreis() {
         return this.preis;
     }
-
-    public void setPreis(BigDecimal preis) {
+    protected void setPreis(BigDecimal preis) {
         this.preis = preis;
     }
-
     public Date getInspektionsdatum() {
         return this.inspektionsdatum;
     }
-    public void setInspektionsdatum(Date iDatum) {
+    protected void setInspektionsdatum(Date iDatum) {
         this.inspektionsdatum = iDatum;
     }
     public int getFachnummer() {
         return this.fachnummer;
     }
-    public void setFachnummer(int newNr){
+    protected void setFachnummer(int newNr){
         this.fachnummer = newNr;
     }
     public Date getEinfuegedatum(){
         return this.einfuegedatum;
     }
-    public void setEinfuegedatum(Date datum){
+    protected void setEinfuegedatum(Date datum){
         this.einfuegedatum = datum;
     }
     public abstract String getKremsorte();

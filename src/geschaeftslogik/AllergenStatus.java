@@ -1,6 +1,6 @@
 package geschaeftslogik;
 
-public enum AStatus {
+public enum AllergenStatus {
     Allergen_unbekannt,
     Allergen_bekannt
 }

@@ -1,5 +1,5 @@
 package netzwerk.tcp;
-
+/*
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.Verwaltung;
@@ -103,7 +103,7 @@ public class Kuchenautomat_Server_TCP implements Runnable {
     }
 
 
-/*
+
     private void sendeinhaltKuchen(Verwaltung model) throws IOException {
         ServerSocket serverSocket = new ServerSocket(5002);
         Socket socket = serverSocket.accept();
@@ -111,10 +111,10 @@ public class Kuchenautomat_Server_TCP implements Runnable {
         ous.writeObject(model);
     }
 
- */
 
 
-    public String herstellerEinfuegen(String herstellername) {
+
+    publicString herstellerEinfuegen(String herstellername) {
         Hersteller hersteller = new Hersteller(herstellername);
         boolean hInsert = model.insertH(hersteller);
         if (hInsert) {
@@ -154,3 +154,5 @@ public class Kuchenautomat_Server_TCP implements Runnable {
         }
     }
 }
+*/
+

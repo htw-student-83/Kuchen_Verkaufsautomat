@@ -12,16 +12,17 @@ public interface KuchenlistManagement {
 
      /**
      * Fügt einen Kuchen in die Liste ein.
-     * @param type, Kuchensorte, die von Kuchen bzw. Verkausobjekt ableitet
+     * @param typ, Kuchensorte, die von Kuchen bzw. Verkausobjekt ableitet
      * @param herstellername
      * @param preis
      * @param naehrwert
      * @param allergene
-     * @param variante Kuchensorte
+     * @param sorte Kuchensorte
      * @return true, wenn Kuchen eingefügt wurde, sonst false
      */
-    boolean insert(Kuchentyp type, Hersteller herstellername, Duration haltbarkeit,
-                   double preis, int naehrwert, Allergene allergene, String variante);
+    boolean insert(Kuchentyp typ, Hersteller herstellername,
+                   double preis, int naehrwert, Duration haltbarkeit,
+                   Allergene allergene, String sorte );
 
     /**
      * Fügt einen Hersteller hinzu.
