@@ -1,5 +1,6 @@
 package simulation1;
 
+import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
 public class DeleteSimulation1 extends Thread implements Runnable {
@@ -15,19 +16,20 @@ public class DeleteSimulation1 extends Thread implements Runnable {
 
     @Override
     public void run() {
-        synchronized (this.monitor){
-            boolean result = this.model.delete(creationRandomNumber());
-            if(result){
-                System.out.println("Thread2 hat einen Kuchen gelöscht.");
-            }
-        }
+        deleteKuchenSimulation();
     }
 
-
-    //Quelle heraussuchen!
-    public int creationRandomNumber() {
-        int minRandomNumber = 1;
-        int maxRandomNumber = 3;
-        return (int) Math.floor(Math.random()*(maxRandomNumber-minRandomNumber+1)+minRandomNumber);
+    public boolean deleteKuchenSimulation(){
+        synchronized (this.monitor){
+            for(Kuchen kuchen: this.model.readKuchen()){
+                int fachnummer = kuchen.getFachnummer();
+                boolean result = this.model.deleteKuchen(fachnummer);
+                if(result){
+                    System.out.println("Thread2 hat einen Kuchen gelöscht.");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

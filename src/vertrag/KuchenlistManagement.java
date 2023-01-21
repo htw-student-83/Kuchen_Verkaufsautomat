@@ -20,7 +20,7 @@ public interface KuchenlistManagement {
      * @param sorte Kuchensorte
      * @return true, wenn Kuchen eingefügt wurde, sonst false
      */
-    boolean insert(Kuchentyp typ, Hersteller herstellername,
+    boolean insertKuchen(Kuchentyp typ, Hersteller herstellername,
                    double preis, int naehrwert, Duration haltbarkeit,
                    Allergene allergene, String sorte );
 
@@ -29,7 +29,7 @@ public interface KuchenlistManagement {
      * @param neuerHersteller
      * @return true, wenn Hersteller eingefügt wurde, sonst false
      */
-    boolean insertH(Hersteller neuerHersteller);
+    boolean insertHersteller(Hersteller neuerHersteller);
 
     /**
      * Gibt vorhandene Kuchen aus.
@@ -60,14 +60,14 @@ public interface KuchenlistManagement {
      * @param fachnummer
      * @return true, wenn Fachnummer bekannt ist, sonst false
      */
-    boolean edit(int fachnummer);
+    boolean editKuchen(int fachnummer);
 
     /**
      * loescht anhand der fachnummer den Kuchen aus der Liste
      * @param fachnummer nummer des Kuchens
      * @return true, wenn Kuchen gelöscht wurde, sonst false
      */
-    boolean delete(int fachnummer);
+    boolean deleteKuchen(int fachnummer);
 
     /**
      * loescht anhand des Namens den Hersteller aus der Liste
@@ -81,6 +81,6 @@ public interface KuchenlistManagement {
      * @param allergene
      * @return true, wenn Allergen hinzugefügt wurde, sonst false
      */
-    boolean insertA(Allergene allergene);
+    boolean insertAllergen(Allergene allergene);
 
 }

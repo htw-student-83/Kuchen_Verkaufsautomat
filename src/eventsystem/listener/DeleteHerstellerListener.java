@@ -1,19 +1,22 @@
 package eventsystem.listener;
-
+/*
 import eventsystem.controller.EventListener;
 import eventsystem.controller.KuchenEvent;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class InsertHerstellerListener implements EventListener {
+public class DeleteHerstellerListener implements EventListener {
+    //Der GL dem Listener bekannt machen
     private Verwaltung model;
 
     //Konstruktor erstellen
-    public InsertHerstellerListener(Verwaltung model) {
+    public DeleteHerstellerListener(Verwaltung model){
         this.model = model;
     }
 
     @Override
     public void run(KuchenEvent event) {
-        this.model.insertHersteller(event.getkuchenhersteller());
+        this.model.deleteHersteller(event.getkuchenhersteller());
     }
 }
+
+ */

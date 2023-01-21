@@ -35,15 +35,15 @@ public class InsertSimulation3 implements Runnable{
 
     public void insertForInspection() throws InterruptedException{
         synchronized (this.monitor){//Beginn des kritischen Bereichs
-            this.model.insertH(hersteller1);
-            this.model.insertH(hersteller2);
-            this.model.insertH(hersteller3);
-            this.model.insertH(hersteller4);
-            this.model.insert(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
+            this.model.insertHersteller(hersteller1);
+            this.model.insertHersteller(hersteller2);
+            this.model.insertHersteller(hersteller3);
+            this.model.insertHersteller(hersteller4);
+            this.model.insertKuchen(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
                     Duration.ofDays(34), Allergene.Gluten, "Banane");
-            this.model.insert(Kuchentyp.Kremkuchen, hersteller2, 2.56, 120,
+            this.model.insertKuchen(Kuchentyp.Kremkuchen, hersteller2, 2.56, 120,
                     Duration.ofDays(22), Allergene.Erdnuss, "Nuss-Creme");
-            this.model.insert(Kuchentyp.Obsttorte, hersteller3, 1.34, 340,
+            this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 1.34, 340,
                     Duration.ofDays(30), Allergene.Haselnuss, "Orange mit Nusskern");
         }
     }

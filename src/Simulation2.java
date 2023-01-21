@@ -1,5 +1,5 @@
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
-import observerpatter.observer.Beobachter;
+import observerpatter.Beobachter;
 import simulation2.DeleteSimulation2;
 import simulation2.InspektionSimulation2;
 

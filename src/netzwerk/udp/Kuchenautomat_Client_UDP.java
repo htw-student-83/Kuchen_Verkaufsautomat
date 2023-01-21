@@ -1,141 +1,173 @@
 package netzwerk.udp;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.*;
+import java.net.*;
 import java.util.Scanner;
 
 public class Kuchenautomat_Client_UDP {
-    static String options = "";
+    private static final String EINFUEGEN = ":c";
+    private static final String LOESCHEN = ":d";
+    private static final String AENDERN = ":u";
+    private static final String ANZEIGEN = ":r";
+    private static final String PERSISTIEREN = ":p";
 
-    public static void main(String[]args){
-        clientStart();
+    byte[] buffer = new byte[4096];
+    private DatagramSocket socket;
+    private InetAddress address;
+    private int port;
+
+
+    public static void main(String[] args) throws IOException {
+        DatagramSocket datagramSocket = new DatagramSocket(5002); // Portnummer Client
+        InetAddress address = InetAddress.getByName("localhost");
+        Kuchenautomat_Client_UDP client = new Kuchenautomat_Client_UDP(datagramSocket, address, 5001);
+        client.clientStart();
     }
 
-    public static void clientStart(){
-        Scanner userInput = new Scanner(System.in);
-        try(DatagramSocket datagramSocket = new DatagramSocket(5001)) {
-            InetAddress address = InetAddress.getByName("localhost");
-            byte[] buffer = new byte[4096];
-            System.out.println("Wählen Sie unter folgenden Optionen aus:");
-            System.out.println("(i) - Hersteller einfügen");
-            System.out.println("(i2) - Kuchen einfügen");
-            System.out.println("(u) - Kuchen inspizieren");
-            System.out.println("(d) - Kuchen löschen");
-            options = userInput.next();
-            String received = "";
+    public Kuchenautomat_Client_UDP(DatagramSocket socket, InetAddress serveradress, int serverport) {
+        this.socket = socket;
+        this.address = serveradress;
+        this.port = serverport;
+    }
 
-            DatagramPacket packetIn = new DatagramPacket(buffer, buffer.length);
-
-            switch (options){
-                case "i":
-                    byte[] bytesBefehl = options.getBytes();
-                    DatagramPacket packetOut = new DatagramPacket(bytesBefehl, bytesBefehl.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    System.out.println("Habe die Messages an den Server weitergeleitet.");
-                    System.out.println("Warte jetzt auf eine Reaktion vom Server");
-                    datagramSocket.receive(packetIn);
-                    Thread.sleep(3000);
-                    System.out.println("Soeben sind Daten eingetroffen...");
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]: " + received);
-                    String herstellername = userInput.next();
-                    byte[] bytesherstellername = herstellername.getBytes();
-                    packetOut = new DatagramPacket(bytesherstellername, bytesherstellername.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]: " + received);
+    public void clientStart() throws IOException {
+              //DatagramPacket packetOut = new DatagramPacket(optioninbytes, optioninbytes.length, address, port);
+        DatagramPacket packetIn = new DatagramPacket(buffer, buffer.length);
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+        DataOutputStream dos = new DataOutputStream(bos);
+        Scanner scanner = new Scanner(System.in);
+        String option = scanner.nextLine();
+        dos.writeUTF(":c");
+        this.sendMessage(bos.toByteArray());
+        // - Daten werden über einen ByteArrayInputStream empfangen
+        //DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
+        // - Daten werden über einen ByteArrayInputStream gesendet
+        //DatagramPacket packetIn = new DatagramPacket(buffer, buffer.length);
+        switch (option) {
+            case ":c":
+                String herstellername = scanner.nextLine();
+                dos.writeUTF(herstellername);
+                this.sendMessage(bos.toByteArray());
+                String kuchendaten = scanner.nextLine();
+                while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") || kuchendaten.equals(":r") ||
+                        kuchendaten.equals(":p"))) {
+                    //  dos.writeUTF(kuchendaten);
+                    // this.sendMessage(bos.toByteArray());
+                    kuchendaten = scanner.nextLine();
+                }
+                /*
+                    scanner = new Scanner(System.in);
+                    herstellername = scanner.nextLine();
+                    dos.writeUTF(herstellername);
+               //     System.out.println("Hersteller gespeichert: " + dis.readUTF());
+                    String kuchendaten = scanner.nextLine();
+                    while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
+                            kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
+                        dos.writeUTF(kuchendaten);
+                        kuchendaten = scanner.nextLine();
+                        if (kuchendaten.equals(":c")) {
+                      //      einfuegemodus();
+                        } else if (kuchendaten.equals(":d")) {
+                      //      loeschmodus();
+                        } else if (kuchendaten.equals(":p")) {
+                      //      persistieren();
+                        } else if (kuchendaten.equals(":u")) {
+                      //      aenderungsmodus();
+                        }
+                    }
+                    //byte[] bytesBefehleinfuegen = userInput.getBytes();
+                    //packetOut = new DatagramPacket(bytesBefehleinfuegen, bytesBefehleinfuegen.length, address, 5002);
+                    //datagramSocket.send(packetOut);
+                    //byte[] herstellername = herstellernameInput.getBytes();
+                    //packetOut = new DatagramPacket(herstellername, herstellername.length, address, 5002);
+                    //datagramSocket.send(packetOut);
+                    //byte[] kuchendaten = kuchendatenInput.getBytes();
+                    //packetOut = new DatagramPacket(kuchendaten, kuchendaten.length, address, 5002);
+                    //datagramSocket.send(packetOut);
                     break;
-                case "i2":
-                    byte[] bytesBefehl2 = options.getBytes();
-                    packetOut = new DatagramPacket(bytesBefehl2, bytesBefehl2.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    System.out.println("Habe die Messages an den Server weitergeleitet.");
-                    System.out.println("Warte jetzt auf eine Reaktion vom Server");
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
 
-                    // - Daten eingeben und diese an den Server senden
-                    String kuchentyp = userInput.next();
-                    byte[] typ = kuchentyp.getBytes();
-                    packetOut = new DatagramPacket(typ, typ.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
+                 */
 
-                    String hersteller = userInput.next();
-                    byte[] inputHersteller = hersteller.getBytes();
-                    packetOut = new DatagramPacket(inputHersteller, inputHersteller.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
+            case ":u":
+                dos.writeUTF(option);
+                System.out.println("Änderungsmodus:");
+                scanner = new Scanner(System.in);
+                String userInput = scanner.nextLine();
+                while (!(userInput.equals(":u") || userInput.equals(":d") ||
+                        userInput.equals(":p") || userInput.equals(":r"))) {
+                    int kuchenID = Integer.parseInt(userInput);
+                    dos.writeInt(kuchenID);
+                    //       System.out.println(dis.readUTF());
+                    userInput = scanner.nextLine();
 
-                    double preis = userInput.nextDouble();
-                    String preisK = String.valueOf(preis);
-                    byte[] preisinBytes = preisK.getBytes();
-                    packetOut = new DatagramPacket(preisinBytes, preisinBytes.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
+                    if (userInput.equals(":c")) {
+                        //        einfuegemodus();
+                    } else if (userInput.equals(":d")) {
+                        //        loeschmodus();
+                    } else if (userInput.equals(":p")) {
+                        //        persistieren();
+                    } else if (userInput.equals(":u")) {
+                        //        aenderungsmodus();
+                    }
+                }
+                break;
 
-                    String naehrwert = userInput.next();
-                    byte[] naehrwertBytes = naehrwert.getBytes();
-                    packetOut = new DatagramPacket(naehrwertBytes, naehrwertBytes.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
+            case ":d":
+                dos.writeUTF(option);
+                System.out.println("Löschmodus:");
+                scanner = new Scanner(System.in);
+                userInput = scanner.nextLine();
+                while (!(userInput.equals(":u") || userInput.equals(":d") ||
+                        userInput.equals(":p") || userInput.equals(":r"))) {
+                    String herstellername_bekannt = userInput;
+                    dos.writeUTF(herstellername_bekannt);
+                    //       System.out.println(dis.readUTF());
+                    userInput = scanner.nextLine();
+                    int kuchenID = Integer.parseInt(userInput);
+                    dos.writeInt(kuchenID);
+                    //       System.out.println(dis.readUTF());
+                    userInput = scanner.nextLine();
 
-                    String sorte = userInput.next();
-                    byte[] sorteBytes = sorte.getBytes();
-                    packetOut = new DatagramPacket(sorteBytes, sorteBytes.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
+                    if (userInput.equals(":c")) {
+                        //                einfuegemodus();
+                    } else if (userInput.equals(":d")) {
+                        //              loeschmodus();
+                    } else if (userInput.equals(":p")) {
+                        //            persistieren();
+                    } else if (userInput.equals(":u")) {
+                        //          aenderungsmodus();
+                    }
+                }
+                break;
+            case ":p":
+                dos.writeUTF(option);
+                //byte[] bytesBefehlpersistieren = userInput.getBytes();
+                //packetOut = new DatagramPacket(bytesBefehlpersistieren, bytesBefehlpersistieren.length, address, 5002);
+                //datagramSocket.send(packetOut);
+                String befehlpersistierung = scanner.nextLine();
+                while (!(befehlpersistierung.equals(":u") || befehlpersistierung.equals(":d") ||
+                        befehlpersistierung.equals(":p") || befehlpersistierung.equals(":r"))) {
+                    dos.writeUTF(befehlpersistierung);
+                    befehlpersistierung = scanner.nextLine();
+                }
+                break;
+            //byte[] bytesbefehlautomatenspeichern = befehlautomatenspeichern.getBytes();
+            //packetOut = new DatagramPacket(bytesbefehlautomatenspeichern, bytesbefehlautomatenspeichern.length, address, 5002);
+            //datagramSocket.send(packetOut);
+            //packetIn = new DatagramPacket(buffer, buffer.length);
+            //datagramSocket.receive(packetIn);
+            //TODO Zustand des Automaten wird empfangen
 
-                    String allergene = userInput.next();
-                    byte[] allergeneBytes = allergene.getBytes();
-                    packetOut = new DatagramPacket(allergeneBytes, allergeneBytes.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    datagramSocket.receive(packetIn);
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]" + received);
-                    break;
-                case "u":
-                case "d":
-                    byte[] bytesBefehl3 = options.getBytes();
-                    packetOut = new DatagramPacket(bytesBefehl3, bytesBefehl3.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    System.out.println("Habe die Messages an den Server weitergeleitet.");
-                    System.out.println("Warte jetzt auf eine Reaktion vom Server");
-                    packetIn = new DatagramPacket(buffer, buffer.length);
-                    datagramSocket.receive(packetIn);
-                    Thread.sleep(3000);
-                    System.out.println("Soeben sind Daten eingetroffen...");
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]: " + received);
-                    String userFachnummmer = userInput.next();
-                    byte[] fachnummerinBytes = userFachnummmer.getBytes();
-                    packetOut = new DatagramPacket(fachnummerinBytes, fachnummerinBytes.length, address, 5002);
-                    datagramSocket.send(packetOut);
-                    System.out.println("Warte jetzt auf eine Reaktion vom Server");
-                    datagramSocket.receive(packetIn);
-                    System.out.println("Soeben sind Daten eingetroffen...");
-                    received = new String(packetIn.getData(),0, packetIn.getLength());
-                    System.out.println("[Server]: " + received);
-                    break;
-                default:
-                    System.out.println("Ungueltiges Zeichen eingegeben.");
-            }
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            default:
+        }
+    }
+    private void sendMessage(byte[] message){
+        DatagramPacket packetOut = new DatagramPacket(message,message.length,
+                this.address,this.port);
+        try {
+            this.socket.send(packetOut);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,4 +1,4 @@
-package observerpatter.subjekt;
+package observerpatter;
 
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Beobachter;

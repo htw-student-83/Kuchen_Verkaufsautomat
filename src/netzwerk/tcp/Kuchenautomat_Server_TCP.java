@@ -1,33 +1,65 @@
 package netzwerk.tcp;
-/*
-import geschaeftslogik.Hersteller;
-import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.Verwaltung;
-import geschaeftslogik.verkaufsobjekt.Kuchen;
-import vertrag.Allergene;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import geschaeftslogik.Hersteller;
+import geschaeftslogik.Kuchenautomat;
+import geschaeftslogik.Kuchentyp;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
+import vertrag.Allergene;
+import java.io.*;
+import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Scanner;
 
-public class Kuchenautomat_Server_TCP implements Runnable {
-    static Verwaltung model = new Verwaltung();
+public class Kuchenautomat_Server_TCP implements Runnable{
+    Verwaltung model = new Verwaltung();
+    Kuchenautomat automat = new Kuchenautomat();
+    private Socket socket;
 
-    public static void main(String[] args) throws IOException {
-        //Verwaltung model = new Verwaltung();
-        Kuchenautomat_Server_TCP server = new Kuchenautomat_Server_TCP();
-        server.run();
-        //server.startServer();
+    Socket getData;
+
+    ObjectInputStream ois = null;
+
+    public Kuchenautomat_Server_TCP(Socket socket, int kapazitaet)  {
+        this.automat.setKapazitaet(kapazitaet);
+        this.socket = socket;
     }
 
+    @Override public void run() {
+        try (DataInputStream in = new DataInputStream(socket.getInputStream())) {
+            System.out.println("client@"+socket.getInetAddress()+":"+socket.getPort()+" connected");
+            this.createKuchenObjekt(in);
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+        //System.out.println("client@"+socket.getInetAddress()+":"+socket.getPort()+" disconnected");
+    }
 
-    @Override
-    public void run() {
+    public void createKuchenObjekt(DataInputStream in) throws IOException {
+        String command = in.readUTF();
+            try {
+                switch (command) {
+                    case ":c":
+                        System.out.println("Der Einfügeprozess wurde gestartet..");
+                        command = in.readUTF();
+                        System.out.println("Herstellername: " + command);
+                        command = in.readUTF();
+                        System.out.println("Kuchendaten: " + command);
+                        break;
+                    default:
+                        System.out.println("unbekannte Eingabe");
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+
+/*
+    public void run2(){
         while (true) {
             try (ServerSocket serverSocket = new ServerSocket(5002)) {
                 try (Socket socket = serverSocket.accept();
@@ -73,14 +105,14 @@ public class Kuchenautomat_Server_TCP implements Runnable {
                             out.writeUTF(dResult);
                             break;
                         case "r":
-                            if(model.readKuchen().isEmpty()){
+                            if(this.model.readKuchen().isEmpty()){
                                 out.writeUTF("null");
                                 out.writeInt(0);
                                 out.writeUTF("null");
                                 out.writeInt(0);
                                 out.writeLong(0);
                             }else{
-                                for(Kuchen kuchen: model.readKuchen()){
+                                for(Kuchen kuchen: this.model.readKuchen()){
                                     out.writeUTF("Kuchen:");
                                     out.writeInt(kuchen.getFachnummer());
                                     out.writeUTF(kuchen.getKremsorte());
@@ -101,22 +133,13 @@ public class Kuchenautomat_Server_TCP implements Runnable {
             }
         }
     }
+ */
 
 
 
-    private void sendeinhaltKuchen(Verwaltung model) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(5002);
-        Socket socket = serverSocket.accept();
-        ObjectOutputStream ous = new ObjectOutputStream(socket.getOutputStream());
-        ous.writeObject(model);
-    }
-
-
-
-
-    publicString herstellerEinfuegen(String herstellername) {
+    public String herstellerEinfuegen(String herstellername) {
         Hersteller hersteller = new Hersteller(herstellername);
-        boolean hInsert = model.insertH(hersteller);
+        boolean hInsert = this.model.insertHersteller(hersteller);
         if (hInsert) {
             return "Hersteller eingefügt.";
         } else {
@@ -127,7 +150,7 @@ public class Kuchenautomat_Server_TCP implements Runnable {
     public String kuchenEinfuegen(Kuchentyp typ, String herstellername, Duration haltbarkeit, double preis,
                                   int naehrwert, Allergene allgene, String sorte) {
         Hersteller hersteller = new Hersteller(herstellername);
-        boolean kInsert = model.insert(typ, hersteller, haltbarkeit, preis, naehrwert, allgene, sorte);
+        boolean kInsert = this.model.insertKuchen(typ, hersteller, preis, naehrwert, haltbarkeit, allgene, sorte);
         if (kInsert) {
             return "Habe den Kuchen eingefuegt.";
         } else {
@@ -137,7 +160,7 @@ public class Kuchenautomat_Server_TCP implements Runnable {
 
 
     private String kuchenInspizieren(int input) {
-        boolean isput = model.edit(input);
+        boolean isput = this.model.editKuchen(input);
         if (isput) {
             return "Habe den Kuchen inspiziert.";
         } else {
@@ -146,7 +169,7 @@ public class Kuchenautomat_Server_TCP implements Runnable {
     }
 
     private String kuchenloeschen(int input) {
-        boolean isput = model.delete(input);
+        boolean isput = this.model.deleteKuchen(input);
         if (isput) {
             return "Habe den Kuchen geloescht.";
         } else {
@@ -154,5 +177,4 @@ public class Kuchenautomat_Server_TCP implements Runnable {
         }
     }
 }
-*/
 

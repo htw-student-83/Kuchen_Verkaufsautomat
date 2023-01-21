@@ -1,4 +1,4 @@
-package observerpatter.observer;
+package observerpatter;
 
 import geschaeftslogik.Kuchenautomat;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;

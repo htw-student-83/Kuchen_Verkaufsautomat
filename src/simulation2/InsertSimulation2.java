@@ -32,15 +32,14 @@ public class InsertSimulation2 extends Thread implements Runnable {
 
     public void insertForInspection() throws InterruptedException{
         synchronized(this.monitor){
-            // Kuchen- und Herstellerliste befüllen
-            this.model.insertH(hersteller1);
-            this.model.insertH(hersteller2);
-            this.model.insertH(hersteller3);
-            this.model.insert(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
+            this.model.insertHersteller(hersteller1);
+            this.model.insertHersteller(hersteller2);
+            this.model.insertHersteller(hersteller3);
+            this.model.insertKuchen(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
                     Duration.ofDays(34), Allergene.Gluten, "Banane");
-            this.model.insert(Kuchentyp.Kremkuchen, hersteller2, 5.23, 122,
+            this.model.insertKuchen(Kuchentyp.Kremkuchen, hersteller2, 5.23, 122,
                     Duration.ofDays(34), Allergene.Haselnuss, "Nuss-Creme");
-            this.model.insert(Kuchentyp.Obsttorte, hersteller3, 2.44, 344,
+            this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 2.44, 344,
                     Duration.ofDays(34), Allergene.Sesamsamen, "Tortencreme");
         }
     }

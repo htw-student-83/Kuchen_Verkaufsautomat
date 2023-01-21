@@ -11,6 +11,7 @@ import java.util.*;
 
 public class Verwaltung extends Observable implements KuchenlistManagement,
         Serializable {
+    int anzahlKuchen = 3;
     Kuchenautomat automat = new Kuchenautomat();
     private int currentFachnummer = 0;
     List<Kuchen> kuchenliste = new ArrayList<>();
@@ -18,7 +19,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
     Set<Allergene> allergenset = new HashSet<>();
 
     @Override
-    public boolean insert(Kuchentyp typ, Hersteller hersteller,
+    public boolean insertKuchen(Kuchentyp typ, Hersteller hersteller,
                           double preis, int naehrwert, Duration haltbarkeit,
                           Allergene allergene, String sorte ) {
         Kuchen kuchen = null;
@@ -44,7 +45,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
             kuchen.setFachnummer(getCurrentFachnummerAndIncrement());
             kuchen.setEinfuegedatum(getDatum());
             kuchenliste.add(kuchen);
-            insertA(allergene);
+            insertAllergen(allergene);
             automat.boxincrement();
             return true;
         }
@@ -55,7 +56,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
 
     // - Besserer Methodennamen: insertHersteller()
     @Override
-    public boolean insertH(Hersteller neuerHersteller) {
+    public boolean insertHersteller(Hersteller neuerHersteller) {
         if(checkTablehersteller(neuerHersteller)== HerstellerStatus.Hersteller_unbekannt){
             herstellerset.add(neuerHersteller);
             return true;
@@ -74,7 +75,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
 
     // - insertAllergen()
     @Override
-    public boolean insertA(Allergene allergene) {
+    public boolean insertAllergen(Allergene allergene) {
         if(checkTableAllergene(allergene )== AllergenStatus.Allergen_unbekannt){
             allergenset.add(allergene);
             return true;
@@ -130,7 +131,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
     }
 
     @Override
-    public boolean edit(int fachnummer) {
+    public boolean editKuchen(int fachnummer) {
         for (Kuchen kuchen: this.kuchenliste) {
             if (kuchen.getFachnummer() == fachnummer) {
                 kuchen.setInspektionsdatum(getInspektion());
@@ -143,7 +144,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
 
     // - deleteKuchen()
     @Override
-    public boolean delete(int fachnummer){
+    public boolean deleteKuchen(int fachnummer){
         if(kuchenliste.isEmpty()){
             return false;
         }
@@ -183,6 +184,10 @@ public class Verwaltung extends Observable implements KuchenlistManagement,
     //Quelle: https://www.delftstack.com/de/howto/java/how-to-get-the-current-date-time-in-java/
     protected Date getDatum() {
         return new Date();
+    }
+
+    protected Duration convertHaltbarkeit(int haltbarkeit){
+        return Duration.ofDays(haltbarkeit);
     }
 
     //TODO - eventuell überarebiten

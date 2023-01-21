@@ -8,8 +8,7 @@ public class ObjektSpeicherungJOS {
 
     static String filenameAutomat = "automaten.txt";
 
-    public static void persistiereAutomaten(){
-        Verwaltung model = new Verwaltung();
+    public static void persistiereAutomaten(Verwaltung model){
         try (FileOutputStream fous=new FileOutputStream(filenameAutomat)){
             ObjectOutputStream outputStream = new ObjectOutputStream(fous);{
                 outputStream.writeObject(model);

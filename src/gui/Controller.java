@@ -97,7 +97,7 @@ public class Controller implements Initializable {
         newhersteller = new Hersteller(dialog.getResult());
         if(result.isPresent()){
             if(!herstellerlist.contains(newhersteller)){
-                this.model.insertH(newhersteller);
+                this.model.insertHersteller(newhersteller);
                 herstellerlist.add(newhersteller);
             }
         }
@@ -169,12 +169,12 @@ public class Controller implements Initializable {
         dialog.getDialogPane().setContent(grid);
 
         //Die Einfüg-Methode der GL soll verwendet werden nicht die Bestandteile der Methode!!!!
-        this.model.insert(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
+        this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
                 Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
         List<Kuchen> kuchen = this.model.readKuchen();
         //TODO Wie kann nur jeweils ein Objekt von Kuchen geladen werden?
         kuchenlist.addAll(kuchen);
-        this.model.insertA(allergen);
+        this.model.insertAllergen(allergen);
         allergenelist.add(allergen);
         System.out.println("Listengroeße Allergene: " + allergenelist.size());
         System.out.println("Listengröße Kuchen: " + kuchenlist.size());
@@ -201,7 +201,7 @@ public class Controller implements Initializable {
         dialog.setContentText("Fachnummer:");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            this.model.edit(Integer.parseInt(result.get()));
+            this.model.editKuchen(Integer.parseInt(result.get()));
             kuchentable.refresh();
             kuchentable.getColumns().get(8).setVisible(true);
         }

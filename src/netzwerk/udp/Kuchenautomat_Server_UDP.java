@@ -1,188 +1,147 @@
 package netzwerk.udp;
 /*
 import geschaeftslogik.Hersteller;
+import geschaeftslogik.Kuchenautomat;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.Verwaltung;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
+import jbp.ObjektSpeicherungJBP;
+import jos.ObjektLadenJOS;
+import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
+import java.io.*;
+import java.net.*;
 import java.time.Duration;
 
 public class Kuchenautomat_Server_UDP {
-    Verwaltung model;
+    private final byte[] inBuffer=new byte[70];
+    Verwaltung model = new Verwaltung();
 
-    public static void main(String[]args){
-        Verwaltung model = new Verwaltung();
-        Kuchenautomat_Server_UDP server = new Kuchenautomat_Server_UDP(model);
-        server.startServer();
+    private DatagramSocket socket;
+
+    public Kuchenautomat_Server_UDP(DatagramSocket socket, int kapazitaet){
+        this.model.setKapazitaet(kapazitaet);
+        this.socket = socket;
     }
 
-    public Kuchenautomat_Server_UDP(Verwaltung model){
-        this.model = model;
-    }
-
-    public void startServer() {
-        while (true) {
-            //String isWaiting = "Warte jetzt auf eine Anfrage vom Client";
-            //byte[] isWaitinginBytes = isWaiting.getBytes();
-            try (DatagramSocket datagramSocket = new DatagramSocket(5002)) {
-                InetAddress address = InetAddress.getByName("localhost");
-                byte[] buffer = new byte[4096];
-
-                DatagramPacket packetIn = new DatagramPacket(buffer, buffer.length);
-                datagramSocket.receive(packetIn);
-                String received = new String(packetIn.getData(), 0, packetIn.getLength());
-
-                packetIn = new DatagramPacket(buffer, buffer.length);
-                //DatagramPacket packetOut = new DatagramPacket(isWaitinginBytes, isWaitinginBytes.length, address, 5001);
-                //datagramSocket.send(packetOut);
-                switch (received){
-                    case "i":
-                        String herstellername = "Wie heißt der Hersteller?";
-                        byte[] herstellernameBytes = herstellername.getBytes();
-                        DatagramPacket packetOut = new DatagramPacket(herstellernameBytes, herstellernameBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        String input = new String(packetIn.getData(), packetIn.getLength());
-                        String result = herstellerEinfuegen(input);
-                        byte[] bytes = result.getBytes();
-                        packetOut = new DatagramPacket(bytes, bytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        break;
-                    case "i2":
-                        String kuchentyp = "Welcher Typ?";
-                        byte[] kuchentypinBytes = kuchentyp.getBytes();
-                        String kuchenhersteller = "Welcher Hersteller?";
-                        byte[] kuchenherstellerinBytes = kuchenhersteller.getBytes();
-                        String kuchenpreis = "Welcher Preis?";
-                        byte[] kuchenpreisinBytes = kuchenpreis.getBytes();
-                        String kuchensorte = "Welche Sorte?";
-                        byte[] kuchensorteinBytes = kuchensorte.getBytes();
-                        String kuchennaehrwert = "Welcher Naehrwert?";
-                        byte[] kuchennaehrwertinBytes = kuchennaehrwert.getBytes();
-                        String kuchenallergene = "Welche Allergene?";
-                        byte[] kuchenallergeneinBytes = kuchenallergene.getBytes();
-
-                        //TODO einzelne Daten convertieren
-
-                        // - Aufforderung und Erwartung der Kuchendaten
-                        packetOut = new DatagramPacket(kuchentypinBytes, kuchentypinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        byte[] typByte = packetIn.getData();
-                        String typeS= new String(typByte, typByte.length);
-                        System.out.println("Typ: " + typeS);
-
-                        packetOut = new DatagramPacket(kuchenherstellerinBytes, kuchenherstellerinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        String inputherstellername = new String(packetIn.getData(), packetIn.getLength());
-
-                        packetOut = new DatagramPacket(kuchenpreisinBytes, kuchenpreisinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        ByteBuffer buffer2 = ByteBuffer.allocate(Double.BYTES);
-                        byte[] preisinBytes = packetIn.getData();
-                        int preisInt = (preisinBytes[0] & 0xff);
-                        System.out.println("Preis: " + Float.intBitsToFloat(preisInt));
-
-                        //String preisSever = new String(packetIn.getData(), packetIn.getLength());
-
-                        packetOut = new DatagramPacket(kuchennaehrwertinBytes, kuchennaehrwertinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        byte[] naehrwertinBytes = packetIn.getData();
-                        int naehrwertZahl = (naehrwertinBytes[0] & 0xff);
-                        System.out.println("Zahl: " + naehrwertZahl);
-
-                        packetOut = new DatagramPacket(kuchensorteinBytes, kuchensorteinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        String sorte= new String(packetIn.getData(), packetIn.getLength());
-
-                        packetOut = new DatagramPacket(kuchenallergeneinBytes, kuchenallergeneinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        String allergeneb= new String(packetIn.getData(), packetIn.getLength());
-                        System.out.println("Allergene: " + allergeneb);
-
-                        //result = kuchenEinfuegen(Kuchentyp.valueOf(typeS), inputherstellername, preis, naehrwertZahl, Allergene.valueOf(allergeneb), kuchensorte);
-
-                        //byte[] resultinBytes = result.getBytes();
-                        //packetOut = new DatagramPacket(resultinBytes, resultinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        break;
-                    case "u":
-                        //Quelle: https://stackoverflow.com/questions/22798345/how-to-get-integer-value-from-byte-array-returned-by-metamessage-getdata
-                        String inspizierung = "Welche Fachnummer?";
-                        byte[] inspizierenInBytes = inspizierung.getBytes();
-                        packetOut = new DatagramPacket(inspizierenInBytes, inspizierenInBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        byte[] data = packetIn.getData();
-                        int fachnummer = (data[0] & 0xff);
-                        result = kuchenInspizieren(fachnummer);
-                        byte[] fachnummerinBytes = result.getBytes();
-                        packetOut = new DatagramPacket(fachnummerinBytes, fachnummerinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        break;
-                    case "d":
-                        String loeschenderKuchen = "Um welche Fachnummer geht es?";
-                        byte[] zuloeschenderKuchen = loeschenderKuchen.getBytes();
-                        packetOut = new DatagramPacket(zuloeschenderKuchen, zuloeschenderKuchen.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        datagramSocket.receive(packetIn);
-                        byte[] dataNr = packetIn.getData();
-                        int fachnummerDeleteKuchen = (dataNr[0] & 0xff);
-                        result = kuchenloeschen(fachnummerDeleteKuchen);
-                        byte[] deletedKuchen = result.getBytes();
-                        packetOut = new DatagramPacket(deletedKuchen, deletedKuchen.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        break;
-                    default:
-                        String failedInput = "Ungueltiges Zeichen verwendet.";
-                        byte[] faildInputinBytes = failedInput.getBytes();
-                        packetOut = new DatagramPacket(faildInputinBytes, faildInputinBytes.length, address, 5001);
-                        datagramSocket.send(packetOut);
-                        break;
-                }
-            } catch (
-                    IOException e) {
-                throw new RuntimeException(e);
+    public void startServer(){
+        System.out.println("Der UDP-Server wurde gestartet..");
+        while (true){
+            DatagramPacket packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
+            try(DataInputStream dis=new DataInputStream(new ByteArrayInputStream(packetIn.getData()))) {
+                this.processMessage(dis);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    private String herstellerEinfuegen(String herstellername) {
-            Hersteller hersteller = new Hersteller(herstellername);
-            boolean isdeleted = this.model.insertH(hersteller);
-            if (isdeleted) {
-                return "Hersteller eingefügt.";
-            } else {
-                return "Hersteller nicht eingefügt..";
-            }
+
+//TODO Der Server nach jedem Befehl in keiner While-Schleife sein. Nur die Befehle sollen ausgeführt werden
+    public void processMessage(DataInputStream dis) throws IOException {
+        System.out.println("Funktion aufgerufen.");
+        this.socket.receive(packetIn);
+        String option = dis.readUTF();
+        String dataString = "";
+        switch (option) {
+            case ":c":
+                //this.einfuegemodus();
+                System.out.println("Befehl " + option);
+                //TODO jeweiliger Befehl wird nach Versandt vom CLient nicht sofort erkannt
+
+                // - Neuen Hersteller einfügen
+                this.socket.receive(packetIn);
+                String herstellername = dis.readUTF();
+                String result = herstellerEinfuegen(herstellername);
+                System.out.println(result);
+                //- Neuen Kuchen einfügen
+                dataString = dis.readUTF();
+                String result2 = getKuchenObejtData(dataString);
+                System.out.println(result2);
+                    //dis.readUTF() blockiert angeblich?!
+                break;
+            case ":u":
+                //this.aenderungsmodus();
+                System.out.println("Befehl u");
+               // String nummer = dis.readUTF();
+               // int kuchenIDInspizierung = Integer.parseInt(nummer);
+                //String result3 = kuchenInspizieren(kuchenIDInspizierung);
+                //System.out.println(result3);
+                break;
+            case ":d":
+                //this.loeschmodus();
+                System.out.println("Befehl d");
+                //this.socket.receive(packetIn);
+               String inputFachnummerFueLoeschung = dis.readUTF();
+                int fachnummerKuchenLoeschung = Integer.parseInt(inputFachnummerFueLoeschung);
+                String result4 = kuchenloeschen(fachnummerKuchenLoeschung);
+
+                System.out.println(result4);
+
+                break;
+            case ":p":
+                this.persistenzmodus();
+                break;
+            case ":r":
+                this.datenlesen();
+                break;
+            default:
+        }
     }
 
-    private String kuchenEinfuegen(Kuchentyp typ, String herstellername,
-                                   Duration haltbarkeit, double preis,
-                                   int naehrwert, Allergene allgene,
-                                   String sorte) {
-        Hersteller hersteller = new Hersteller(herstellername);
-        boolean isdeleted = this.model.insert(typ, hersteller, haltbarkeit,preis, naehrwert, allgene, sorte);
+
+    private void einfuegemodus(){
+
+    }
+
+    private void aenderungsmodus(){
+        System.out.println("Änderung.");
+    }
+
+    private void anzeigemodus(){
+        System.out.println("Anzeige.");
+    }
+
+    private void loeschmodus(){
+        System.out.println("Löschen.");
+    }
+
+    //Quelle: https://stackoverflow.com/questions/66786965/how-can-i-turn-an-int-minutes-into-a-duration-in-java
+    protected String getKuchenObejtData(String kuchendaten){
+        String[] dataArray = kuchendaten.split(" ");
+        // - Aus dem String am Index 0 werden die ersten zwei Zeichen entfernt
+        //String typString = dataArray[0].substring(2);
+        Kuchentyp typ = Kuchentyp.valueOf(dataArray[0]);
+        String hersteller = dataArray[1];
+        Hersteller newhersteller = new Hersteller(hersteller);
+        double preis = Double.parseDouble(dataArray[2]);
+        int naehrwert = Integer.parseInt(dataArray[3]);
+        int haltbarkeitInt = Integer.parseInt(dataArray[4]);
+        Duration haltbarkeitD = Duration.ofMinutes(haltbarkeitInt);
+        //Duration haltbarkeit = Duration.parse(dataArray[4]);
+        Allergene allergene = Allergene.valueOf(dataArray[5]);
+        String sorte = dataArray[6];
+        boolean isdeleted = this.model.insertKuchen(typ, newhersteller, preis,naehrwert,
+                haltbarkeitD, allergene, sorte);
         if (isdeleted) {
-            return "Habe den Kuchen eingefuegt.";
+            return "Kuchen eingefügt.";
         } else {
-            return "Habe den Kuchen nicht eingefuegt.";
+            return "Kuchen nicht eingefügt.";
         }
     }
 
+    protected String herstellerEinfuegen(String herstellername) {
+        Hersteller hersteller = new Hersteller(herstellername);
+        boolean isdeleted = this.model.insertHersteller(hersteller);
+        if (isdeleted) {
+            return "Hersteller eingefügt.";
+        } else {
+            return "Hersteller nicht eingefügt..";
+        }
+    }
 
-    private String kuchenInspizieren(int input) {
-        boolean isput = this.model.edit(input);
+    protected String kuchenInspizieren(int input) {
+        boolean isput = this.model.editKuchen(input);
         if (isput) {
             return "Habe den Kuchen inspiziert.";
         } else {
@@ -190,12 +149,138 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
-    private String kuchenloeschen(int input) {
-        boolean isput = this.model.delete(input);
+    protected String kuchenloeschen(int input) {
+        boolean isput = this.model.deleteKuchen(input);
         if (isput) {
             return "Habe den Kuchen geloescht.";
         } else {
             return "Habe den Kuchen nicht geloescht.";
+        }
+    }
+
+    protected void datenlesen() throws IOException {
+       /* ByteArrayInputStream bais = new ByteArrayInputStream(packetIn.getData());
+        //DataInputStream dis = new DataInputStream(bais);
+        //String input = dis.readUTF();
+        //socket.receive(packetIn);
+        //String input = new String(packetIn.getData(), packetIn.getLength());
+        switch (input){
+            case "kuchen":
+                kuchendaten();
+            case "hersteller":
+                herstellerdaten();
+            case "allergene":
+                allergenendaten();
+        }
+
+
+    }
+
+    protected void persistenzmodus() throws IOException {
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(packetIn.getData());
+        DataInputStream dis = new DataInputStream(bais);
+        String inputPersistierung = dis.readUTF();
+        //socket.receive(packetIn);
+        //String input = new String(packetIn.getData(), packetIn.getLength());
+        switch (inputPersistierung){
+            case "saveJOS":
+                automatenspeichern();
+            case "loadJOS":
+                automatenladen();
+            case "saveJBP":
+            case "loadJBP":
+        }
+
+
+    }
+
+    protected void automatenspeichern() {
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model);
+    }
+
+    protected void automatenladen() throws IOException {
+        this.model = ObjektLadenJOS.reloadAutomt();
+        if(this.model!=null){
+            for(Kuchen kuchen: this.model.readKuchen()){
+                String preis = String.valueOf(kuchen.getPreis());
+                String naehrwert = String.valueOf(kuchen.getNaehrwert());
+                String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
+                String allergene = String.valueOf(kuchen.getAllergene());
+                String sorte  = kuchen.getKremsorte();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                DataOutputStream dos = new DataOutputStream(baos);
+                dos.writeUTF(preis);
+                dos.writeUTF(naehrwert);
+                dos.writeUTF(haltbarkeit);
+                dos.writeUTF(allergene);
+                dos.writeUTF(sorte);
+                baos.close();
+                dos.close();
+            }
+
+
+            for(Hersteller hersteller: this.model.readHersteller()){
+                String namehersteller = hersteller.getName();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                DataOutputStream dos = new DataOutputStream(baos);
+                dos.writeUTF(namehersteller);
+                baos.close();
+                dos.close();
+            }
+
+
+            for(Allergene allergene: this.model.readAllergener()){
+                String nameAllergen = allergene.toString();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                DataOutputStream dos = new DataOutputStream(baos);
+                dos.writeUTF(nameAllergen);
+                baos.close();
+                dos.close();
+            }
+        }
+    }
+
+
+    protected void kuchendaten() throws IOException {
+        for(Kuchen kuchen: this.model.readKuchen()){
+            String naehrwert = String.valueOf(kuchen.getNaehrwert());
+            String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
+            String allergene = String.valueOf(kuchen.getAllergene());
+            String sorte  = kuchen.getKremsorte();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+            DataOutputStream dos = new DataOutputStream(baos);
+            dos.writeUTF(sorte);
+            dos.writeInt(kuchen.getFachnummer());
+            dos.writeUTF(naehrwert);
+            dos.writeUTF(haltbarkeit);
+            dos.writeUTF(allergene);
+            baos.close();
+            dos.close();
+        }
+    }
+
+
+    protected void herstellerdaten() throws IOException {
+        for(Hersteller hersteller: this.model.readHersteller()){
+            String herstellerName = hersteller.getName();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1096);
+            DataOutputStream dos = new DataOutputStream(baos);
+            dos.writeUTF(herstellerName);
+            baos.close();
+            dos.close();
+        }
+    }
+
+
+    protected void allergenendaten() throws IOException {
+        for(Allergene allergene: this.model.readAllergener()){
+            String nameAllergen = String.valueOf(allergene);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1096);
+            DataOutputStream dos = new DataOutputStream(baos);
+            dos.writeUTF(nameAllergen);
+            baos.close();
+            dos.close();
         }
     }
 }

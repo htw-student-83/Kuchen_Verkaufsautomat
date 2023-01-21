@@ -30,21 +30,21 @@ public class DeleteSimulation2 extends Thread implements Runnable {
         }
     }
 
-    public  void editInspektiondate() throws InterruptedException, ParseException {
+    public  boolean editInspektiondate() throws InterruptedException, ParseException {
         synchronized(this.monitor){
             // prüfen, ob die Liste 3 Kuchen enthält, falls nein -> warten
             // für jeden Kuchen wird ein Inspektionsdatum gesetzt
             final int kapazity = 4;
             for(int i = 1; i<kapazity; i++){
-                boolean isedied = this.model.edit(i);
-                if (!isedied){
-                    System.out.println("Kuchen nicht inspiziert.");
-                }else {
+                boolean isedied = this.model.editKuchen(i);
+                if (isedied){
                     System.out.println("Kuchen inspiziert.");
+                    return true;
                 }
             }
             aeltestesInspektionsdatum();
         }
+        return false;
     }
 
     public void aeltestesInspektionsdatum(){
@@ -70,12 +70,14 @@ public class DeleteSimulation2 extends Thread implements Runnable {
     }
 
 
-    public void deleteKuchen(int fachnummer){
-        boolean isDeleted = this.model.delete(fachnummer);
+    public boolean deleteKuchen(int fachnummer){
+        boolean isDeleted = this.model.deleteKuchen(fachnummer);
         if(isDeleted){
             System.out.println("Thread2: Kuchen mit dem Inspektionsdatum " + aeltesteZeitDate + " gelöscht.");
+            return true;
         }else {
             System.out.println("Keine Löschung stattgefunden.");
+            return  false;
         }
     }
 }

@@ -2,21 +2,25 @@ package simulation3;
 
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
-
 import java.text.ParseException;
 import java.util.Date;
 
 public class DeleteSimulation3 implements Runnable {
+    private Date insertDate = null;
     private final Object monitor;
     private Verwaltung model;
 
-    int anzahlzuLoeschendeKuchen = 0;
-    long aeltesteinspektionzeit = 0;
-    Date aeltesteZeitDate = null;
+    private int anzahlzuLoeschendeKuchen = 0;
+    private long aeltesteinspektionzeit = 0;
+    private Date aeltesteZeitDate = null;
 
     public DeleteSimulation3(Verwaltung kl, Object monitor) {
         this.model = kl;
         this.monitor = monitor;
+    }
+
+    public Date getInsertDate(){
+        return this.insertDate;
     }
 
 
@@ -38,8 +42,10 @@ public class DeleteSimulation3 implements Runnable {
 
             // für jeden Kuchen wird ein Inspektionsdatum gesetzt
             final int kapazity = 4;
-            for (int i = 1; i < kapazity; i++) {
-                this.model.edit(i);
+            if(this.model.getKuchenlisteSize()>0){
+                for (int i = 1; i < kapazity; i++) {
+                    this.model.editKuchen(i);
+                }
             }
 
             int max_number_of_delete_cookies = creationRandomNumber();
@@ -50,7 +56,7 @@ public class DeleteSimulation3 implements Runnable {
                 System.out.println("Es wurde kein Kuchen gelöscht");
             }else{
                 while (kontrollzahl1<max_number_of_delete_cookies){
-                    int fachnummer = getfachnummerFromoldestDate();
+                    int fachnummer = fachnummerAeltesterKuchen();
                     boolean isremove = deleteKuchen(fachnummer);
                     if (isremove){
                         System.out.println("Kuchen mit dem Datum: " +
@@ -62,8 +68,7 @@ public class DeleteSimulation3 implements Runnable {
         }
     }
 
-    public int getfachnummerFromoldestDate(){
-        Date insertDate = null;
+    public int fachnummerAeltesterKuchen(){
         int fachnummer = 0;
         long juengereinspektionszeit = 0;
         for (Kuchen kuchen : this.model.readKuchen()){
@@ -87,13 +92,13 @@ public class DeleteSimulation3 implements Runnable {
     }
 
 
-    public boolean deleteKuchen ( int fachnummer){
-        return this.model.delete(fachnummer);
+    protected boolean deleteKuchen ( int fachnummer){
+        return this.model.deleteKuchen(fachnummer);
     }
 
 
     //Quelle: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random?retiredLocale=de
-    public int creationRandomNumber () {
+    protected int creationRandomNumber () {
         int minRandomNumber = 0;
         int maxRandomNumber = 3;
         return (int) Math.floor(Math.random() * (maxRandomNumber - minRandomNumber + 1)

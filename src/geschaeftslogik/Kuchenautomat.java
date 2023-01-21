@@ -4,16 +4,18 @@ import java.io.Serializable;
 
 public class Kuchenautomat implements Serializable {
     private int belegtekuchenfeacher = 0;
-    private int KUCHENFAECHER_MAX = 3;
-
+    private int KUCHENFAECHER_MAX;
     public int getAnzahlbelegteFaecher() {
         return this.belegtekuchenfeacher;
     }
 
-    //public void setAnzahlbelegteFaecher(int zahl){this.belegtekuchenfeacher = this.belegtekuchenfeacher + zahl;}
 
     public int getKapazity(){
         return this.KUCHENFAECHER_MAX;
+    }
+
+    public void setKapazitaet(int newKapazitaet){
+        this.KUCHENFAECHER_MAX = newKapazitaet;
     }
 
     public void boxdecrement() {
@@ -23,4 +25,5 @@ public class Kuchenautomat implements Serializable {
     public void boxincrement(){
         this.belegtekuchenfeacher++;
     }
+
 }

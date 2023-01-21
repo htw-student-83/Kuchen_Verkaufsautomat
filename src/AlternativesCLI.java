@@ -1,28 +1,43 @@
 import geschaeftslogik.Hersteller;
-import geschaeftslogik.Kuchenautomat;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
+
 import java.time.Duration;
 import java.util.Scanner;
 
-public class CLI {
-    Verwaltung model = new Verwaltung();
-    Kuchenautomat automat = new Kuchenautomat();
+public class AlternativesCLI {
+    static Verwaltung model;
     private static final String EINFUEGEN = ":c";
     private static final String LOESCHEN = ":d";
     private static final String AENDERN = ":u";
     private static final String ANZEIGEN = ":r";
     private static final String PERSISTIEREN = ":p";
 
-    public CLI(int kapazitaetAutomat){
-        this.automat.setKapazitaet(kapazitaetAutomat);
+    public AlternativesCLI(Verwaltung model) {
+        this.model = model;
     }
 
-    public void startCLI(){
+
+    public static void main(String[]args){
+        Verwaltung model = new Verwaltung();
+        AlternativesCLI acli = new AlternativesCLI(model);
+        acli.startAutomat();
+    }
+
+    public void startAutomat(){
+            /*System.out.println("##########Kuchen-Verkaufsautomat###############");
+            System.out.println();
+            System.out.println("Bitte wählen Sie eines der folgenden Optionen aus:");
+            System.out.println(":c Einfügemodus");
+            System.out.println(":d Löschmodus");
+            System.out.println(":r Anzeigemodus");
+            System.out.println(":u Änderungsmodus");
+            System.out.println(":p Persistenzmodus");
+            */
             Scanner scanner = new Scanner(System.in);
             String options = scanner.next();
             switch (options) {
@@ -38,13 +53,14 @@ public class CLI {
                     anzeigemodus();
                     break;
                 case LOESCHEN:
+                    //die Methode um einen Hersteller einzufügen wurde deaktiviert.
                     loeschmodus();
-                    startCLI();
                     break;
                 case PERSISTIEREN:
                     persistieren();
                     break;
                 default:
+                    System.err.println("Ihre Eingabe ist ungueltig. Versuchen Sie es erneut.");
                     break;
                 }
     }
@@ -55,6 +71,28 @@ public class CLI {
                 inputUser.equals("r") || inputUser.equals("n") ||
                 inputUser.equals("e");
     }
+/*
+    private void netzwerkauswaehlen() {
+        final String UDP = "UDP";
+        final String TCP = "TCP";
+        System.out.println("Wie soll der Automat bedient werden?");
+        System.out.println("(TCP)");
+        System.out.println("(UDP)");
+        Scanner scanner = new Scanner(System.in);
+        String userNetzwerk = scanner.next();
+        switch (userNetzwerk){
+            case UDP:
+                Kuchenautomat_Client_UDP.clientStart();
+                break;
+            case TCP:
+                Kuchenautomat_Client_TCP.startClient();
+            default:
+                System.err.println("Ihre Eingabe ist ungueltig. Versuchen Sie es erneut.");
+                netzwerkauswaehlen();
+        }
+    }
+ */
+
 
 
     public void einfuegemodus(){
@@ -66,7 +104,6 @@ public class CLI {
             System.out.println(result);
         }
         String kuchendaten = scanner.nextLine();
-        String sorte ="";
         while (!(kuchendaten.equals(":u")|| kuchendaten.equals(":d") ||
                 kuchendaten.equals(":p") || kuchendaten.equals(":r"))){
             String[] array = kuchendaten.split(" ");
@@ -85,17 +122,19 @@ public class CLI {
             int haltbarkeit = Integer.parseInt(haltbarkeitS);
             String allergene = array[5];
             String allergenAsNull = null;
-            String sorteteil1 = array[6];
-            Allergene allergen = Allergene.valueOf(allergene);
+            String sorte = array[6];
             Hersteller hersteller2 = new Hersteller(herstellern);
-            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
-                    Duration.ofDays(haltbarkeit), allergen, sorteteil1);
-            System.out.println(result2);
-
             if(allergene.equals(",")){
                 //TODO Sollen dann keins eingefügt werden oder das "Komma"?
+                this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
+                        Duration.ofDays(haltbarkeit), Allergene.valueOf(allergenAsNull), sorte);
             }
-
+            Allergene allergen = Allergene.valueOf(allergene);
+            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
+                    Duration.ofDays(haltbarkeit), allergen, sorte);
+            if(result2){
+                System.out.println(result2);
+            }
             kuchendaten = scanner.nextLine();
             if(kuchendaten.equals(":u")){
                 aenderungsmodus();
@@ -121,7 +160,7 @@ public class CLI {
                 eingabeUser.equals(":u") || eingabeUser.equals(":p"))) {
             switch (eingabeUser) {
                 case KUCHEN:
-                    for (Kuchen kuchen: this.model.readKuchen()) {
+                    for (Kuchen kuchen : model.readKuchen()) {
                         System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
                                 "Fachnummer: " + kuchen.getFachnummer() + "\n" +
                                 "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
@@ -130,15 +169,17 @@ public class CLI {
                     }
                     break;
                 case HERSTELLER:
-                    for (Hersteller hersteller : this.model.readHersteller()) {
+                    for (Hersteller hersteller : model.readHersteller()) {
                         System.out.println(hersteller.getName());
                     }
                     break;
                 case ALLERGENE:
-                    for (Allergene allergene : this.model.readAllergener()) {
-                        System.out.println(allergene);
-                    }
-                    break;
+                    //TODO Funktion deaktivieren
+                    //for (Allergene allergene : model.readAllergener()) {
+                    //    System.out.println(allergene);
+                    //}
+                    System.out.println("Funktion zur Allergenenauflistung deaktiviert.");
+                    disable();
             }
 
             eingabeUser = userInput.nextLine();
@@ -153,11 +194,53 @@ public class CLI {
             }
         }
     }
+    /*
+        if(kuchentyp == null){
+            readKuchen();
+        }else{
+            Kuchentyp typ = Kuchentyp.valueOf(kuchentyp);
+            for (Kuchen kuchen : this.model.readKuchen()) {
+                if (typ  == Kuchentyp.Kremkuchen){
+                    System.out.println("Kuchentyp:" + kuchentyp + "\n" +
+                            //TODO Wie weiß das System, welcher Kuchen ein Kremkuchen ist?
+                            "Fachnummer: " + kuchen.getFachnummer() + "\n" +
+                            "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
+                            "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
+                            "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
+                    System.out.println("---------------------------------------------");
+                    break;
+                } else if(typ == Kuchentyp.Obstkuchen){
+                    System.out.println("Kuchentyp:" + kuchentyp + "\n" +
+                            "Fachnummer: " + kuchen.getFachnummer() + "\n" +
+                            "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
+                            "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
+                            "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
+                    System.out.println("---------------------------------------------");
+                    break;
+                }else if(typ == Kuchentyp.Obsttorte){
+                    System.out.println("Kuchentyp:" + kuchentyp + "\n" +
+                            "Fachnummer: " + kuchen.getFachnummer() + "\n" +
+                            "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
+                            "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
+                            "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
+                    System.out.println("---------------------------------------------");
+                    break;
+                }
+            }
+        }
 
+        //TODO Hersteller mit Anzahl ihrer Kuchen listen
+
+        //TODO Kuchen listen
+        System.out.println("Allergene");
+        for (Allergene allergene : this.model.readAllergener()) {
+            System.out.println(allergene);
+        }
+         */
 
     public void readKuchen(){
         System.out.println("Kuchen");
-        for (Kuchen kuchen : this.model.readKuchen()) {
+        for (Kuchen kuchen : model.readKuchen()) {
             System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
                             "Fachnummer: " + kuchen.getFachnummer() + "\n" +
                             "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
@@ -167,11 +250,16 @@ public class CLI {
     }
 
     public void loeschmodus(){
+        //TODO Funktion Hersteller löschen deaktivieren
         Scanner scanner = new Scanner(System.in);
         String herstellername = scanner.nextLine();
-        this.model.deleteHersteller(herstellername);
+        model.deleteHersteller(herstellername);;
         int fachnummer = scanner.nextInt();
-        this.model.deleteKuchen(fachnummer);
+        model.deleteKuchen(fachnummer);
+    }
+
+    public static void disable()
+    {
     }
 
     public void aenderungsmodus(){

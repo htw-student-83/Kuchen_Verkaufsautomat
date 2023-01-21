@@ -1,5 +1,5 @@
 package geschaeftslogik;
 
 public enum Kuchentyp {
-    Kremkuchen, Obstkuchen, Obsttorte
+    Kremkuchen, Obstkuchen, Obsttorte, unbekannt
 }
