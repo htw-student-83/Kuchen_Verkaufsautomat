@@ -126,15 +126,13 @@ public class AlternativesCLI {
             Hersteller hersteller2 = new Hersteller(herstellern);
             if(allergene.equals(",")){
                 //TODO Sollen dann keins eingefügt werden oder das "Komma"?
-                this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
-                        Duration.ofDays(haltbarkeit), Allergene.valueOf(allergenAsNull), sorte);
+               // this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint, Duration.ofDays(haltbarkeit), Allergene.valueOf(allergenAsNull), sorte);
             }
             Allergene allergen = Allergene.valueOf(allergene);
-            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
-                    Duration.ofDays(haltbarkeit), allergen, sorte);
-            if(result2){
-                System.out.println(result2);
-            }
+           // boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint, Duration.ofDays(haltbarkeit), allergen, sorte);
+            //if(result2){
+             //   System.out.println(result2);
+            //}
             kuchendaten = scanner.nextLine();
             if(kuchendaten.equals(":u")){
                 aenderungsmodus();

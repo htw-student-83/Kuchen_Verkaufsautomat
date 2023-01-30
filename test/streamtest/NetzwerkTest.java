@@ -1,19 +1,12 @@
 package streamtest;
 
-import geschaeftslogik.Hersteller;
-import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import netzwerk.tcp.Kuchenautomat_Server_TCP;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import vertrag.Allergene;
 
 import java.io.*;
 import java.net.Socket;
-import java.time.Duration;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

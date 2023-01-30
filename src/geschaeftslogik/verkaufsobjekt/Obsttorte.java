@@ -5,19 +5,24 @@ import vertrag.Hersteller;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Set;
 
 public class Obsttorte extends Kuchen {
 
-    String obsttortensorte;
+    String obstsorte;
+    String kremsorte;
 
-    public Obsttorte(String sorte, int naehrwert, Hersteller hersteller,
-                     Duration haltbarkeit, Allergene allergene, BigDecimal preis) {
-        super(naehrwert, hersteller, haltbarkeit, allergene, preis);
-        this.obsttortensorte = sorte;
+    public Obsttorte(String kuchentyp, Hersteller hersteller, BigDecimal preis,
+                     int naehrwert, Duration haltbarkeit, Set<Allergene> allergene,
+                     String sorte, String kremsorte) {
+        super(kuchentyp, hersteller,preis, naehrwert, haltbarkeit, allergene);
+        this.obstsorte = sorte;
+        this.kremsorte = kremsorte;
     }
 
     @Override
     public String getKremsorte() {
-        return obsttortensorte;
+        return obstsorte;
     }
 }

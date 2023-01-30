@@ -5,8 +5,6 @@ import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -169,12 +167,11 @@ public class Controller implements Initializable {
         dialog.getDialogPane().setContent(grid);
 
         //Die Einfüg-Methode der GL soll verwendet werden nicht die Bestandteile der Methode!!!!
-        this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
-                Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
+        //this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert, Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
         List<Kuchen> kuchen = this.model.readKuchen();
         //TODO Wie kann nur jeweils ein Objekt von Kuchen geladen werden?
         kuchenlist.addAll(kuchen);
-        this.model.insertAllergen(allergen);
+        //this.model.insertAllergen(allergen);
         allergenelist.add(allergen);
         System.out.println("Listengroeße Allergene: " + allergenelist.size());
         System.out.println("Listengröße Kuchen: " + kuchenlist.size());

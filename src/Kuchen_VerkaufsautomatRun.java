@@ -22,15 +22,14 @@ public class Kuchen_VerkaufsautomatRun {
                 //serverUDP.startServer();
                 break;
             case "TCP":
-                System.out.println("TCP");
                 try(ServerSocket serverSocket=new ServerSocket(5001);) {
                     Socket socket=serverSocket.accept();
-                    Kuchenautomat_Server_TCP serverTCP = new Kuchenautomat_Server_TCP( socket, automatenkapazitaet);
+                    Kuchenautomat_Server_TCP serverTCP =
+                            new Kuchenautomat_Server_TCP(socket, automatenkapazitaet);
                     serverTCP.run();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
                 break;
             default:
                 CLI cli = new CLI(automatenkapazitaet);

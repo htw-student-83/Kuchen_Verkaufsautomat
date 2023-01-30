@@ -2,9 +2,11 @@ package simulation3;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.*;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Allergene;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class InsertSimulation3 implements Runnable{
 
@@ -35,16 +37,21 @@ public class InsertSimulation3 implements Runnable{
 
     public void insertForInspection() throws InterruptedException{
         synchronized (this.monitor){//Beginn des kritischen Bereichs
+            Set<Allergene> allergeneSet = null;
             this.model.insertHersteller(hersteller1);
             this.model.insertHersteller(hersteller2);
             this.model.insertHersteller(hersteller3);
             this.model.insertHersteller(hersteller4);
+            allergeneSet = new HashSet<>();
             this.model.insertKuchen(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
-                    Duration.ofDays(34), Allergene.Gluten, "Banane");
+                    Duration.ofDays(34), allergeneSet, "Banane","");
+            allergeneSet.add(Allergene.Gluten);
+            allergeneSet.add(Allergene.Erdnuss);
             this.model.insertKuchen(Kuchentyp.Kremkuchen, hersteller2, 2.56, 120,
-                    Duration.ofDays(22), Allergene.Erdnuss, "Nuss-Creme");
+                    Duration.ofDays(22), allergeneSet, "","Sahne");
+            allergeneSet.add(Allergene.Gluten);
             this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 1.34, 340,
-                    Duration.ofDays(30), Allergene.Haselnuss, "Orange mit Nusskern");
+                    Duration.ofDays(30), allergeneSet, "Apfel","Sahne");
         }
     }
 }

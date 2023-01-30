@@ -2,9 +2,11 @@ package simulation1;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.*;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Allergene;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class InsertSimulation1 extends Thread implements Runnable{
 
@@ -29,27 +31,31 @@ public class InsertSimulation1 extends Thread implements Runnable{
 
     public void insertKuchenSimulation(){
         synchronized (this.monitor){
+            Set<Allergene> allergeneSet = null;
             //eine Zufallszahl zw. 1 und 3 ermitteln
             int zufallszahl = creationRandomNumber();
             //Auszwahl und einfügen eines Kuchens
             switch (zufallszahl){
                 case 1:
+                    allergeneSet = new HashSet<>();
                     this.model.insertHersteller(hersteller1);
                     this.model.insertKuchen(Kuchentyp.Obstkuchen, hersteller1, 5.44, 256,
-                            Duration.ofDays(34), Allergene.Gluten, "Orange");
-
+                            Duration.ofDays(34), allergeneSet, "Orange","");
                     System.out.println("Thread1 hat einen Kremkuchen eingefügt.");
                     break;
                 case 2:
+                    allergeneSet.add(Allergene.Gluten);
+                    allergeneSet.add(Allergene.Erdnuss);
                     this.model.insertHersteller(hersteller2);
                     this.model.insertKuchen(Kuchentyp.Kremkuchen, hersteller2, 3.44, 230,
-                            Duration.ofDays(24), Allergene.Gluten, "Zitrone");
+                            Duration.ofDays(24), allergeneSet, "Zitrone","Butter");
                     System.out.println("Thread1 hat einen Obstkuchen eingefügt.");
                     break;
                 case 3:
                     this.model.insertHersteller(hersteller3);
+                    allergeneSet.add(Allergene.Gluten);
                     this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 1.44, 330,
-                            Duration.ofDays(44), Allergene.Gluten, "Bananentorte");
+                            Duration.ofDays(44), allergeneSet, "Banane","Sahne");
                     System.out.println("Thread1 hat eine Obsttorte eingefügt.");
                     break;
             }

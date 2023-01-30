@@ -17,12 +17,15 @@ public interface KuchenlistManagement {
      * @param preis
      * @param naehrwert
      * @param allergene
-     * @param sorte Kuchensorte
+     * @param obstsorte Kuchensorte
+      * @param kremsorte
      * @return true, wenn Kuchen eingefügt wurde, sonst false
      */
+    //boolean insertKuchen(Kuchentyp typ, Hersteller herstellername,double preis, int naehrwert, Duration haltbarkeit,Allergene allergene, String sorte );
+
     boolean insertKuchen(Kuchentyp typ, Hersteller herstellername,
-                   double preis, int naehrwert, Duration haltbarkeit,
-                   Allergene allergene, String sorte );
+                         double preis, int naehrwert, Duration haltbarkeit,
+                         Set<Allergene> allergene, String obstsorte, String kremsorte);
 
     /**
      * Fügt einen Hersteller hinzu.
@@ -41,7 +44,7 @@ public interface KuchenlistManagement {
      * Gibt vorhandene Kuchen eines bestimmtes Typs aus.
      * @return Liste aller Kuchen eines Typs
      */
-    List<Kuchen> readKuchen(Kuchentyp typ);
+   // String readKuchen(String typ);
 
     /**
      * Gibt alle vorhandenen Hersteller aus.
@@ -81,6 +84,6 @@ public interface KuchenlistManagement {
      * @param allergene
      * @return true, wenn Allergen hinzugefügt wurde, sonst false
      */
-    boolean insertAllergen(Allergene allergene);
+    boolean insertAllergen(Set<Allergene> allergene);
 
 }

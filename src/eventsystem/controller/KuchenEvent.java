@@ -17,9 +17,9 @@ public class KuchenEvent extends EventObject {
     private Allergene kuchenallergene;
     private int fachnumer;
 
-    public KuchenEvent(Object source,Kuchentyp kuchentyp,Hersteller hersteller,
-                       String kuchensorte, double kuchenpreis,
-                       int kuchennaehrwert, Allergene kuchenallergene){
+    public KuchenEvent(Object source, Kuchentyp kuchentyp, Hersteller hersteller,
+                       double kuchenpreis, int kuchennaehrwert, Duration haltbarkeit,
+                       Allergene kuchenallergene, String obstsorte, String kremsorte){
         super(source);
         this.kuchenhersteller = hersteller;
         this.kuchentyp = kuchentyp;
@@ -34,11 +34,13 @@ public class KuchenEvent extends EventObject {
         super(source);
         this.fachnumer = kuchenfachnummer;
     }
-
-    public KuchenEvent(Object source, Hersteller hersteller){
+/*
+    public KuchenEvent(Object source, String hersteller){
         super(source);
         this.kuchenhersteller = hersteller;
     }
+
+ */
 
     public Hersteller getkuchenhersteller(){return this.kuchenhersteller;}
 

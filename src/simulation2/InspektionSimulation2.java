@@ -2,9 +2,11 @@ package simulation2;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.*;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Allergene;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class InspektionSimulation2 implements Runnable {
 
@@ -25,16 +27,21 @@ public class InspektionSimulation2 implements Runnable {
     @Override
     public void run() {
         synchronized (this.monitor){
+            Set<Allergene> allergeneSet = null;
             // Kuchen- und Herstellerliste werden befüllt
             this.model.insertHersteller(hersteller1);
             this.model.insertHersteller(hersteller2);
             this.model.insertHersteller(hersteller3);
+            allergeneSet = new HashSet<>();
             this.model.insertKuchen(Kuchentyp.Obstkuchen, hersteller1, 3.44, 230,
-                    Duration.ofDays(34), Allergene.Gluten, "Banane");
+                    Duration.ofDays(34), allergeneSet, "Banane","");
+            allergeneSet.add(Allergene.Gluten);
+            allergeneSet.add(Allergene.Erdnuss);
             this.model.insertKuchen(Kuchentyp.Kremkuchen, hersteller2, 5.23, 122,
-                    Duration.ofDays(34), Allergene.Haselnuss, "Nuss-Creme");
+                    Duration.ofDays(34),allergeneSet, "","Butter");
+            allergeneSet.add(Allergene.Gluten);
             this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 2.44, 344,
-                    Duration.ofDays(34), Allergene.Sesamsamen, "Tortencreme");
+                    Duration.ofDays(34), allergeneSet, "Apfel", "Sahne");
 
             //eine Zufallszahl zw. 1 und 3 ermitteln
             //Auszwahl eines Kuchens

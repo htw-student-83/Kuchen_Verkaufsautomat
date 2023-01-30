@@ -14,6 +14,6 @@ public class AnzeigenKuchenListener implements EventListener {
 
     @Override
     public void run(KuchenEvent event) {
-        this.model.readKuchen(event.getkuchentyp());
+     //  this.model.readKuchen(event.getkuchentyp());
     }
 }

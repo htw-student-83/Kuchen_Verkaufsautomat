@@ -1,7 +1,8 @@
 package simulationstest;
 
 import geschaeftslogik.Hersteller;
-import geschaeftslogik.verkaufsobjekt.*;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

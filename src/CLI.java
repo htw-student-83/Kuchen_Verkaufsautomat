@@ -1,5 +1,6 @@
+import eventsystem.controller.KuchenEvent;
+import eventsystem.handler.Handler;
 import geschaeftslogik.Hersteller;
-import geschaeftslogik.Kuchenautomat;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
@@ -7,11 +8,26 @@ import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+
 
 public class CLI {
     Verwaltung model = new Verwaltung();
-    Kuchenautomat automat = new Kuchenautomat();
+    Set<Allergene> newallergeneSet = new HashSet<>();
+
+    private KuchenEvent event = null;
+
+
+    private Handler insertHerstellerHandler, insertKuchenHandler,
+    insertAllergenHandler, editKuchenHandler,
+    anzeigeKuchenHandler, anzeigeHerstellerHandler,
+    anzeigeAllergeneHandler, speichernAutomatenHandler,
+    ladenAutomatenHandler, deleteHerstellerHandler,
+    deleteKuchenHandler;
+
     private static final String EINFUEGEN = ":c";
     private static final String LOESCHEN = ":d";
     private static final String AENDERN = ":u";
@@ -19,8 +35,50 @@ public class CLI {
     private static final String PERSISTIEREN = ":p";
 
     public CLI(int kapazitaetAutomat){
-        this.automat.setKapazitaet(kapazitaetAutomat);
+        this.model.setKapazitaet(kapazitaetAutomat);
     }
+
+
+    public void setInsertHerstellerHandler(Handler handler) {
+        this.insertHerstellerHandler = handler;
+    }
+
+    public void setInsertKuchenHandler(Handler handler) {
+        this.insertKuchenHandler = handler;
+    }
+
+    public void setInsertAllergen(Handler handler) {
+        this.insertAllergenHandler = handler;
+    }
+
+    public void setEditKuchenHandler(Handler handler) {
+        this.editKuchenHandler = handler;
+    }
+
+    public void setAnzeigeKuchenHandler(Handler handler) {
+        this.anzeigeKuchenHandler = handler;
+    }
+
+    public void setAnzeigeHerstellerHandler(Handler handler) {
+        this.anzeigeHerstellerHandler = handler;
+    }
+
+    public void setAnzeigeAllergeneHandler(Handler handler) {
+        this.anzeigeAllergeneHandler = handler;
+    }
+
+    public void setDeleteHerstellerHandler(Handler handler) {this.deleteHerstellerHandler = handler;}
+
+    public void setDeleteKuchenHandler(Handler handler) {
+        this.deleteKuchenHandler = handler;
+    }
+
+    public void setSpeichernAutomatenHandler(Handler handler) {this.speichernAutomatenHandler = handler;}
+
+    public void setLadenAutomatenHandler(Handler handler) {
+        this.ladenAutomatenHandler = handler;
+    }
+
 
     public void startCLI(){
             Scanner scanner = new Scanner(System.in);
@@ -61,19 +119,19 @@ public class CLI {
         Scanner scanner = new Scanner(System.in);
         String herstellername  = scanner.nextLine();
         Hersteller hersteller = new Hersteller(herstellername);
+        //event = new KuchenEvent(this, herstellername);
+        //return event;
+        Allergene newAllergen = null;
         boolean result = this.model.insertHersteller(hersteller);
         if(result){
             System.out.println(result);
         }
         String kuchendaten = scanner.nextLine();
-        String sorte ="";
         while (!(kuchendaten.equals(":u")|| kuchendaten.equals(":d") ||
                 kuchendaten.equals(":p") || kuchendaten.equals(":r"))){
+            String sorte = "";
+            String ksorte = "";
             String[] array = kuchendaten.split(" ");
-            while (array.length<7){
-                System.err.println("Zu wenig Argumente!");
-                break;
-            }
             String typ = array[0];
             Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
             String herstellern = array[1];
@@ -83,19 +141,40 @@ public class CLI {
             int naehrwertint = Integer.parseInt(naehrwert);
             String haltbarkeitS = array[4];
             int haltbarkeit = Integer.parseInt(haltbarkeitS);
-            String allergene = array[5];
-            String allergenAsNull = null;
-            String sorteteil1 = array[6];
-            Allergene allergen = Allergene.valueOf(allergene);
-            Hersteller hersteller2 = new Hersteller(herstellern);
-            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
-                    Duration.ofDays(haltbarkeit), allergen, sorteteil1);
-            System.out.println(result2);
-
-            if(allergene.equals(",")){
-                //TODO Sollen dann keins eingefügt werden oder das "Komma"?
+            String allergen = array[5].trim();
+            sorte = array[6];
+            if(array[7] != null){
+                ksorte = array[7];
             }
 
+            //TODO Evtl. löschen?
+            if(allergen.equals(",")){
+                //TODO eine leere Liste von Allergenen wird übergeben
+                //this.model.insertAllergen(this.newallergeneSet);
+            }
+
+            String[] allergenarray = allergen.split(",");
+            if(allergenarray.length>0){
+                for(String allergene: allergenarray){
+                    allergene = allergene.trim();
+                    //TODO Jedes einzelene Allergen wird dem Set übergeben
+                    this.newallergeneSet = Collections.singleton(Allergene.valueOf(allergene));
+                    //TODO Das Set (Aufzählung von Allergenen) wird übergeben
+                    //this.model.insertAllergen(this.newallergeneSet);
+                }
+            }
+
+            //String[] sorte = new String[kuchendaten.length() - 6];
+            //String[] ksorte = new String[kuchendaten.length() - 7];
+            // copy remaining inputs to argss array
+            //System.arraycopy(array, 6, sorte, 0, array.length - 6);
+            //System.arraycopy(array, 7, ksorte, 0, array.length - 7);
+            Hersteller hersteller2 = new Hersteller(herstellern);
+            //event = new KuchenEvent()
+            // return event;
+            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
+                    Duration.ofDays(haltbarkeit), this.newallergeneSet, sorte, ksorte);
+            System.out.println(result2);
             kuchendaten = scanner.nextLine();
             if(kuchendaten.equals(":u")){
                 aenderungsmodus();
@@ -112,8 +191,9 @@ public class CLI {
 
     public void anzeigemodus() {
         final String KUCHEN = "kuchen";
+        final String KUCHENFILTER = "kuchen [[Kremkuchen]]";
         final String HERSTELLER = "hersteller";
-        final String ALLERGENE = "allergene";
+        final String ALLERGENE = "allergene i";
 
         Scanner userInput = new Scanner(System.in);
         String eingabeUser = userInput.nextLine();
@@ -121,20 +201,21 @@ public class CLI {
                 eingabeUser.equals(":u") || eingabeUser.equals(":p"))) {
             switch (eingabeUser) {
                 case KUCHEN:
-                    for (Kuchen kuchen: this.model.readKuchen()) {
-                        System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
-                                "Fachnummer: " + kuchen.getFachnummer() + "\n" +
-                                "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
-                                "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
-                                "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
-                    }
+                    readKuchen();
                     break;
+                case KUCHENFILTER:
+                    //TODO Wie wird die Eingabe vom Kunden erfolgen:
+                    //kuchen kuchentyp oder
+                    //kuchen [[kuchentyp]] ?
+                    readKuchen("Kremkuchen");
                 case HERSTELLER:
                     for (Hersteller hersteller : this.model.readHersteller()) {
                         System.out.println(hersteller.getName());
                     }
                     break;
                 case ALLERGENE:
+                    //event = new KuchenEvent(this, allergene);
+                    //return event;
                     for (Allergene allergene : this.model.readAllergener()) {
                         System.out.println(allergene);
                     }
@@ -154,9 +235,9 @@ public class CLI {
         }
     }
 
-
     public void readKuchen(){
         System.out.println("Kuchen");
+        //event = new KuchenEvent(this,...);
         for (Kuchen kuchen : this.model.readKuchen()) {
             System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
                             "Fachnummer: " + kuchen.getFachnummer() + "\n" +
@@ -166,11 +247,24 @@ public class CLI {
         }
     }
 
+    public void readKuchen(String typ){
+        //event = new KuchenEvent(this,...);
+        for(Kuchen kuchen: this.model.readKuchen(this.model.readKuchen(), typ)){
+            System.out.println( "Fachnummer: " + kuchen.getFachnummer() + "\n" +
+                    "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
+                    "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
+        }
+    }
+
     public void loeschmodus(){
         Scanner scanner = new Scanner(System.in);
         String herstellername = scanner.nextLine();
+        //event = new KuchenEvent(this, herstellername);
+        //return event;
         this.model.deleteHersteller(herstellername);
         int fachnummer = scanner.nextInt();
+        //event = new KuchenEvent(this, fachnummer);
+        //return event;
         this.model.deleteKuchen(fachnummer);
     }
 
@@ -179,6 +273,8 @@ public class CLI {
         String userInput = scanner.nextLine();
         while (!(userInput.equals(":p") || userInput.equals(":r") || userInput.equals(":c"))){
             int fachnummer = Integer.parseInt(userInput);
+            //event = new KuchenEvent(this,fachnummer);
+            //return event;
             boolean result = this.model.editKuchen(fachnummer);
             if(result){
                 System.out.println(result);
@@ -208,9 +304,12 @@ public class CLI {
                 userInput.equals(":u") || userInput.equals(":d"))) {
             switch (userInput) {
                 case SAVEJOS:
+                    //event = new KuchenEvent(this, model);
+                    //return event;
                     ObjektSpeicherungJOS.persistiereAutomaten(this.model);
                     break;
                 case LOADJOS:
+                    //return event;
                     ladeAutomaten();
                     break;
                 case LOADJBP:
@@ -231,6 +330,8 @@ public class CLI {
     }
 
     public void ladeAutomaten() {
+        //event = new KuchenEvent(this, model);
+        //return event;
             this.model = ObjektLadenJOS.reloadAutomt();
             System.out.println("Hersteller:");
             for (Hersteller hersteller : this.model.readHersteller()) {

@@ -11,34 +11,45 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import vertrag.Allergene;
 
+import java.io.*;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class SpeicherTest {
     Verwaltung model;
-
+    Set<Allergene> allergeneSet = null;
     @Test
-    @DisplayName("Zustand des Kuchenautomaten mit JOS speichern")
-    public void automatenspeichern() {
-        model = new Verwaltung();
-        Hersteller hersteller1 = new Hersteller("hersteller1");
-        model.insertHersteller(hersteller1);
-        model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
-                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
-        ObjektSpeicherungJOS.persistiereAutomaten(model);
-        Verwaltung vw = ObjektLadenJOS.reloadAutomt();
-        Assertions.assertNotNull(vw);
+    @DisplayName("Daten werden ein- und ausgelesen")
+    public void streamTest() throws IOException {
+        byte[] expectedOutput  = "Das ist ein Test".getBytes();
+        InputStream inputStream = new ByteArrayInputStream(expectedOutput);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int data = inputStream.read();
+        while (data!=-1){
+            outputStream.write(data);
+            data = inputStream.read();
+        }
+        byte[] actualOutput = outputStream.toByteArray();
+        assertArrayEquals(expectedOutput, actualOutput);//Hier wird das ByteArray vergleichen
+        Assertions.assertEquals("Das ist ein Test", outputStream.toString());//Hier wird der Inhalt vergleichen
     }
 
     @Test
     @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
     public void automatenSpeichern2(){
         model = new Verwaltung();
+        model.setKapazitaet(1);
         Hersteller hersteller1 = new Hersteller("hersteller1");
+        allergeneSet = new HashSet<>();
+        allergeneSet.add(Allergene.Gluten);
+        allergeneSet.add(Allergene.Erdnuss);
         model.insertHersteller(hersteller1);
         model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
-                Duration.ofDays(23), Allergene.Gluten, "Erdbeere");
+                Duration.ofDays(23), allergeneSet, "","Butter");
         ObjektSpeicherungJBP.persistiereAutomaten();
         fail();
     }

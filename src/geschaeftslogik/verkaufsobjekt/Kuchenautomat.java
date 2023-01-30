@@ -1,4 +1,4 @@
-package geschaeftslogik;
+package geschaeftslogik.verkaufsobjekt;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ public class Kuchenautomat implements Serializable {
         return this.KUCHENFAECHER_MAX;
     }
 
-    public void setKapazitaet(int newKapazitaet){
+    protected void setKapazitaet(int newKapazitaet){
         this.KUCHENFAECHER_MAX = newKapazitaet;
     }
 

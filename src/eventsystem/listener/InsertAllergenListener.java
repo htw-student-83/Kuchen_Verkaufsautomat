@@ -14,6 +14,6 @@ public class InsertAllergenListener implements EventListener {
 
     @Override
     public void run(KuchenEvent event) {
-        this.model.insertAllergen(event.getkuchenallergene());
+        //this.model.insertAllergen(event.getkuchenallergene());
     }
 }
