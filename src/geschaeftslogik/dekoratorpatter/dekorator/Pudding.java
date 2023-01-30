@@ -13,17 +13,13 @@ public class Pudding extends Kuchenbelag {
     String name = "Pudding";
     BigDecimal preis = BigDecimal.valueOf(4.10);
     Duration haltbarkeit = Duration.ofDays(5);
-    //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Set<Allergene> allergen = new HashSet<>();
-    Set<Allergene> allergen2 = new HashSet<>(super.getAllergen());
+    Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 235;
 
 
     public Pudding(Kuchenbestandteile bestandteil) {
         super(bestandteil);
     }
-
-    //public Pudding(Kuchenbelag belag) {super(belag);}
 
     public String getName() {
         return super.getName() + ", " + this.name;
@@ -36,17 +32,12 @@ public class Pudding extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
-    //TODO Enumwerte als String ausgeben lassen
-    public Set<Allergene> getAllAllergene(){
-        allergen.addAll(super.getAllergen());
-        allergen.addAll(getAllergen());
-        return allergen;
-    }
 
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Gluten);
-        allergen.add(Allergene.Erdnuss);
-        return allergen;
+        allergene.addAll(super.getAllergen());
+        allergene.add(Allergene.Gluten);
+        allergene.add(Allergene.Sesamsamen);
+        return allergene;
     }
 
     public int getNaehrwert() {

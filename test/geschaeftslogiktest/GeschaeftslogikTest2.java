@@ -4,6 +4,9 @@ import geschaeftslogik.Hersteller;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -52,7 +55,7 @@ public class GeschaeftslogikTest2 {
     @Test
     @DisplayName("Ein neuer Muerbeteig mit allen 5 Belägen wird eingefügt")
     public void insertKuchenAlsDekorator4() {
-        String[] belagarray = {"Birne", "Apfel", "Kirsche", "Sahne2", "Pudding"};
+        String[] belagarray = {"Birne", "Apfel", "Kirsche", "Sahne", "Pudding"};
         Verwaltung vw = new Verwaltung();
         vw.setKapazitaet(1);
         Hersteller hersteller = new Hersteller("Hersteller1");
@@ -78,7 +81,7 @@ public class GeschaeftslogikTest2 {
     @Test
     @DisplayName("Ein neuer Muerbeteig mit 5 Belägen aber unbekanntem Hersteller wird eingefügt")
     public void insertKuchenAlsDekorator6(){
-        String[] belagarray = {"Birne", "Apfel", "Kirsche", "Sahne2", "Pudding"};
+        String[] belagarray = {"Birne", "Apfel", "Kirsche", "Sahne", "Pudding"};
         Verwaltung vw = new Verwaltung();
         vw.setKapazitaet(1);
         Hersteller hersteller = new Hersteller("Hersteller1");
@@ -135,5 +138,13 @@ public class GeschaeftslogikTest2 {
         vw.insetKuchen2("", hersteller,belagarray);
         int listSize = vw.getKuchenlisteSize2();
         assertEquals(0, listSize);
+    }
+
+    @Test
+    @DisplayName("Ein neuer Kuchen ohne Boden wird eingefügt")
+    public void insertKuchenAlsDekorator11(){
+        int zahl  = 2;
+        Verwaltung vw = new Verwaltung();
+        assertEquals(Duration.ofDays(2), vw.convertHaltbarkeit(zahl));
     }
 }

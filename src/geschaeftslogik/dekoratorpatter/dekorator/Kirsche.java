@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Kirsche extends Kuchenbelag {
-    Set<Allergene> allergen = new HashSet<>();
+    Set<Allergene> allergene = new HashSet<>();
     String name = "Kirsche";
     BigDecimal preis = BigDecimal.valueOf(3.10);
     Duration haltbarkeit = Duration.ofDays(2);
@@ -33,17 +33,11 @@ public class Kirsche extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
-    //TODO Enumwerte als String ausgeben lassen
-    public Set<Allergene> getAllAllergene(){
-        allergen.addAll(super.getAllergen());
-        allergen.addAll(getAllergen());
-        return allergen;
-    }
-
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Gluten);
-        allergen.add(Allergene.Erdnuss);
-        return allergen;
+        allergene.addAll(super.getAllergen());
+        allergene.add(Allergene.Gluten);
+        allergene.add(Allergene.Erdnuss);
+        return allergene;
     }
 
     public int getNaehrwert() {

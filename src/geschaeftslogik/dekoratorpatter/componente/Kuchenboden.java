@@ -8,9 +8,6 @@ public class Kuchenboden {
     public Kuchenboden(Hersteller hersteller) {
         this.hersteller = hersteller;
     }
-
-    //public void setAllergene ();
-
 }
 
 

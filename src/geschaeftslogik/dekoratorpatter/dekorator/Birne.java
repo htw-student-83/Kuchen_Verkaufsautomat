@@ -13,20 +13,13 @@ public class Birne extends Kuchenbelag {
     BigDecimal preis = BigDecimal.valueOf(2.22);
     Duration haltbarkeit = Duration.ofDays(3);
     //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Set<Allergene> allergen = new HashSet<>();
-
-    static Allergene[] allergenenarray = {Allergene.Gluten, Allergene.Sesamsamen};
+    Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 306;
 
 
     public Birne(Kuchenbestandteile bestandteil) {
         super(bestandteil);
     }
-
-
-   // public Birne(Kuchenbelag belag) {super(belag);}
-
-    //public Birne(Kuchenboden boden) {super(boden);}
 
 
     @Override
@@ -42,16 +35,11 @@ public class Birne extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
-    public Set<Allergene> getAllAllergene(){
-        allergen.addAll(super.getAllergen());
-        allergen.addAll(getAllergen());
-        return allergen;
-    }
-
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Gluten);
-        allergen.add(Allergene.Erdnuss);
-        return allergen;
+        allergene.addAll(super.getAllergen());
+        allergene.add(Allergene.Gluten);
+        allergene.add(Allergene.Sesamsamen);
+        return allergene;
     }
 
     @Override

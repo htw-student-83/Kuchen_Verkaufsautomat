@@ -12,12 +12,8 @@ public class Sahne extends Kuchenbelag {
     String name = "Sahne";
     BigDecimal preis = BigDecimal.valueOf(2.44);
     Duration haltbarkeit = Duration.ofDays(2);
-    //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Set<Allergene> allergen = new HashSet<>();
+    Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 200;
-
-
-    //public Sahne(Kuchenboden boden) {super(boden);}
 
     public Sahne(Kuchenbestandteile bestandteil) {
         super(bestandteil);
@@ -36,16 +32,12 @@ public class Sahne extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
-    public Set<Allergene> getAllAllergene(){
-        allergen.addAll(super.getAllergen());
-        allergen.addAll(getAllergen());
-        return allergen;
-    }
 
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Gluten);
-        allergen.add(Allergene.Erdnuss);
-        return allergen;
+        allergene.addAll(super.getAllergen());
+        allergene.add(Allergene.Gluten);
+        allergene.add(Allergene.Erdnuss);
+        return allergene;
     }
 
     @Override

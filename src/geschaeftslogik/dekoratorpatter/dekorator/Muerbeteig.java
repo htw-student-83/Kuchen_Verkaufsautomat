@@ -16,7 +16,8 @@ public class Muerbeteig extends Kuchenboden implements Kuchenbestandteile {
     BigDecimal preis = BigDecimal.valueOf(2.55);
     Duration haltbarkeit = Duration.ofDays(3);
     //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Set<Allergene> allergen = new HashSet<>();
+    Allergene[] allergen = {Allergene.Sesamsamen};
+    Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 140;
 
     public Muerbeteig(Hersteller hersteller){
@@ -34,16 +35,10 @@ public class Muerbeteig extends Kuchenboden implements Kuchenbestandteile {
         return this.haltbarkeit;
     }
 
-
     @Override
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Sesamsamen);
-        return allergen;
-    }
-
-    @Override
-    public Set<Allergene> getAllAllergene() {
-        return this.allergen;
+        allergene.add(Allergene.Sesamsamen);
+        return allergene;
     }
 
     @Override

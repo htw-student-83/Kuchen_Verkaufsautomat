@@ -8,15 +8,13 @@ import java.util.Set;
 
 public class Kuchenbelag implements Kuchenbestandteile {
     Kuchenbestandteile bestandteil;
-    Kuchenboden boden;
+    //Kuchenboden boden;
 
     public Kuchenbelag(Kuchenbestandteile bestandteil){
         this.bestandteil = bestandteil;
     }
 
-    public Kuchenbelag(Kuchenboden boden){
-        this.boden = boden;
-    }
+    //public Kuchenbelag(Kuchenboden boden){this.boden = boden;}
 
     @Override
     public String getName() {return bestandteil.getName();}
@@ -26,11 +24,6 @@ public class Kuchenbelag implements Kuchenbestandteile {
 
     @Override
     public Set<Allergene> getAllergen() { return bestandteil.getAllergen(); }
-
-    @Override
-    public Set<Allergene> getAllAllergene() {
-        return bestandteil.getAllAllergene();
-    }
 
     @Override
     public int getNaehrwert() { return  bestandteil.getNaehrwert(); }

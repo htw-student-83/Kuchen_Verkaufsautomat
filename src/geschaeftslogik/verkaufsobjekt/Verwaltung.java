@@ -297,7 +297,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         return new Date();
     }
 
-    protected Duration convertHaltbarkeit(int haltbarkeit){
+    public Duration convertHaltbarkeit(int haltbarkeit){
         return Duration.ofDays(haltbarkeit);
     }
 

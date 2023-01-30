@@ -1,20 +1,21 @@
 package geschaeftslogik.dekoratorpatter.dekorator;
 
-import eventsystem.controller.AllergenAnzeigenEvent;
 import geschaeftslogik.Kuchenbestandteile;
 import geschaeftslogik.dekoratorpatter.componente.Kuchenbelag;
 import vertrag.Allergene;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Apfel extends Kuchenbelag {
     String name  = "Apfel";
     BigDecimal preis = BigDecimal.valueOf(1.55);
     Duration haltbarkeit = Duration.ofDays(3);
     //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Set<Allergene> allergen = new HashSet<>();//Allergenenset für die Klasse Apfel
+    Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 140;
 
 
@@ -36,16 +37,12 @@ public class Apfel extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
-    public Set<Allergene> getAllAllergene(){
-        allergen.addAll(super.getAllergen());
-        allergen.addAll(getAllergen());
-        return allergen;
-    }
 
     public Set<Allergene> getAllergen() {
-        allergen.add(Allergene.Gluten);
-        allergen.add(Allergene.Erdnuss);
-        return allergen;
+        allergene.addAll(super.getAllergen());
+        allergene.add(Allergene.Gluten);
+        allergene.add(Allergene.Erdnuss);
+        return allergene;
     }
 
     public int getNaehrwert() {
