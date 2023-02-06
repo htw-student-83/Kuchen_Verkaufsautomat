@@ -1,3 +1,4 @@
+/*
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
@@ -10,6 +11,7 @@ import java.time.Duration;
 import java.util.Scanner;
 
 public class AlternativesCLI {
+
     static Verwaltung model;
     private static final String EINFUEGEN = ":c";
     private static final String LOESCHEN = ":d";
@@ -23,13 +25,13 @@ public class AlternativesCLI {
 
 
     public static void main(String[]args){
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(2);
         AlternativesCLI acli = new AlternativesCLI(model);
         acli.startAutomat();
     }
 
     public void startAutomat(){
-            /*System.out.println("##########Kuchen-Verkaufsautomat###############");
+            System.out.println("##########Kuchen-Verkaufsautomat###############");
             System.out.println();
             System.out.println("Bitte wählen Sie eines der folgenden Optionen aus:");
             System.out.println(":c Einfügemodus");
@@ -37,7 +39,7 @@ public class AlternativesCLI {
             System.out.println(":r Anzeigemodus");
             System.out.println(":u Änderungsmodus");
             System.out.println(":p Persistenzmodus");
-            */
+
             Scanner scanner = new Scanner(System.in);
             String options = scanner.next();
             switch (options) {
@@ -71,7 +73,7 @@ public class AlternativesCLI {
                 inputUser.equals("r") || inputUser.equals("n") ||
                 inputUser.equals("e");
     }
-/*
+
     private void netzwerkauswaehlen() {
         final String UDP = "UDP";
         final String TCP = "TCP";
@@ -91,7 +93,7 @@ public class AlternativesCLI {
                 netzwerkauswaehlen();
         }
     }
- */
+
 
 
 
@@ -158,13 +160,17 @@ public class AlternativesCLI {
                 eingabeUser.equals(":u") || eingabeUser.equals(":p"))) {
             switch (eingabeUser) {
                 case KUCHEN:
+
                     for (Kuchen kuchen : model.readKuchen()) {
+
                         System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
                                 "Fachnummer: " + kuchen.getFachnummer() + "\n" +
                                 "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                                 "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
                                 "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
                     }
+
+
                     break;
                 case HERSTELLER:
                     for (Hersteller hersteller : model.readHersteller()) {
@@ -192,7 +198,7 @@ public class AlternativesCLI {
             }
         }
     }
-    /*
+
         if(kuchentyp == null){
             readKuchen();
         }else{
@@ -234,10 +240,11 @@ public class AlternativesCLI {
         for (Allergene allergene : this.model.readAllergener()) {
             System.out.println(allergene);
         }
-         */
+
 
     public void readKuchen(){
         System.out.println("Kuchen");
+
         for (Kuchen kuchen : model.readKuchen()) {
             System.out.println("Sorte: " + kuchen.getKremsorte() + "\n" +
                             "Fachnummer: " + kuchen.getFachnummer() + "\n" +
@@ -245,6 +252,8 @@ public class AlternativesCLI {
                             "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
                             "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
         }
+
+
     }
 
     public void loeschmodus(){
@@ -294,7 +303,7 @@ public class AlternativesCLI {
                 userInput.equals(":u") || userInput.equals(":d"))) {
             switch (userInput) {
                 case SAVEJOS:
-                    ObjektSpeicherungJOS.persistiereAutomaten(this.model);
+                    ObjektSpeicherungJOS.persistiereAutomaten(this.model, dis);
                     break;
                 case LOADJOS:
                     ladeAutomaten();
@@ -324,6 +333,7 @@ public class AlternativesCLI {
             }
 
             System.out.println("Kuchen:");
+
             for (Kuchen kuchen : this.model.readKuchen()) {
                 System.out.println("Fachnummer: " + kuchen.getFachnummer() + "\n" +
                         "Kuchensorte: " + kuchen.getKremsorte() + "\n" +
@@ -332,9 +342,12 @@ public class AlternativesCLI {
                         "Inspektionsdatum: " + kuchen.getInspektionsdatum());
             }
 
+
+
             System.out.println("Allergene:");
             for (Allergene allergen : this.model.readAllergener()) {
                 System.out.println(allergen);
             }
         }
 }
+ */

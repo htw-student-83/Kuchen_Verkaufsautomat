@@ -16,6 +16,6 @@ public class InsertKuchenListener implements EventListener {
 
     @Override
     public void run(KuchenEvent event) {
-       // this.model.insertKuchen(event.getkuchentyp(), event.getkuchenhersteller(), event.getkuchenpreis(), event.getkuchennaehrwert(), event.getkuchenhaltbarkeit(), event.getkuchenallergene(), event.getkuchensorte());
+         this.model.insertKuchen2(event.getKuchenBoden(), event.getkuchenhersteller(), event.getKuchenBelaege());
     }
 }

@@ -9,9 +9,8 @@ public class Simulation2 {
         final Object monitor=new Object();
         int waitingTime = 0;
         while (true){
-            Verwaltung model = new Verwaltung();
-            Kuchenautomat automat = new Kuchenautomat();
-            Beobachter beobachter = new Beobachter(model, automat);
+            Verwaltung model = new Verwaltung(3);
+            Beobachter beobachter = new Beobachter(model);
             model.addObserver(beobachter);
             Thread t1 = new Thread(new InspektionSimulation2(model, monitor));
             Thread t2 = new Thread(new DeleteSimulation2(model, monitor));

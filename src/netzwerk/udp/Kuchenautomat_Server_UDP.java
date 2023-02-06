@@ -1,112 +1,54 @@
 package netzwerk.udp;
-/*
+
 import geschaeftslogik.Hersteller;
-import geschaeftslogik.Kuchenautomat;
-import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
+import jbp.ObjektLadenJBP;
 import jbp.ObjektSpeicherungJBP;
 import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
+
 import java.io.*;
 import java.net.*;
-import java.time.Duration;
 
 public class Kuchenautomat_Server_UDP {
-    private final byte[] inBuffer=new byte[70];
-    Verwaltung model = new Verwaltung();
-
+    private final byte[] inBuffer=new byte[1024];
+    Verwaltung model;
     private DatagramSocket socket;
+    DatagramPacket packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
+    DatagramPacket packetOut;
 
-    public Kuchenautomat_Server_UDP(DatagramSocket socket, int kapazitaet){
-        this.model.setKapazitaet(kapazitaet);
+    public Kuchenautomat_Server_UDP(DatagramSocket socket, Verwaltung model){
+        this.model = model;
         this.socket = socket;
     }
 
-    public void startServer(){
+    public void startServer() {
         System.out.println("Der UDP-Server wurde gestartet..");
-        while (true){
-            DatagramPacket packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
-            try(DataInputStream dis=new DataInputStream(new ByteArrayInputStream(packetIn.getData()))) {
-                this.processMessage(dis);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try(DataInputStream dis=new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
+            DataOutputStream dos=new DataOutputStream(new ByteArrayOutputStream(14))){
+            this.processProtokoll();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-
-//TODO Der Server nach jedem Befehl in keiner While-Schleife sein. Nur die Befehle sollen ausgeführt werden
-    public void processMessage(DataInputStream dis) throws IOException {
-        System.out.println("Funktion aufgerufen.");
+    public void processProtokoll() throws IOException {
+        packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
         this.socket.receive(packetIn);
-        String option = dis.readUTF();
-        String dataString = "";
-        switch (option) {
-            case ":c":
-                //this.einfuegemodus();
-                System.out.println("Befehl " + option);
-                //TODO jeweiliger Befehl wird nach Versandt vom CLient nicht sofort erkannt
-
-                // - Neuen Hersteller einfügen
-                this.socket.receive(packetIn);
-                String herstellername = dis.readUTF();
-                String result = herstellerEinfuegen(herstellername);
-                System.out.println(result);
-                //- Neuen Kuchen einfügen
-                dataString = dis.readUTF();
-                String result2 = getKuchenObejtData(dataString);
-                System.out.println(result2);
-                    //dis.readUTF() blockiert angeblich?!
-                break;
-            case ":u":
-                //this.aenderungsmodus();
-                System.out.println("Befehl u");
-               // String nummer = dis.readUTF();
-               // int kuchenIDInspizierung = Integer.parseInt(nummer);
-                //String result3 = kuchenInspizieren(kuchenIDInspizierung);
-                //System.out.println(result3);
-                break;
-            case ":d":
-                //this.loeschmodus();
-                System.out.println("Befehl d");
-                //this.socket.receive(packetIn);
-               String inputFachnummerFueLoeschung = dis.readUTF();
-                int fachnummerKuchenLoeschung = Integer.parseInt(inputFachnummerFueLoeschung);
-                String result4 = kuchenloeschen(fachnummerKuchenLoeschung);
-
-                System.out.println(result4);
-
-                break;
-            case ":p":
-                this.persistenzmodus();
-                break;
-            case ":r":
-                this.datenlesen();
-                break;
-            default:
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        switch (received) {
+            case ":c" -> this.kuchenEinfuegen();
+            case ":u" -> this.inspizierung();
+            case ":d" -> this.loeschung();
+            case ":p" -> this.persistenzmodus();
+            case ":r" -> this.datenlesen();
         }
-    }
-
-
-    private void einfuegemodus(){
-
-    }
-
-    private void aenderungsmodus(){
-        System.out.println("Änderung.");
-    }
-
-    private void anzeigemodus(){
-        System.out.println("Anzeige.");
-    }
-
-    private void loeschmodus(){
-        System.out.println("Löschen.");
     }
 
     //Quelle: https://stackoverflow.com/questions/66786965/how-can-i-turn-an-int-minutes-into-a-duration-in-java
+    /*
     protected String getKuchenObejtData(String kuchendaten){
         String[] dataArray = kuchendaten.split(" ");
         // - Aus dem String am Index 0 werden die ersten zwei Zeichen entfernt
@@ -121,8 +63,340 @@ public class Kuchenautomat_Server_UDP {
         //Duration haltbarkeit = Duration.parse(dataArray[4]);
         Allergene allergene = Allergene.valueOf(dataArray[5]);
         String sorte = dataArray[6];
-        boolean isdeleted = this.model.insertKuchen(typ, newhersteller, preis,naehrwert,
+        boolean isdeleted = this.model.insertKuchen2(typ, newhersteller, preis,naehrwert,
                 haltbarkeitD, allergene, sorte);
+        if (isdeleted) {
+            return "Kuchen eingefügt.";
+        } else {
+            return "Kuchen nicht eingefügt.";
+        }
+    }
+     */
+
+    private void kuchenEinfuegen() throws IOException {
+        System.out.println("Einfügeprozess gestartet...");
+        // - Neuen Hersteller einfügen
+        packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
+        this.socket.receive(packetIn);
+        String herstellername = new String(packetIn.getData(),0, packetIn.getLength());
+        String result = herstellerEinfuegen(herstellername);
+        System.out.println(result);
+        //- Neuen Kuchen einfügen
+        int lengthKuchendaten = 10;
+        packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        while (received.length()>lengthKuchendaten){
+            received = new String(packetIn.getData(),0,packetIn.getLength());
+            String result2 = getKuchenObejtData2(received);
+            System.out.println(result2);
+            this.socket.receive(packetIn);
+            received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received) {
+                case ":u" -> this.inspizierung();
+                case ":d" -> this.loeschung();
+                case ":p" -> this.persistenzmodus();
+                case ":r" -> this.datenlesen();
+            }
+        }
+    }
+
+    private void inspizierung() throws IOException {
+        System.out.println("Inspektionsprozess gestartet...");
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        while (!(received.equals(":c") || received.equals(":d") ||
+                received.equals(":r")|| received.equals(":p"))){
+            int kuchenid = Integer.parseInt(received);
+            String isChecked = kuchenInspizieren(kuchenid);
+            System.out.println(isChecked);
+            this.socket.receive(packetIn);
+            received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received) {
+                case ":c" -> this.kuchenEinfuegen();
+                case ":d" -> this.loeschung();
+                case ":p" -> this.persistenzmodus();
+                case ":r" -> this.datenlesen();
+            }
+        }
+    }
+
+
+    private void loeschung() throws IOException {
+        System.out.println("Löschprozess gestartet...");
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        String herstellerisDeleted = herstellerloeschen(received);
+        System.out.println(herstellerisDeleted);
+        this.socket.receive(packetIn);
+        received = new String(packetIn.getData(),0,packetIn.getLength());
+        while (!(received.equals(":c") || received.equals(":u") ||
+                received.equals(":r")|| received.equals(":p"))){
+            int kuchenid = Integer.parseInt(received);
+            String isdeleted = kuchenloeschen(kuchenid);
+            System.out.println(isdeleted);
+            this.socket.receive(packetIn);
+            received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received) {
+                case ":c" -> this.kuchenEinfuegen();
+                case ":u" -> this.inspizierung();
+                case ":p" -> this.persistenzmodus();
+                case ":r" -> this.datenlesen();
+            }
+        }
+    }
+
+    protected void datenlesen() throws IOException {
+        System.out.println("Daten lesen");
+        packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        while (!(received.equals(":c") || received.equals(":u") ||
+                received.equals(":d") || received.equals(":p"))){
+            switch (received) {
+                case "kuchen":
+                    kuchendaten();
+                    break;
+                case "hersteller":
+                    herstellerdaten();
+                    break;
+                case "allergene i":
+                    allergenendaten();
+                    break;
+            }
+        }
+    }
+
+    protected void persistenzmodus() throws IOException {
+        System.out.println("Persistieren..");
+        //TODO in diesem Modus gibt es 4 Möglichkeiten
+        packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        switch (received){
+            case "saveJOS":
+                automatenspeichernMitJOS();
+                break;
+            case "loadJOS":
+                automatenladenMitJOS();
+                break;
+            case "saveJBP":
+                automatenspeichernMitJBP();
+                break;
+            case "loadJBP":
+                automatenzustandmitJBPLaden();
+        }
+    }
+
+    protected void automatenspeichernMitJOS() throws IOException {
+        System.out.println("Der aktuelle Zustand des Automaten wird gespeichert...");
+        //TODO Wie soll die Angabe über den Speicherort erfolgen - Frage ins Forum!
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+        packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+        this.socket.receive(packetIn);
+        String received = new String(packetIn.getData(),0,packetIn.getLength());
+        switch (received){
+            case "loadJOS":
+                automatenladenMitJOS();
+                break;
+            case "saveJBP":
+                automatenspeichernMitJBP();
+                break;
+            case "loadJBP":
+                automatenzustandmitJBPLaden();
+                break;
+            case ":c":
+                kuchenEinfuegen();
+                break;
+            case ":u":
+                inspizierung();
+                break;
+            case ":d":
+                loeschung();
+                break;
+            case ":r":
+                datenlesen();
+                break;
+        }
+    }
+
+    protected void automatenladenMitJOS() throws IOException {
+        System.out.println("Der aktuelle Zustand des Automaten wird geladen...");
+        this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
+        if(this.model!=null){
+            for(DekoKuchen kuchen: this.model.readKuchen()){
+                String id = String.valueOf(kuchen.getFachnummer());
+                String naehrwert = String.valueOf(kuchen.getNaehrwert());
+                String preis = String.valueOf(kuchen.getPreis());
+                String edatum = String.valueOf(kuchen.getEinfuegedatum());
+                String idatum = String.valueOf(kuchen.getInspektionsdatum());
+                String hersteller = kuchen.getHersteller().getName();
+                String gespeicherteKuchendaten = "KuchenID: " + id+"\nNährwert: "+naehrwert + "\nPreis: " + preis +
+                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHersteller: " + hersteller;
+                byte[] gespeicherteKuchendatenInBytes = gespeicherteKuchendaten.getBytes();
+                packetOut = new DatagramPacket(gespeicherteKuchendatenInBytes, gespeicherteKuchendatenInBytes.length, packetIn.getAddress(), packetIn.getPort());
+                this.socket.send(packetOut);
+            }
+            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            this.socket.receive(packetIn);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received) {
+                case "loadJOS":
+                    automatenladenMitJOS();
+                    break;
+                case "saveJBP":
+                    automatenspeichernMitJBP();
+                    break;
+                case "loadJBP":
+                    automatenzustandmitJBPLaden();
+                    break;
+                case ":c":
+                    kuchenEinfuegen();
+                    break;
+                case ":u":
+                    inspizierung();
+                    break;
+                case ":d":
+                    loeschung();
+                    break;
+                case ":r":
+                    datenlesen();
+                    break;
+            }
+                    /*
+            for(Hersteller hersteller: this.model.readHersteller()){
+                String namehersteller = hersteller.getName();
+                byte[] nameherstellerInBytes = namehersteller.getBytes();
+                packetOut = new DatagramPacket(nameherstellerInBytes, nameherstellerInBytes.length, packetIn.getAddress(), packetIn.getPort());
+                this.socket.send(packetOut);
+            }
+ */
+
+        }
+    }
+
+
+    protected void kuchendaten() throws IOException {
+        System.out.println("Kuchendaten lesen");
+        byte[] kuchendatenInBytes;
+            for(DekoKuchen kuchen: this.model.readKuchen()) {
+                String id = String.valueOf(kuchen.getFachnummer());
+                String naehrwert = String.valueOf(kuchen.getNaehrwert());
+                String preis = String.valueOf(kuchen.getPreis());
+                String edatum = String.valueOf(kuchen.getEinfuegedatum());
+                String idatum = String.valueOf(kuchen.getInspektionsdatum());
+                String hersteller = kuchen.getHersteller().getName();
+                String kuchendaten = "KuchenID: " + id + "\nNährwert: " + naehrwert + "\nPreis: " + preis +
+                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHersteller: " + hersteller;
+                kuchendatenInBytes = kuchendaten.getBytes();
+                packetOut = new DatagramPacket(kuchendatenInBytes, kuchendatenInBytes.length, packetIn.getAddress(),
+                        packetIn.getPort());
+                this.socket.send(packetOut);
+            }
+            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            this.socket.receive(packetIn);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received){
+                case "hersteller":
+                    herstellerdaten();
+                    break;
+                case "allergene i":
+                    allergenendaten();
+                    break;
+                case ":c":
+                    kuchenEinfuegen();
+                    break;
+                case ":u":
+                    inspizierung();
+                    break;
+                case ":d":
+                    loeschung();
+                    break;
+                case ":p":
+                    persistenzmodus();
+                    break;
+                case ":r":
+                    datenlesen();
+                    break;
+            }
+
+    }
+
+
+    protected void herstellerdaten() throws IOException {
+        for(Hersteller hersteller: this.model.readHersteller()){
+            String herstellerName = hersteller.getName();
+            byte[] nameherstellerInBytes = herstellerName.getBytes();
+            packetOut = new DatagramPacket(nameherstellerInBytes, nameherstellerInBytes.length, packetIn.getAddress(), packetIn.getPort());
+            this.socket.send(packetOut);
+            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            this.socket.receive(packetIn);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received){
+                case "kuchen":
+                    kuchendaten();
+                    break;
+                case "allergene i":
+                    allergenendaten();
+                    break;
+                case ":c":
+                    kuchenEinfuegen();
+                    break;
+                case ":u":
+                    inspizierung();
+                    break;
+                case ":d":
+                    loeschung();
+                    break;
+                case ":p":
+                    persistenzmodus();
+                    break;
+                case ":r":
+                    datenlesen();
+                    break;
+            }
+        }
+    }
+
+
+    protected void allergenendaten() throws IOException {
+        System.out.println("Allergene lesen");
+        //TODO Wie kann man sich alle Allergene vom Dekoratorkuchen ausgeben lassen?
+        for(Allergene allergene: this.model.readAllergener()){
+            String nameAllergen = String.valueOf(allergene);
+            byte[] nameAllergenInBytes = nameAllergen.getBytes();
+            packetOut = new DatagramPacket(nameAllergenInBytes, nameAllergenInBytes.length, packetIn.getAddress(), packetIn.getPort());
+            this.socket.send(packetOut);
+            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            this.socket.receive(packetIn);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            switch (received){
+                case "kuchen":
+                    kuchendaten();
+                case "hersteller":
+                    herstellerdaten();
+                case ":c":
+                    kuchenEinfuegen();
+                case ":u":
+                    inspizierung();
+                case ":d":
+                    loeschung();
+                case ":p":
+                    persistenzmodus();
+                case ":r":
+                    datenlesen();
+            }
+        }
+    }
+
+    protected String getKuchenObejtData2(String kuchendaten){
+        String[] dataArray = kuchendaten.split(" ");
+        String boden = dataArray[0];
+        String hersteller = dataArray[1];
+        Hersteller newhersteller = new Hersteller(hersteller);
+        String[] kuchenbelagarray = new String[dataArray.length-2];
+        System.arraycopy(dataArray, 2, kuchenbelagarray, 0, kuchenbelagarray.length);
+        boolean isdeleted = this.model.insertKuchen2(boden, newhersteller, kuchenbelagarray);
         if (isdeleted) {
             return "Kuchen eingefügt.";
         } else {
@@ -140,8 +414,8 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
-    protected String kuchenInspizieren(int input) {
-        boolean isput = this.model.editKuchen(input);
+    protected String kuchenInspizieren(int kuchenId) throws IOException {
+        boolean isput = this.model.editKuchen(kuchenId);
         if (isput) {
             return "Habe den Kuchen inspiziert.";
         } else {
@@ -158,131 +432,29 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
-    protected void datenlesen() throws IOException {
-       /* ByteArrayInputStream bais = new ByteArrayInputStream(packetIn.getData());
-        //DataInputStream dis = new DataInputStream(bais);
-        //String input = dis.readUTF();
-        //socket.receive(packetIn);
-        //String input = new String(packetIn.getData(), packetIn.getLength());
-        switch (input){
-            case "kuchen":
-                kuchendaten();
-            case "hersteller":
-                herstellerdaten();
-            case "allergene":
-                allergenendaten();
+    protected String herstellerloeschen(String name) {
+        boolean isput = this.model.deleteHersteller(name);
+        if (isput) {
+            return "Habe den Hersteller geloescht.";
+        } else {
+            return "Habe den Hersteller nicht geloescht.";
         }
-
-
     }
 
-    protected void persistenzmodus() throws IOException {
-
-        ByteArrayInputStream bais = new ByteArrayInputStream(packetIn.getData());
-        DataInputStream dis = new DataInputStream(bais);
-        String inputPersistierung = dis.readUTF();
-        //socket.receive(packetIn);
-        //String input = new String(packetIn.getData(), packetIn.getLength());
-        switch (inputPersistierung){
-            case "saveJOS":
-                automatenspeichern();
-            case "loadJOS":
-                automatenladen();
-            case "saveJBP":
-            case "loadJBP":
-        }
-
-
+    protected void automatenspeichernMitJBP() {
+        ObjektSpeicherungJBP.persistiereAutomaten(this.model, "automaten.xml");
     }
 
-    protected void automatenspeichern() {
-        ObjektSpeicherungJOS.persistiereAutomaten(this.model);
-    }
-
-    protected void automatenladen() throws IOException {
-        this.model = ObjektLadenJOS.reloadAutomt();
-        if(this.model!=null){
-            for(Kuchen kuchen: this.model.readKuchen()){
-                String preis = String.valueOf(kuchen.getPreis());
-                String naehrwert = String.valueOf(kuchen.getNaehrwert());
-                String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
-                String allergene = String.valueOf(kuchen.getAllergene());
-                String sorte  = kuchen.getKremsorte();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-                DataOutputStream dos = new DataOutputStream(baos);
-                dos.writeUTF(preis);
-                dos.writeUTF(naehrwert);
-                dos.writeUTF(haltbarkeit);
-                dos.writeUTF(allergene);
-                dos.writeUTF(sorte);
-                baos.close();
-                dos.close();
-            }
-
-
-            for(Hersteller hersteller: this.model.readHersteller()){
-                String namehersteller = hersteller.getName();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-                DataOutputStream dos = new DataOutputStream(baos);
-                dos.writeUTF(namehersteller);
-                baos.close();
-                dos.close();
-            }
-
-
-            for(Allergene allergene: this.model.readAllergener()){
-                String nameAllergen = allergene.toString();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-                DataOutputStream dos = new DataOutputStream(baos);
-                dos.writeUTF(nameAllergen);
-                baos.close();
-                dos.close();
+    public void automatenzustandmitJBPLaden() {
+       ObjektLadenJBP.automatenzustandLaden("automaten.xml");
+       /*
+        if(model!=null){
+            for(DekoKuchen kuchen: model.readKuchen()){
+                System.out.println("KuchenID: " + kuchen.getFachnummer() + "\nEinfuegedatum: " + kuchen.getEinfuegedatum()
+                        + "\nInspektionsdatum: " + kuchen.getInspektionsdatum() + "\nPreis: " + kuchen.getPreis());
             }
         }
-    }
 
-
-    protected void kuchendaten() throws IOException {
-        for(Kuchen kuchen: this.model.readKuchen()){
-            String naehrwert = String.valueOf(kuchen.getNaehrwert());
-            String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
-            String allergene = String.valueOf(kuchen.getAllergene());
-            String sorte  = kuchen.getKremsorte();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-            DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeUTF(sorte);
-            dos.writeInt(kuchen.getFachnummer());
-            dos.writeUTF(naehrwert);
-            dos.writeUTF(haltbarkeit);
-            dos.writeUTF(allergene);
-            baos.close();
-            dos.close();
-        }
-    }
-
-
-    protected void herstellerdaten() throws IOException {
-        for(Hersteller hersteller: this.model.readHersteller()){
-            String herstellerName = hersteller.getName();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1096);
-            DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeUTF(herstellerName);
-            baos.close();
-            dos.close();
-        }
-    }
-
-
-    protected void allergenendaten() throws IOException {
-        for(Allergene allergene: this.model.readAllergener()){
-            String nameAllergen = String.valueOf(allergene);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1096);
-            DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeUTF(nameAllergen);
-            baos.close();
-            dos.close();
-        }
+        */
     }
 }
-
- */

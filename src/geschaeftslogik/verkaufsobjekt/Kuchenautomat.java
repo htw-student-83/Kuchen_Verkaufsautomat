@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class Kuchenautomat implements Serializable {
     private int belegtekuchenfeacher = 0;
     private int KUCHENFAECHER_MAX;
+
+
     public int getAnzahlbelegteFaecher() {
         return this.belegtekuchenfeacher;
     }

@@ -2,6 +2,7 @@ package eventsystem.controller;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenboden;
 import vertrag.Allergene;
 
 import java.time.Duration;
@@ -11,6 +12,8 @@ public class KuchenEvent extends EventObject {
     private Hersteller kuchenhersteller;
     private String kuchensorte;
     private Kuchentyp kuchentyp;
+    private String boden;
+    private String[] belaege;
     private double kuchenpreis;
     private Duration kuchenhaltbarkeit;
     private int kuchennaehrwert;
@@ -34,13 +37,19 @@ public class KuchenEvent extends EventObject {
         super(source);
         this.fachnumer = kuchenfachnummer;
     }
-/*
-    public KuchenEvent(Object source, String hersteller){
+
+    public KuchenEvent(Object source, Hersteller hersteller){
         super(source);
         this.kuchenhersteller = hersteller;
     }
 
- */
+    public KuchenEvent(Object source, String boden, Hersteller hersteller, String[] belagarray){
+        super(source);
+        this.kuchenhersteller = hersteller;
+        this.boden = boden;
+        this.belaege = belagarray;
+    }
+
 
     public Hersteller getkuchenhersteller(){return this.kuchenhersteller;}
 
@@ -66,6 +75,13 @@ public class KuchenEvent extends EventObject {
 
     public int getkuchenfachnummer(){
         return this.fachnumer;
+    }
+
+    public String getKuchenBoden(){
+        return this.boden;
+    }
+    public String[] getKuchenBelaege(){
+        return this.belaege;
     }
 
 }

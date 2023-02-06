@@ -1,6 +1,7 @@
 package simulationstest;
 
 import geschaeftslogik.Hersteller;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +20,7 @@ public class Simulation2Test {
     public void delete(){
         int kuchenID = 1;
         final Object monitor=new Object();
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(0);
         DeleteSimulation2 sim2 = new DeleteSimulation2(model, monitor);
         boolean isDeleted =  sim2.deleteKuchen(kuchenID);
         Assertions.assertFalse(isDeleted);
@@ -30,10 +31,10 @@ public class Simulation2Test {
     @DisplayName("Befüllte Kuchenliste wird ausgelesen.")
     public void delete2() throws InterruptedException {
         final Object monitor=new Object();
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(3);
         InsertSimulation2 sim = new InsertSimulation2(model, monitor);
         sim.insertForInspection();
-        List<Kuchen> kuchen = model.readKuchen();
+        List<DekoKuchen> kuchen = model.readKuchen();
         Assertions.assertNotNull(kuchen);
     }
 
@@ -41,7 +42,7 @@ public class Simulation2Test {
     @DisplayName("Ein nicht vorhandener Kuchen wird nicht inspiziert.")
     public void inspizieren() throws ParseException, InterruptedException {
         final Object monitor=new Object();
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(0);
         DeleteSimulation2 sim2 = new DeleteSimulation2(model, monitor);
         boolean isChecked = sim2.editInspektiondate();
         Assertions.assertFalse(isChecked);
@@ -50,7 +51,7 @@ public class Simulation2Test {
     @Test
     @DisplayName("Vorhandene Kuchen werden inspiziert und gelöscht.")
     public void inspizieren2() throws ParseException, InterruptedException {
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(3);
         final Object monitor=new Object();
         InsertSimulation2 sim = new InsertSimulation2(model, monitor);
         DeleteSimulation2 sim2 = new DeleteSimulation2(model, monitor);
@@ -63,7 +64,7 @@ public class Simulation2Test {
     @Test
     @DisplayName("Befülltes Herstellerset wird ausgelesen.")
     public void inspizieren3() throws InterruptedException {
-        Verwaltung model = new Verwaltung();
+        Verwaltung model = new Verwaltung(3);
         final Object monitor=new Object();
         InsertSimulation2 sim = new InsertSimulation2(model, monitor);
         sim.insertForInspection();

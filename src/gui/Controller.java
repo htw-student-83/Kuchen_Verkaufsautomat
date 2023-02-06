@@ -60,7 +60,7 @@ public class Controller implements Initializable {
     ObservableList<Hersteller> herstellerlist = FXCollections.observableArrayList();
     ObservableList<Allergene> allergenelist = FXCollections.observableArrayList();
     ObservableList<Kuchen> kuchenlist = FXCollections.observableArrayList();
-    Verwaltung model = new Verwaltung();
+    Verwaltung model = new Verwaltung(3);
     Hersteller newhersteller = null;
 
 
@@ -168,9 +168,9 @@ public class Controller implements Initializable {
 
         //Die Einfüg-Methode der GL soll verwendet werden nicht die Bestandteile der Methode!!!!
         //this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert, Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
-        List<Kuchen> kuchen = this.model.readKuchen();
+       // List<Kuchen> kuchen = this.model.readKuchen();
         //TODO Wie kann nur jeweils ein Objekt von Kuchen geladen werden?
-        kuchenlist.addAll(kuchen);
+        //kuchenlist.addAll(kuchen);
         //this.model.insertAllergen(allergen);
         allergenelist.add(allergen);
         System.out.println("Listengroeße Allergene: " + allergenelist.size());

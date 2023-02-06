@@ -1,12 +1,14 @@
 package observerpatter;
-/*
+
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import vertrag.Beobachter;
+import vertrag.ISubjekt;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Subjekt implements vertrag.Subjekt {
+public class Subjekt implements ISubjekt {
 
     private Verwaltung verwaltung;
     public List<Beobachter> beobachterList = new LinkedList<>();
@@ -17,10 +19,9 @@ public class Subjekt implements vertrag.Subjekt {
 
     public Subjekt(Verwaltung verwaltung){
         this.verwaltung = verwaltung;
-        this.zustandKuchenliste = verwaltung.getKuchenlisteSize();
+        this.zustandKuchenliste = verwaltung.getKuchenlisteSize2();
         this.zustandHerstellerset = verwaltung.getHerstellerSetSize();
         this.zustandAllergenset = verwaltung.getAllergenenSetSize();
-        this.inspektionsdatum = verwaltung.getInspektion();
     }
 
     @Override
@@ -46,23 +47,18 @@ public class Subjekt implements vertrag.Subjekt {
     }
 
     @Override
+    public Date gibInspektion() {
+        return this.inspektionsdatum;
+    }
+
+    @Override
     public int gibZustandKuchenliste() {
         return this.zustandKuchenliste;
     }
 
     @Override
-    public int gibZustandHerstellerSet() {
+    public int gibZustandHerstellerliste() {
         return this.zustandHerstellerset;
-    }
-
-    @Override
-    public int gibZustandAllergenenSet() {
-        return this.zustandAllergenset;
-    }
-
-    @Override
-    public Date gibZustandInpektionsdatum() {
-        return this.inspektionsdatum;
     }
 
     @Override
@@ -71,6 +67,5 @@ public class Subjekt implements vertrag.Subjekt {
             beobachter.aktualisiere();
         }
     }
-}
 
- */
+}

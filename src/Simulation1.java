@@ -1,4 +1,3 @@
-import geschaeftslogik.verkaufsobjekt.Kuchenautomat;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import observerpatter.Beobachter;
 import simulation1.DeleteSimulation1;
@@ -10,9 +9,8 @@ public class Simulation1 {
 
         int waitingTime = 0;
         while (true){
-            Verwaltung model = new Verwaltung();
-            Kuchenautomat automat = new Kuchenautomat();
-            Beobachter beobachter = new Beobachter(model, automat);
+            Verwaltung model = new Verwaltung(3);
+            Beobachter beobachter = new Beobachter(model);
             model.addObserver(beobachter);
             Thread t1 = new Thread(new InsertSimulation1(model, monitor));
             Thread t2 = new Thread(new DeleteSimulation1(model, monitor));

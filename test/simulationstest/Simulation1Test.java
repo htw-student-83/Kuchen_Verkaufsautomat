@@ -1,6 +1,6 @@
 package simulationstest;
 
-import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +10,7 @@ import simulation1.InsertSimulation1;
 import java.util.List;
 
 public class Simulation1Test {
-    Verwaltung model = new Verwaltung();
+    Verwaltung model = new Verwaltung(3);
     final Object monitor=new Object();
 
     @Test
@@ -18,7 +18,7 @@ public class Simulation1Test {
     public void insert1(){
         InsertSimulation1 sim1 = new InsertSimulation1(model, monitor);
         sim1.insertKuchenSimulation();
-        List<Kuchen> kuchen = this.model.readKuchen();
+        List<DekoKuchen> kuchen = this.model.readKuchen();
         Assertions.assertNotNull(kuchen);
     }
 

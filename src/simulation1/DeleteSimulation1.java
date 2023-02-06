@@ -1,5 +1,7 @@
 package simulation1;
 
+import geschaeftslogik.IKuchen;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
@@ -13,7 +15,6 @@ public class DeleteSimulation1 extends Thread implements Runnable {
         this.monitor = monitor;
     }
 
-
     @Override
     public void run() {
         deleteKuchenSimulation();
@@ -21,7 +22,7 @@ public class DeleteSimulation1 extends Thread implements Runnable {
 
     public boolean deleteKuchenSimulation(){
         synchronized (this.monitor){
-            for(Kuchen kuchen: this.model.readKuchen()){
+            for(DekoKuchen kuchen: this.model.readKuchen()){
                 int fachnummer = kuchen.getFachnummer();
                 boolean result = this.model.deleteKuchen(fachnummer);
                 if(result){

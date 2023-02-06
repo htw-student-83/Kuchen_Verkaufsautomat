@@ -1,6 +1,8 @@
 package vertrag;
 
-public interface Subjekt {
+import java.util.Date;
+
+public interface ISubjekt {
 
     /**
      * Registriert den Beobachter.
@@ -23,7 +25,7 @@ public interface Subjekt {
 
     void setZustandHerstellerliste(int neuerHersteller);
 
-
+    Date gibInspektion();
 
     /**
      * Gibt den aktuellen Zustand zurueck

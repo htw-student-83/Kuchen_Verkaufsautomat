@@ -1,7 +1,7 @@
 package geschaeftslogik.verkaufsobjekt;
 
-import geschaeftslogik.dekoratorpatter.componente.Kuchenboden;
-import geschaeftslogik.dekoratorpatter.componente.Kuchenbelag;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenboden;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
 import vertrag.Allergene;
 import vertrag.Hersteller;
 import vertrag.Obsttorte;

@@ -1,37 +1,34 @@
-package geschaeftslogik.dekoratorpatter.dekorator;
+package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Kuchenbestandteile;
-import geschaeftslogik.dekoratorpatter.componente.Kuchenbelag;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
 import vertrag.Allergene;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class Apfel extends Kuchenbelag {
-    String name  = "Apfel";
-    BigDecimal preis = BigDecimal.valueOf(1.55);
+public class Sahne extends Kuchenbelag implements Serializable {
+    String name = "Sahne";
+    BigDecimal preis = BigDecimal.valueOf(2.44);
     Duration haltbarkeit = Duration.ofDays(3);
-    //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
     Set<Allergene> allergene = new HashSet<>();
-    int naehrwert = 140;
+    int naehrwert = 200;
 
-
-    public Apfel(Kuchenbestandteile bestandteil) {
+    public Sahne(Kuchenbestandteile bestandteil) {
         super(bestandteil);
     }
 
-    //public Apfel(Kuchenbelag belag) {super(belag);}
-
     @Override
     public String getName() {
-        return super.getName() + ", " +  this.name;
+        return super.getName() + ", " + this.name;
     }
 
+    @Override
     public Duration gethaltbarkeit() {
-        if(super.gethaltbarkeit().compareTo(this.haltbarkeit)<0){
+        if(super.gethaltbarkeit().compareTo(this.haltbarkeit) < 0){
             return super.gethaltbarkeit();
         }
         return this.haltbarkeit;
@@ -45,10 +42,12 @@ public class Apfel extends Kuchenbelag {
         return allergene;
     }
 
+    @Override
     public int getNaehrwert() {
         return super.getNaehrwert() + this.naehrwert;
     }
 
+    @Override
     public BigDecimal getPreis() {
         return super.getPreis().add(this.preis);
     }

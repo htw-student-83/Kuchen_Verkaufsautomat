@@ -1,24 +1,25 @@
-package geschaeftslogik.dekoratorpatter.dekorator;
+package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Kuchenbestandteile;
-import geschaeftslogik.dekoratorpatter.componente.Kuchenbelag;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
 import vertrag.Allergene;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Kirsche extends Kuchenbelag {
+public class Pudding extends Kuchenbelag implements Serializable {
+
+    String name = "Pudding";
+    BigDecimal preis = BigDecimal.valueOf(4.10);
+    Duration haltbarkeit = Duration.ofDays(6);
     Set<Allergene> allergene = new HashSet<>();
-    String name = "Kirsche";
-    BigDecimal preis = BigDecimal.valueOf(3.10);
-    Duration haltbarkeit = Duration.ofDays(2);
-
-    //TODO sollen die vorgebenen Allergene benutzt werden oder gehen auch andere?
-    int naehrwert = 216;
+    int naehrwert = 235;
 
 
-    public Kirsche(Kuchenbestandteile bestandteil) {
+    public Pudding(Kuchenbestandteile bestandteil) {
         super(bestandteil);
     }
 
@@ -33,10 +34,11 @@ public class Kirsche extends Kuchenbelag {
         return this.haltbarkeit;
     }
 
+
     public Set<Allergene> getAllergen() {
         allergene.addAll(super.getAllergen());
         allergene.add(Allergene.Gluten);
-        allergene.add(Allergene.Erdnuss);
+        allergene.add(Allergene.Sesamsamen);
         return allergene;
     }
 

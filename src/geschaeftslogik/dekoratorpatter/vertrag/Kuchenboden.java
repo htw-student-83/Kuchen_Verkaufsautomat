@@ -1,4 +1,4 @@
-package geschaeftslogik.dekoratorpatter.componente;
+package geschaeftslogik.dekoratorpatter.vertrag;
 
 import geschaeftslogik.Hersteller;
 

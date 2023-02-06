@@ -2,6 +2,7 @@ package streamtest;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import jbp.ObjektSpeicherungJBP;
 import jos.ObjektLadenJOS;
@@ -14,6 +15,7 @@ import vertrag.Allergene;
 import java.io.*;
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -40,9 +42,8 @@ public class SpeicherTest {
 
     @Test
     @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
-    public void automatenSpeichern2(){
-        model = new Verwaltung();
-        model.setKapazitaet(1);
+    public void automatenSpeichern(){
+        model = new Verwaltung(1);
         Hersteller hersteller1 = new Hersteller("hersteller1");
         allergeneSet = new HashSet<>();
         allergeneSet.add(Allergene.Gluten);
@@ -50,7 +51,17 @@ public class SpeicherTest {
         model.insertHersteller(hersteller1);
         model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
                 Duration.ofDays(23), allergeneSet, "","Butter");
-        ObjektSpeicherungJBP.persistiereAutomaten();
-        fail();
+        ObjektSpeicherungJOS.persistiereAutomaten(model, "automaten.txt");
     }
+
+/*
+    @Test
+    @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
+    public void automatenzustandLaden(){
+        this.model = ObjektLadenJOS.reloadAutomt();
+        List<Kuchen> kuchen = this.model.readKuchen();
+
+    }
+ */
+
 }

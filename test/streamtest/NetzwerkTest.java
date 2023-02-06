@@ -1,9 +1,11 @@
 package streamtest;
 
+import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import netzwerk.tcp.Kuchenautomat_Server_TCP;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import vertrag.Verkaufsobjekt;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,7 +18,8 @@ public class NetzwerkTest {
     @DisplayName("Stellvertretertest für's Einfügen eines Kuchens")
     public void insertKuchen() throws IOException {
         Socket serversocket = mock(Socket.class);
-        Kuchenautomat_Server_TCP server = new Kuchenautomat_Server_TCP(serversocket,3);
+        Verwaltung model = new Verwaltung(3);
+        Kuchenautomat_Server_TCP server = new Kuchenautomat_Server_TCP(serversocket,model);
         ByteArrayOutputStream bos = new ByteArrayOutputStream(14);
         DataOutputStream dos = new DataOutputStream(bos);
         dos.writeUTF("Test1");

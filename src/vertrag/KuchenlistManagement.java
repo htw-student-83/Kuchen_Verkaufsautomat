@@ -1,7 +1,9 @@
 package vertrag;
 
 import geschaeftslogik.Hersteller;
+import geschaeftslogik.IKuchen;
 import geschaeftslogik.Kuchentyp;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 
 import java.time.Duration;
@@ -38,7 +40,7 @@ public interface KuchenlistManagement {
      * Gibt vorhandene Kuchen aus.
      * @return Liste von Kuchen
      */
-    List<Kuchen> readKuchen();
+    List<DekoKuchen> readKuchen();
 
     /**
      * Gibt vorhandene Kuchen eines bestimmtes Typs aus.

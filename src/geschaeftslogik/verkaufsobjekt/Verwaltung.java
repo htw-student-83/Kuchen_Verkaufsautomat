@@ -1,8 +1,8 @@
 package geschaeftslogik.verkaufsobjekt;
 
 import geschaeftslogik.*;
-import geschaeftslogik.dekoratorpatter.dekorator.Muerbeteig;
-import geschaeftslogik.dekoratorpatter.dekorator.*;
+import geschaeftslogik.dekoratorpatter.dekorator_implementierung.Muerbeteig;
+import geschaeftslogik.dekoratorpatter.dekorator_implementierung.*;
 import vertrag.Allergene;
 import vertrag.KuchenlistManagement;
 import java.io.Serializable;
@@ -14,17 +14,22 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     Kuchenautomat automat = new Kuchenautomat();
     private int currentFachnummer = 0;
     List<Kuchen> kuchenliste = new ArrayList<>();
-
-    List<IKuchen> kuchenliste2 = new ArrayList<>();
+    List<DekoKuchen> kuchenliste2 = new ArrayList<>();
     Set<Hersteller> herstellerset = new HashSet<>();
     Set<Allergene> allergenset = new HashSet<>();
     ArrayList<Kuchenbestandteile> belagliste = new ArrayList<>();
 
+    public Verwaltung(int limit){
+        setAutomatenLimit(limit);
+    }
+
+    public Verwaltung(){}
+
     //Quelle: chatGPT
-    public boolean insetKuchen2(String kuchenboden, Hersteller hersteller, String... kuchenbelag){
+    public boolean insertKuchen2(String kuchenboden, Hersteller hersteller, String... kuchenbelag){
         if(checkTablehersteller(hersteller) == HerstellerStatus.Hersteller_bekannt && isNotFull()) {
-            //TODO alle wesentlichen Prüfungen, Hersteller bekannt genug Kapazität vorhanden!
-            IKuchen kuchen;
+            //TODO alle wesentlichen Prüfungen, Hersteller bekannt und genug Kapazität vorhanden!
+            DekoKuchen kuchen = null;
             Kuchenbestandteile boden = null;
             Kuchenbestandteile kBelag = null;
 
@@ -68,16 +73,21 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
                     }
                 }
             }
-
-            //TODO Wie kann ein Kuchen mit seinen bereits erzeugten Bestandteilen angelegt werden?
             kuchen = new DekoKuchen(boden, hersteller, belagliste);
             kuchen.setFachnummer(getCurrentFachnummerAndIncrement());
             kuchen.setEinfuegedatum(getDatum());
             automat.boxincrement();
             kuchenliste2.add(kuchen);
+            this.setChanged();
+            this.notifyObservers();
             return true;
             }
         return false;
+    }
+
+
+    protected void setAutomatenLimit(int newLimit){
+        this.automat.setKapazitaet(newLimit);
     }
 
 
@@ -129,7 +139,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
             this.notifyObservers();
             return true;
         }
-        this.notifyObservers();
         return false;
     }
 
@@ -176,9 +185,9 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
 
     @Override
-    public List<Kuchen> readKuchen() {
+    public List<DekoKuchen> readKuchen() {
         this.notifyObservers();
-        return this.kuchenliste;
+        return this.kuchenliste2;
     }
 
 
@@ -190,36 +199,35 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
 
     public int getHerstellerSetSize (){
-        this.notifyObservers();
         return this.herstellerset.size();
     }
 
 
     public int getKuchenlisteSize (){
-        this.notifyObservers();
         return this.kuchenliste.size();
     }
 
     public int getKuchenlisteSize2 (){
-        this.notifyObservers();
         return this.kuchenliste2.size();
     }
 
     public int getAllergenenSetSize (){
-        this.notifyObservers();
         return this.allergenset.size();
     }
 
 
 
     //TODO überarbeiten?
-    public List<Kuchen> readKuchen(List<Kuchen> kuchen, String typ){
-        List<Kuchen> gefiltertekuchenliste = new ArrayList<>();
+    public List<DekoKuchen> readKuchen(List<DekoKuchen> kuchen, String typ){
+        List<DekoKuchen> gefiltertekuchenliste = new ArrayList<>();
         if(typ.length()!=0) {
-            for (Kuchen kuchenelement : kuchen) {
+            for (DekoKuchen kuchenelement : kuchen) {
+               /*
                 if (kuchenelement.getTyp().equals(typ)) {
                     gefiltertekuchenliste.add(kuchenelement);
                 }
+
+                */
             }
         }
         this.notifyObservers();
@@ -227,11 +235,11 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
    }
 
     @Override
-
     public boolean editKuchen(int fachnummer) {
-        for (Kuchen kuchen: this.kuchenliste) {
+        //TODO Wie kann die Methode richtig gesetzt werden, wenn diese im Interface vorkommt?
+        for (DekoKuchen kuchen: this.kuchenliste2) {
             if (kuchen.getFachnummer() == fachnummer) {
-                kuchen.setInspektionsdatum(getInspektion());
+                kuchen.setInspektion(getInspektion());
                 this.setChanged();
                 this.notifyObservers();
                 return true;
@@ -244,13 +252,13 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
     @Override
     public boolean deleteKuchen(int fachnummer){
-        if(kuchenliste.isEmpty()){
+        if(kuchenliste2.isEmpty()){
             this.notifyObservers();
             return false;
         }
-        for(Kuchen kuchen: this.kuchenliste) {
+        for(DekoKuchen kuchen: this.kuchenliste2) {
             if(kuchen.getFachnummer() == fachnummer){
-                kuchenliste.remove(kuchen);
+                kuchenliste2.remove(kuchen);
                 automat.boxdecrement();
                 this.setChanged();
                 this.notifyObservers();
@@ -283,13 +291,12 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         return getDatum();
     }
 
+    public int getKapazity (){
+       return this.automat.getKapazity();
+    }
 
     protected boolean isNotFull(){
         return automat.getAnzahlbelegteFaecher()<automat.getKapazity();
-    }
-
-    public void setKapazitaet(int newKapazitaet){
-        this.automat.setKapazitaet(newKapazitaet);
     }
 
     //Quelle: https://www.delftstack.com/de/howto/java/how-to-get-the-current-date-time-in-java/

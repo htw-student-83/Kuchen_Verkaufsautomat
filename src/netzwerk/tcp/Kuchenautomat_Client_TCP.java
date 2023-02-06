@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class Kuchenautomat_Client_TCP {
     Scanner scanner = new Scanner(System.in);
 
-
     public static void main(String[] args) throws IOException {
         Kuchenautomat_Client_TCP clientTCP = new Kuchenautomat_Client_TCP();
         clientTCP.startClient();
@@ -45,8 +44,6 @@ public class Kuchenautomat_Client_TCP {
     private void einfuegeprozessClient(DataInputStream in, DataOutputStream out) throws IOException {
         String herstellername = scanner.nextLine();
         out.writeUTF(herstellername);
-        //System.out.println("Kuchen einfügen nach der Syntax: ");
-        //System.out.println("[Kuchenboden][Herstellername][[Belag]]*");
         String kuchendaten = scanner.nextLine();
         while (!(kuchendaten.equals(":u") || kuchendaten.equals(":r") ||
                 kuchendaten.equals(":d") || kuchendaten.equals(":p"))) {
@@ -132,13 +129,14 @@ public class Kuchenautomat_Client_TCP {
 
 
     private void anzeigemodusClient(DataOutputStream out, DataInputStream in) throws IOException {
-        String objektdaten = "";
         String daten = scanner.nextLine();
+        out.writeUTF(daten);
         while (!(daten.equals(":c") || daten.equals(":d") ||
-                daten.equals(":u") || daten.equals(":p")) ){
-            out.writeUTF(daten);
-            while ((objektdaten = in.readLine())!=null){
+                daten.equals(":u") || daten.equals(":p"))) {
+            String objektdaten = in.readLine();
+            while (in.available()>0) {
                 System.out.println(objektdaten);
+                objektdaten = in.readLine();
             }
             daten = scanner.nextLine();
             switch (daten) {
@@ -146,7 +144,7 @@ public class Kuchenautomat_Client_TCP {
                     out.writeUTF(daten);
                     einfuegeprozessClient(in, out);
                 }
-                case ":r" -> {
+                case ":u" -> {
                     out.writeUTF(daten);
                     aenderungsmodusClient(in, out);
                 }

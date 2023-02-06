@@ -1,22 +1,22 @@
-package geschaeftslogik.dekoratorpatter.dekorator;
+package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchenbestandteile;
-import geschaeftslogik.dekoratorpatter.componente.Kuchenboden;
+import geschaeftslogik.dekoratorpatter.vertrag.Kuchenboden;
 import vertrag.Allergene;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Muerbeteig extends Kuchenboden implements Kuchenbestandteile {
+public class Muerbeteig extends Kuchenboden implements Kuchenbestandteile, Serializable {
 
     String name  = "Muerbeteig";
     BigDecimal preis = BigDecimal.valueOf(2.55);
-    Duration haltbarkeit = Duration.ofDays(3);
-    //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
-    Allergene[] allergen = {Allergene.Sesamsamen};
+    Duration haltbarkeit = Duration.ofDays(7);
     Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 140;
 

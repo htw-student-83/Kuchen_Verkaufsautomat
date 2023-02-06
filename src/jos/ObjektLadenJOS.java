@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 public class ObjektLadenJOS {
-    static String filenameAutomat = "automaten.txt";
-    public static Verwaltung reloadAutomt() {
-        try (FileInputStream inputStream =new FileInputStream(filenameAutomat)){
+    public static Verwaltung reloadAutomt(String filename) {
+        try (FileInputStream inputStream =new FileInputStream(filename)){
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
             return (Verwaltung) objectInputStream.readObject();
         } catch (IOException e) {

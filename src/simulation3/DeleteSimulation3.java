@@ -1,6 +1,6 @@
 package simulation3;
 
-import geschaeftslogik.verkaufsobjekt.Kuchen;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import java.text.ParseException;
 import java.util.Date;
@@ -71,18 +71,19 @@ public class DeleteSimulation3 implements Runnable {
     public int fachnummerAeltesterKuchen(){
         int fachnummer = 0;
         long juengereinspektionszeit = 0;
-        for (Kuchen kuchen : this.model.readKuchen()){
-            insertDate = kuchen.getInspektionsdatum();
-            System.out.println("Inspektionsdatum: " + insertDate);
-            juengereinspektionszeit = insertDate.getTime();
+        for (DekoKuchen kuchen : this.model.readKuchen()){
+            System.out.println("Erhaltene Inspektion: " + kuchen.getInspektionsdatum());
+            this.insertDate = kuchen.getInspektionsdatum();
+            System.out.println("Inspektionsdatum: " + this.insertDate);
+            juengereinspektionszeit = this.insertDate.getTime();
             if (aeltesteinspektionzeit == 0) {
                 aeltesteinspektionzeit = juengereinspektionszeit;
-                aeltesteZeitDate = insertDate;
+                aeltesteZeitDate = this.insertDate;
                 fachnummer = kuchen.getFachnummer();
             } else {
                 if (aeltesteinspektionzeit > juengereinspektionszeit) {
                     aeltesteinspektionzeit = juengereinspektionszeit;
-                    aeltesteZeitDate = insertDate;
+                    aeltesteZeitDate = this.insertDate;
                     fachnummer = kuchen.getFachnummer();
                 }
             }

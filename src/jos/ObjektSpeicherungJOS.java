@@ -6,10 +6,11 @@ import java.io.*;
 
 public class ObjektSpeicherungJOS {
 
-    static String filenameAutomat = "automaten.txt";
-
-    public static void persistiereAutomaten(Verwaltung model){
-        try (FileOutputStream fous=new FileOutputStream(filenameAutomat)){
+    //Von außen muss noch die Info des Speicherplatzes erfolgen
+    //Quelle chatGPT
+    public static void persistiereAutomaten(Verwaltung model, String filename) {
+        //TODO wenn nicht über das Netzwerk, wie können über Stream Daten übertragen werden?
+        try (OutputStream fous=new FileOutputStream(filename)){
             ObjectOutputStream outputStream = new ObjectOutputStream(fous);{
                 outputStream.writeObject(model);
             }
@@ -17,6 +18,5 @@ public class ObjektSpeicherungJOS {
             e.printStackTrace();
         }
     }
-
 
 }
