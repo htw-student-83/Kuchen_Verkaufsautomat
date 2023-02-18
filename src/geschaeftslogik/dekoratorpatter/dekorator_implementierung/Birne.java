@@ -2,6 +2,7 @@ package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Kuchenbestandteile;
 import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import vertrag.Allergene;
 
 import java.io.Serializable;
@@ -17,7 +18,6 @@ public class Birne extends Kuchenbelag implements Serializable {
     //TODO sollen die vorgebenen ALlergene benutzt werden oder gehen auch andere?
     Set<Allergene> allergene = new HashSet<>();
     int naehrwert = 306;
-
 
     public Birne(Kuchenbestandteile bestandteil) {
         super(bestandteil);

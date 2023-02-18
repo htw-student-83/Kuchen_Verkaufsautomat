@@ -13,4 +13,5 @@ public class AnzeigenHerstellerEvent implements EventListener {
     public void run(KuchenEvent event) {
         this.handler.distribute(event);
     }
+
 }

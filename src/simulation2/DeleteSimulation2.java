@@ -52,7 +52,7 @@ public class DeleteSimulation2 extends Thread implements Runnable {
     public void aeltestesInspektionsdatum(){
         int fachnummer = 0;
         long juengereinspektionszeit = 0;
-        for(DekoKuchen kuchen: this.model.readKuchen()){
+        for(Kuchen kuchen: this.model.readKuchen()){
             Date insertDate = kuchen.getInspektionsdatum();
             System.out.println("Inspektionsdatum: " + insertDate);
             juengereinspektionszeit = insertDate.getTime();

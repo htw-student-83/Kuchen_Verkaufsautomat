@@ -14,38 +14,35 @@ public class Beobachter implements Observer {
 
     public Beobachter(Verwaltung model) {
         this.model = model;
-        this.bekannteListengroesseKuchen = this.model.getKuchenlisteSize2();
-        this.bekannteSetgroesseHersteller = this.model.getHerstellerSetSize();
+  //      this.bekannteListengroesseKuchen = this.model.getKuchenlisteSize2();
+    //    this.bekannteSetgroesseHersteller = this.model.getHerstellerSetSize();
         this.bekannteSetgroesseAllergene = this.model.getAllergenenSetSize();
         this.kapazity = this.model.getKapazity();
     }
 
     @Override
     public void update(Observable o, Object arg) {
+
         if(bekannteListengroesseKuchen != this.model.getKuchenlisteSize2()){
             bekannteListengroesseKuchen = this.model.getKuchenlisteSize2();
-            System.out.println("In der Kuchenliste hat sich etwas verändert.");
+            //System.out.println("In der Kuchenliste hat sich etwas verändert.");
         }
-
+/*s
         if(bekannteSetgroesseHersteller != this.model.getHerstellerSetSize()){
             bekannteSetgroesseHersteller = this.model.getHerstellerSetSize();
             System.out.println("Im Herstellerset hat sich etwas verändert.");
         }
-
-
-        if(bekannteSetgroesseAllergene != this.model.getAllergenenSetSize()){
-            System.out.println("Im Allergenenset hat sich etwas verändert.");
-        }
-
+ */
 
         if(bekannteSetgroesseAllergene != this.model.getAllergenenSetSize()){
+            bekannteSetgroesseAllergene = this.model.getAllergenenSetSize();
             System.out.println("Im Allergenenset hat sich etwas verändert.");
         }
 
 
         // - Prozentualer Anteil der Kuchen in der Liste ermitteln
         if(this.bekannteListengroesseKuchen >= (this.model.getKapazity()*0.9)){
-            System.out.println("Jetzt sind 90% der Kapazität erreicht.");
+            System.out.println("Jetzt sind mehr als 90% der Kapazität erreicht.");
         }
     }
 }

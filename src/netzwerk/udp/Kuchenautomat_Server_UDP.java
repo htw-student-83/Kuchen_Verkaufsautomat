@@ -2,6 +2,7 @@ package netzwerk.udp;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.verkaufsobjekt.DekoKuchen;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import jbp.ObjektLadenJBP;
 import jbp.ObjektSpeicherungJBP;
@@ -224,7 +225,7 @@ public class Kuchenautomat_Server_UDP {
         System.out.println("Der aktuelle Zustand des Automaten wird geladen...");
         this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
         if(this.model!=null){
-            for(DekoKuchen kuchen: this.model.readKuchen()){
+            for(Kuchen kuchen: this.model.readKuchen()){
                 String id = String.valueOf(kuchen.getFachnummer());
                 String naehrwert = String.valueOf(kuchen.getNaehrwert());
                 String preis = String.valueOf(kuchen.getPreis());
@@ -279,7 +280,7 @@ public class Kuchenautomat_Server_UDP {
     protected void kuchendaten() throws IOException {
         System.out.println("Kuchendaten lesen");
         byte[] kuchendatenInBytes;
-            for(DekoKuchen kuchen: this.model.readKuchen()) {
+            for(Kuchen kuchen: this.model.readKuchen()) {
                 String id = String.valueOf(kuchen.getFachnummer());
                 String naehrwert = String.valueOf(kuchen.getNaehrwert());
                 String preis = String.valueOf(kuchen.getPreis());
@@ -293,9 +294,13 @@ public class Kuchenautomat_Server_UDP {
                         packetIn.getPort());
                 this.socket.send(packetOut);
             }
-            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            System.out.println("Test");
+            DatagramPacket packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            System.out.println("Test0");
             this.socket.receive(packetIn);
-            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
+            String received = dis.readUTF();
+            System.out.println(received);
             switch (received){
                 case "hersteller":
                     herstellerdaten();
@@ -307,6 +312,7 @@ public class Kuchenautomat_Server_UDP {
                     kuchenEinfuegen();
                     break;
                 case ":u":
+                    System.out.println(":u");
                     inspizierung();
                     break;
                 case ":d":
@@ -441,8 +447,9 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
-    protected void automatenspeichernMitJBP() {
-        ObjektSpeicherungJBP.persistiereAutomaten(this.model, "automaten.xml");
+    protected void automatenspeichernMitJBP() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.xml");
+        ObjektSpeicherungJBP.persistiereAutomaten(this.model, os);
     }
 
     public void automatenzustandmitJBPLaden() {

@@ -42,7 +42,8 @@ public class SpeicherTest {
 
     @Test
     @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
-    public void automatenSpeichern(){
+    public void automatenSpeichern() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.txt");
         model = new Verwaltung(1);
         Hersteller hersteller1 = new Hersteller("hersteller1");
         allergeneSet = new HashSet<>();
@@ -51,7 +52,7 @@ public class SpeicherTest {
         model.insertHersteller(hersteller1);
         model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
                 Duration.ofDays(23), allergeneSet, "","Butter");
-        ObjektSpeicherungJOS.persistiereAutomaten(model, "automaten.txt");
+        ObjektSpeicherungJBP.persistiereAutomaten(model, os);
     }
 
 /*

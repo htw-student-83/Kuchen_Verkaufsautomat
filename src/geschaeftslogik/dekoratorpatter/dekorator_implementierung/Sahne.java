@@ -2,6 +2,7 @@ package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Kuchenbestandteile;
 import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import vertrag.Allergene;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Sahne extends Kuchenbelag implements Serializable {
+
     String name = "Sahne";
     BigDecimal preis = BigDecimal.valueOf(2.44);
     Duration haltbarkeit = Duration.ofDays(3);

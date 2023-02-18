@@ -17,4 +17,5 @@ public class EditKuchenListener implements EventListener {
     public void run(KuchenEvent event) {
         this.model.editKuchen(event.getkuchenfachnummer());
     }
+
 }

@@ -2,6 +2,7 @@ package netzwerk.tcp;
 
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.verkaufsobjekt.DekoKuchen;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
@@ -137,12 +138,12 @@ public class Kuchenautomat_Server_TCP implements Runnable{
         String input = userinput;
         while (!(input.equals(":c") || input.equals(":d") ||
                 input.equals(":u") || input.equals(":r"))){
-            for (DekoKuchen kuchen : this.model.readKuchen()) {
+            for (Kuchen kuchen : this.model.readKuchen()) {
                 String kuchenID = String.valueOf(kuchen.getFachnummer());
                 Date eDate = kuchen.getEinfuegedatum();
                 String edate = dateFormat.format(eDate);
                 Date iDate = kuchen.getInspektionsdatum();
-                Hersteller herstellername = kuchen.getHerstellername();
+                Hersteller herstellername = (Hersteller) kuchen.getHersteller();
                 if(iDate == null){
                     Date inspektion = null;
                     outP.println(" \nKuchenID: " + kuchenID + "\nEinfuegedatum: " + edate +
@@ -274,7 +275,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
         while (persistierungsbefehl.equals("loadJOS")){
            this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
            if (this.model != null) {
-               for (DekoKuchen kuchen : this.model.readKuchen()) {
+               for (Kuchen kuchen : this.model.readKuchen()) {
                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                    String fachnummer = String.valueOf(kuchen.getFachnummer());
                    Date eDate = kuchen.getEinfuegedatum();

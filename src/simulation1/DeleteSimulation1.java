@@ -22,7 +22,7 @@ public class DeleteSimulation1 extends Thread implements Runnable {
 
     public boolean deleteKuchenSimulation(){
         synchronized (this.monitor){
-            for(DekoKuchen kuchen: this.model.readKuchen()){
+            for(Kuchen kuchen: this.model.readKuchen()){
                 int fachnummer = kuchen.getFachnummer();
                 boolean result = this.model.deleteKuchen(fachnummer);
                 if(result){

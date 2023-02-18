@@ -40,7 +40,7 @@ public interface KuchenlistManagement {
      * Gibt vorhandene Kuchen aus.
      * @return Liste von Kuchen
      */
-    List<DekoKuchen> readKuchen();
+    List<Kuchen> readKuchen();
 
     /**
      * Gibt vorhandene Kuchen eines bestimmtes Typs aus.

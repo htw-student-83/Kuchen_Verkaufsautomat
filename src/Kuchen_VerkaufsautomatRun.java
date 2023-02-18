@@ -1,8 +1,6 @@
 import eventsystem.controller.EventListener;
 import eventsystem.handler.Handler;
-import eventsystem.listener.InfoListener;
-import eventsystem.listener.InsertHerstellerListener;
-import eventsystem.listener.InsertKuchenListener;
+import eventsystem.listener.*;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import netzwerk.tcp.Kuchenautomat_Server_TCP;
 import netzwerk.udp.Kuchenautomat_Server_UDP;
@@ -23,6 +21,12 @@ public class Kuchen_VerkaufsautomatRun {
     }
 
     public void startAutomat(Verwaltung model, String netzwerk) throws IOException {
+        Handler handlerInsertHersteller = null;
+        Handler handlerInsertKuchen = null;
+        Handler handlerHerstellerloeschen = null;
+        Handler handlerKuchenloeschen = null;
+        Handler handlerEditKuchen = null;
+
         switch (netzwerk){
             case "UDP":
                 DatagramSocket datagramSocket = new DatagramSocket(5001);
@@ -45,20 +49,37 @@ public class Kuchen_VerkaufsautomatRun {
                 Beobachter beobachter = new Beobachter(model);
                 model.addObserver(beobachter);
 
-                Handler handlerforHersteller = new Handler();
+                handlerInsertHersteller = new Handler();
                 EventListener listenerInsertHersteller = new InsertHerstellerListener(model);
                 EventListener infoListener = new InfoListener();
+                handlerInsertHersteller.add(listenerInsertHersteller);
+                handlerInsertHersteller.add(infoListener);
+                cli.setInsertHerstellerHandler(handlerInsertHersteller);
 
-                handlerforHersteller.add(listenerInsertHersteller);
-                handlerforHersteller.add(infoListener);
-                cli.setInsertHerstellerHandler(handlerforHersteller);
-
-                Handler handlerforKuchen = new Handler();
+                handlerInsertKuchen = new Handler();
                 EventListener listenerInsertKuchen = new InsertKuchenListener(model);
-                handlerforKuchen.add(listenerInsertKuchen);
-                handlerforKuchen.add(infoListener);
-                cli.setInsertHerstellerHandler(handlerforHersteller);
-                cli.setInsertKuchenHandler(handlerforKuchen);
+                handlerInsertKuchen.add(listenerInsertKuchen);
+                handlerInsertKuchen.add(infoListener);
+                cli.setInsertKuchenHandler(handlerInsertKuchen);
+
+                handlerHerstellerloeschen = new Handler();
+                EventListener listenerDeleteHersteller = new DeleteHerstellerListener(model);
+                handlerHerstellerloeschen.add(listenerDeleteHersteller);
+                handlerHerstellerloeschen.add(infoListener);
+                cli.setDeleteHerstellerHandler(handlerHerstellerloeschen);
+
+                handlerKuchenloeschen = new Handler();
+                EventListener listenerDeleteKuchen = new DeleteKuchenListener(model);
+                handlerKuchenloeschen.add(listenerDeleteKuchen);
+                handlerKuchenloeschen.add(infoListener);
+                cli.setDeleteKuchenHandler(handlerKuchenloeschen);
+
+                handlerEditKuchen = new Handler();
+                EventListener listenerEditKuchen = new EditKuchenListener(model);
+                handlerEditKuchen.add(listenerEditKuchen);
+                handlerEditKuchen.add(infoListener);
+                cli.setEditKuchenHandler(handlerEditKuchen);
+
                 cli.startCLI();
         }
     }

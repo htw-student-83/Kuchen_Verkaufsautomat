@@ -13,4 +13,5 @@ public class KuchenInspizierenEvent implements EventListener {
     public void run(KuchenEvent event) {
         this.handler.distribute(event);
     }
+
 }

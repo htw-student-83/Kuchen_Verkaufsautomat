@@ -2,6 +2,7 @@ package geschaeftslogik.dekoratorpatter.dekorator_implementierung;
 
 import geschaeftslogik.Kuchenbestandteile;
 import geschaeftslogik.dekoratorpatter.vertrag.Kuchenbelag;
+import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import vertrag.Allergene;
 
 import java.io.Serializable;

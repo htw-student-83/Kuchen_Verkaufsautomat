@@ -28,7 +28,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     //Quelle: chatGPT
     public boolean insertKuchen2(String kuchenboden, Hersteller hersteller, String... kuchenbelag){
         if(checkTablehersteller(hersteller) == HerstellerStatus.Hersteller_bekannt && isNotFull()) {
-            //TODO alle wesentlichen Prüfungen, Hersteller bekannt und genug Kapazität vorhanden!
             DekoKuchen kuchen = null;
             Kuchenbestandteile boden = null;
             Kuchenbestandteile kBelag = null;
@@ -36,10 +35,14 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
             switch (kuchenboden) {
                 case "Hefeteig" -> {
                     boden = new Hefeteig(hersteller);
+                    this.setChanged();
+                    this.notifyObservers();
                     break;
                 }
                 case "Muerbeteig" -> {
                     boden = new Muerbeteig(hersteller);
+                    this.setChanged();
+                    this.notifyObservers();
                     break;
                 }
             }
@@ -49,26 +52,36 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
                     case "Kirsche" -> {
                         kBelag = new Kirsche(boden);
                         belagliste.add(kBelag);
+                        this.setChanged();
+                        this.notifyObservers();
                         break;
                     }
                     case "Birne" -> {
                         kBelag = new Birne(boden);
                         belagliste.add(kBelag);
+                        this.setChanged();
+                        this.notifyObservers();
                         break;
                     }
                     case "Apfel" -> {
                         kBelag = new Apfel(boden);
                         belagliste.add(kBelag);
+                        this.setChanged();
+                        this.notifyObservers();
                         break;
                     }
                     case "Pudding" -> {
                         kBelag = new Pudding(boden);
                         belagliste.add(kBelag);
+                        this.setChanged();
+                        this.notifyObservers();
                         break;
                     }
                     case "Sahne" -> {
                         kBelag = new Sahne(boden);
                         belagliste.add(kBelag);
+                        this.setChanged();
+                        this.notifyObservers();
                         break;
                     }
                 }
@@ -84,7 +97,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
             }
         return false;
     }
-
 
     protected void setAutomatenLimit(int newLimit){
         this.automat.setKapazitaet(newLimit);
@@ -143,7 +155,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     }
 
 
-    //TODO Wie kann geprüft werden, ob es im Set bereits Elemente gibt?
     private HerstellerStatus checkTablehersteller(Hersteller herstellername){
         if(herstellerset.contains(herstellername)) {
             this.notifyObservers();
@@ -154,14 +165,22 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     }
 
 
+    //TODO Es werden nicht sofort angegebene Allergene ins Set aufgenommen.
     @Override
     public boolean insertAllergen(Set<Allergene> allergene) {
+        int setSize = allergene.size();
+        //TODO Installieren einer Laufvariablen, die bei jedem Schritt im Set mitzählt
+        //wenn diese Variable die Größe des Sets erreicht hat, soll true ausgegeben werden
+        int groesseAllergenSet = 0;
         for(Allergene allergen: allergene){
             if(checkTableAllergene(allergen)== AllergenStatus.Allergen_unbekannt){
                 allergenset.add(allergen);
+                groesseAllergenSet++;
                 this.setChanged();
                 this.notifyObservers();
-                return true;
+                if(groesseAllergenSet == setSize){
+                    return true;
+                }
             }
         }
         this.notifyObservers();
@@ -185,9 +204,9 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
 
     @Override
-    public List<DekoKuchen> readKuchen() {
+    public List<Kuchen> readKuchen() {
         this.notifyObservers();
-        return this.kuchenliste2;
+        return this.kuchenliste;
     }
 
 
@@ -201,7 +220,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     public int getHerstellerSetSize (){
         return this.herstellerset.size();
     }
-
 
     public int getKuchenlisteSize (){
         return this.kuchenliste.size();
@@ -218,8 +236,8 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
 
     //TODO überarbeiten?
-    public List<DekoKuchen> readKuchen(List<DekoKuchen> kuchen, String typ){
-        List<DekoKuchen> gefiltertekuchenliste = new ArrayList<>();
+    public List<Kuchen> readKuchen(List<DekoKuchen> kuchen, String typ){
+        List<Kuchen> gefiltertekuchenliste = new ArrayList<>();
         if(typ.length()!=0) {
             for (DekoKuchen kuchenelement : kuchen) {
                /*
@@ -237,9 +255,9 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     @Override
     public boolean editKuchen(int fachnummer) {
         //TODO Wie kann die Methode richtig gesetzt werden, wenn diese im Interface vorkommt?
-        for (DekoKuchen kuchen: this.kuchenliste2) {
+        for (Kuchen kuchen: this.kuchenliste) {
             if (kuchen.getFachnummer() == fachnummer) {
-                kuchen.setInspektion(getInspektion());
+                kuchen.setInspektionsdatum(getInspektion());
                 this.setChanged();
                 this.notifyObservers();
                 return true;

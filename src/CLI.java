@@ -2,13 +2,17 @@ import eventsystem.controller.KuchenEvent;
 import eventsystem.handler.Handler;
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.DekoKuchen;
+import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import jbp.ObjektLadenJBP;
 import jbp.ObjektSpeicherungJBP;
 import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.time.Duration;
 import java.util.*;
 
@@ -20,8 +24,8 @@ public class CLI {
     Set<Allergene> newallergeneSet = new HashSet<>();
     private KuchenEvent event = null;
     private Handler insertHerstellerHandler, insertKuchenHandler, editKuchenHandler, anzeigeKuchenHandler,
-            anzeigeHerstellerHandler, anzeigeAllergeneHandler, speichernAutomatenHandler,
-            ladenAutomatenHandler, deleteHerstellerHandler, deleteKuchenHandler;
+                     anzeigeHerstellerHandler, anzeigeAllergeneHandler, speichernAutomatenHandler,
+                     ladenAutomatenHandler, deleteHerstellerHandler, deleteKuchenHandler;
 
     private static final String EINFUEGEN = ":c";
     private static final String LOESCHEN = ":d";
@@ -29,11 +33,14 @@ public class CLI {
     private static final String ANZEIGEN = ":r";
     private static final String PERSISTIEREN = ":p";
 
+
     public CLI(Verwaltung model) {
         this.model = model;
     }
 
-    public void setInsertHerstellerHandler(Handler handler) { this.insertHerstellerHandler = handler; }
+    public void setInsertHerstellerHandler(Handler handler) {
+        this.insertHerstellerHandler = handler;
+    }
 
     public void setInsertKuchenHandler(Handler handler) {
         this.insertKuchenHandler = handler;
@@ -72,21 +79,41 @@ public class CLI {
     }
 
 
-    public void startCLI() {
+    public void startCLI() throws FileNotFoundException {
+        System.out.println("Anfang");
         String options = scanner.nextLine();
         switch (options) {
             case EINFUEGEN:
-                if(insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller());
+                if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller());
                 String kuchendaten = scanner.nextLine();
                 while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
                         kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
-                    if(insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
+                    if (insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
                     kuchendaten = scanner.nextLine();
-                    switch (kuchendaten){
+                    switch (kuchendaten) {
                         case ":u":
-                            aenderungsmodus();
+                            while (!(kuchendaten.equals(":p") || kuchendaten.equals(":r") ||
+                                    kuchendaten.equals(":c") || kuchendaten.equals(":d"))) {
+                                if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus());
+                                kuchendaten = scanner.nextLine();
+                                switch (kuchendaten){
+                                    case ":r":
+                                        anzeigemodus();
+                                }
+                            }
+                            break;
                         case ":d":
-                            loeschmodus();
+                            String herstellername = scanner.nextLine();
+                            while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
+                                    herstellername.equals(":r") || herstellername.equals(":p"))) {
+                                if (deleteHerstellerHandler != null)
+                                    deleteHerstellerHandler.distribute(loeschmodus(herstellername));
+                                kuchendaten = scanner.nextLine();
+                                if (deleteKuchenHandler != null)
+                                    deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
+                                herstellername = scanner.nextLine();
+                            }
+                            break;
                         case ":r":
                             anzeigemodus();
                         case ":p":
@@ -99,12 +126,18 @@ public class CLI {
                 break;
             case ANZEIGEN:
                 scanner = new Scanner(System.in);
-                String kuchentyp = scanner.next();
+                String kuchentyp = scanner.nextLine();
                 anzeigemodus();
                 break;
             case LOESCHEN:
-                //if(deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus());
-                //if(deleteKuchenHandler != null) deleteKuchenHandler.distribute(loeschmodus());
+                String userinput = scanner.next();
+                while (!(userinput.equals(":c") || userinput.equals(":u") ||
+                        userinput.equals(":r") || userinput.equals(":p"))) {
+                    if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(userinput));
+                    userinput = scanner.nextLine();
+                    if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(userinput));
+                    userinput = scanner.nextLine();
+                }
                 startCLI();
                 break;
             case PERSISTIEREN:
@@ -114,122 +147,73 @@ public class CLI {
     }
 
 
-    //TODO ein Einfuegevent für einen Hersteller
-    public KuchenEvent einfuegenHersteller(){
+    public KuchenEvent einfuegenHersteller() {
         String herstellername = scanner.nextLine();
         Hersteller hersteller = new Hersteller(herstellername);
         event = new KuchenEvent(this, hersteller);
         return event;
     }
 
+
     public KuchenEvent einfuegenKuchen(String kuchendaten) {
+        Hersteller hersteller = null;
+        String obstsorte = "";
+        String ksorte = "";
+        String typ;
+        String herstellername;
+        String preis;
+        String naehrwert;
+        String haltbarkeitS;
+
         String[] array = kuchendaten.split(" ");
-        String boden = array[0];
-        String newhersteller = array[1];
-        Hersteller nextHersteller = new Hersteller(newhersteller);
-        String[] belagarray = new String[array.length - 2];
-        System.arraycopy(array, 2, belagarray, 0, belagarray.length);
-        event = new KuchenEvent(this, boden, nextHersteller, belagarray);
-        return event;
-    }
-
-    public void einfuegemodus() {
-        Scanner scanner = new Scanner(System.in);
-        String herstellername = scanner.nextLine();
-        Hersteller hersteller = new Hersteller(herstellername);
-        boolean result = this.model.insertHersteller(hersteller);
-        System.out.println(result);
-        String kuchendaten = scanner.nextLine();
-        while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
-                kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
-            String[] array = kuchendaten.split(" ");
-            String boden = array[0];
-            String newhersteller = array[1];
-            Hersteller nextHersteller = new Hersteller(newhersteller);
-            String[] belagarray = new String[array.length - 2];
-            System.arraycopy(array, 2, belagarray, 0, belagarray.length);
-            boolean result2 = this.model.insertKuchen2(boden, nextHersteller, belagarray);
-            System.out.println(result2);
-            kuchendaten = scanner.nextLine();
-            switch (kuchendaten) {
-                case ":u" -> aenderungsmodus();
-                case ":d" -> loeschmodus();
-                case ":r" -> anzeigemodus();
-                case ":p" -> persistieren();
-            }
-        }
-    }
-
-    public void einfuegemodus0() {
-        Scanner scanner = new Scanner(System.in);
-        String herstellername = scanner.nextLine();
-        Hersteller hersteller = new Hersteller(herstellername);
-        Allergene newAllergen = null;
-        boolean result = this.model.insertHersteller(hersteller);
-        if (result) {
-            System.out.println(result);
-        }
-        String kuchendaten = scanner.nextLine();
-        while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
-                kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
-            String sorte = "";
-            String ksorte = "";
-            String[] array = kuchendaten.split(" ");
-            String typ = array[0];
-            Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
-            String herstellern = array[1];
-            String preis = array[2];
-            double preisd = Double.parseDouble(preis);
-            String naehrwert = array[3];
-            int naehrwertint = Integer.parseInt(naehrwert);
-            String haltbarkeitS = array[4];
-            int haltbarkeit = Integer.parseInt(haltbarkeitS);
-            String allergen = array[5].trim();
-            sorte = array[6];
-            if (array[7] != null) {
-                ksorte = array[7];
-            }
-
-            //TODO Evtl. löschen?
-            if (allergen.equals(",")) {
-                //TODO eine leere Liste von Allergenen wird übergeben
-                //this.model.insertAllergen(this.newallergeneSet);
-            }
-
-            String[] allergenarray = allergen.split(",");
-            if (allergenarray.length > 0) {
-                for (String allergene : allergenarray) {
-                    allergene = allergene.trim();
-                    //TODO Jedes einzelene Allergen wird dem Set übergeben
-                    this.newallergeneSet = Collections.singleton(Allergene.valueOf(allergene));
-                    //TODO Das Set (Aufzählung von Allergenen) wird übergeben
-                    //this.model.insertAllergen(this.newallergeneSet);
+        typ = array[0];
+        Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
+        herstellername = array[1];
+        hersteller = new Hersteller(herstellername);
+        preis = array[2];
+        double preisd = Double.parseDouble(preis);
+        naehrwert = array[3];
+        int naehrwertint = Integer.parseInt(naehrwert);
+        haltbarkeitS = array[4];
+        Duration haltbarkeit = Duration.ofDays(Long.parseLong(haltbarkeitS));
+        switch (array.length){
+            case 7:
+                Set<String> allergens = new HashSet<>(Arrays.asList(array[5].split(",")));
+                if(allergens.size()>0){
+                    for(String allergenElement: allergens){
+                        Allergene allergen = Allergene.valueOf(allergenElement);
+                        this.newallergeneSet.add(allergen);
+                    }
+                    ksorte = array[6];
+                    // - es wird ein leeren Allergenenset übergeben
+                    // - wenn eine Varibale keine Daten beinhaltet, so ist diese mit "" zu initialisieren
+                    event = new KuchenEvent(this, kuchentyp, hersteller, preisd, naehrwertint,
+                            haltbarkeit, this.newallergeneSet, obstsorte, ksorte);
+                    return event;
+                }else{
+                    obstsorte = array[6];
+                    //TODO es wird ein leeren Allergenenset übergeben
+                    //TODO wenn eine Varibale keine Daten beinhaltet, so ist ein diese mit "" zu initialisieren!
+                    event = new KuchenEvent(this, kuchentyp, hersteller, preisd, naehrwertint,
+                            haltbarkeit, this.newallergeneSet, obstsorte, ksorte);
+                    return event;
                 }
-            }
-
-            //String[] sorte = new String[kuchendaten.length() - 6];
-            //String[] ksorte = new String[kuchendaten.length() - 7];
-            // copy remaining inputs to argss array
-            //System.arraycopy(array, 6, sorte, 0, array.length - 6);
-            //System.arraycopy(array, 7, ksorte, 0, array.length - 7);
-            Hersteller hersteller2 = new Hersteller(herstellern);
-            //event = new KuchenEvent()
-            // return event;
-            boolean result2 = this.model.insertKuchen(kuchentyp, hersteller2, preisd, naehrwertint,
-                    Duration.ofDays(haltbarkeit), this.newallergeneSet, sorte, ksorte);
-            System.out.println(result2);
-            kuchendaten = scanner.nextLine();
-            switch (kuchendaten) {
-                case ":u" -> aenderungsmodus();
-                case ":d" -> loeschmodus();
-                case ":r" -> anzeigemodus();
-                case ":p" -> persistieren();
-            }
-        }
+            case 8:
+                allergens = new HashSet<>(Arrays.asList(array[5].split(",")));
+                for(String allergenElement: allergens){
+                    Allergene allergen = Allergene.valueOf(allergenElement);
+                    this.newallergeneSet.add(allergen);
+                }
+                obstsorte = array[6];
+                ksorte = array[7];
+                event = new KuchenEvent(this, kuchentyp, hersteller, preisd, naehrwertint,
+                            haltbarkeit, this.newallergeneSet, obstsorte, ksorte);
+                    return event;
+                }
+        return null;
     }
 
-
-    public void anzeigemodus() {
+    public void anzeigemodus() throws FileNotFoundException {
         final String KUCHEN = "kuchen";
         final String KUCHENFILTER = "kuchen [[Kremkuchen]]";
         final String HERSTELLER = "hersteller";
@@ -245,9 +229,6 @@ public class CLI {
                     break;
                 case KUCHENFILTER:
                     //TODO Wie wird die Eingabe vom Kunden erfolgen:
-                    //kuchen kuchentyp oder
-                    //kuchen [[kuchentyp]] ?
-                    //readKuchen("Kremkuchen");
                 case HERSTELLER:
                     readHersteller();
                     break;
@@ -258,8 +239,14 @@ public class CLI {
 
             eingabeUser = userInput.nextLine();
             switch (eingabeUser) {
-                case ":c" -> einfuegemodus();
-                case ":d" -> loeschmodus();
+                //case ":c" -> einfuegenKuchen();
+                case ":d" -> {
+                    String herstellername = scanner.nextLine();
+                    loeschmodus(herstellername);
+                    String kuchendaten = scanner.nextLine();
+                    loeschmodus(kuchendaten);
+                    break;
+                }
                 case ":p" -> persistieren();
                 case ":u" -> aenderungsmodus();
             }
@@ -267,17 +254,18 @@ public class CLI {
     }
 
     public void readKuchen() {
-        for (DekoKuchen kuchen : this.model.readKuchen()) {
+        for (Kuchen kuchen : this.model.readKuchen()) {
             System.out.println("Fachnummer: " + kuchen.getFachnummer() + "\n" +
                     "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
                     "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                     "Preis: " + kuchen.getPreis() + "\n" +
-                    "Nährwert: " + kuchen.getNaehrwert());
+                    "Nährwert: " + kuchen.getNaehrwert() + "\n" +
+                    "Haltbarkeit: " + kuchen.getHaltbarkeit());
+            System.out.println("---------------------------");
         }
     }
 
     public void readAllergene() {
-        System.out.println("Allergene");
         for (Allergene allergen : this.model.readAllergener()) {
             System.out.println(allergen.name());
         }
@@ -289,7 +277,7 @@ public class CLI {
         }
     }
 
-    /*
+/*
     public void readKuchen(String typ){
         //event = new KuchenEvent(this,...);
         for(Kuchen kuchen: this.model.readKuchen(this.model.readKuchen(), typ)){
@@ -297,51 +285,51 @@ public class CLI {
                     "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                     "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
         }
+
+   }
+ */
+
+
+    public KuchenEvent loeschmodus(String herstellername) {
+        event = new KuchenEvent(this, herstellername);
+        return event;
     }
 
-     */
-
-    public void loeschmodus() {
-        System.out.println("Löschen");
-        String herstellername = scanner.nextLine();
-        while (!(herstellername.equals(":c") || herstellername.equals(":r") ||
-                herstellername.equals(":u") || herstellername.equals(":p"))) {
-            boolean result = this.model.deleteHersteller(herstellername);
-            System.out.println(result);
-            String fachnummer = scanner.nextLine();
-            boolean result2 = this.model.deleteKuchen(Integer.parseInt(fachnummer));
-            System.out.println(result2);
-            herstellername = scanner.nextLine();
-            switch (herstellername) {
-                case ":d" -> loeschmodus();
-                case ":r" -> anzeigemodus();
-                case ":c" -> einfuegemodus();
-                case ":p" -> persistieren();
-            }
-        }
+    public KuchenEvent kuchenloeschen(String loeschdaten) {
+        int kuchenID = Integer.parseInt(loeschdaten);
+        event = new KuchenEvent(this, kuchenID);
+        return event;
     }
 
 
-    public void aenderungsmodus() {
-        System.out.println("Inspizierung");
+    public KuchenEvent aenderungsmodus() {
         Scanner scanner = new Scanner(System.in);
         String userInput = scanner.nextLine();
-        while (!(userInput.equals(":p") || userInput.equals(":r") ||
-                userInput.equals(":c") || userInput.equals(":d"))) {
-            int fachnummer = Integer.parseInt(userInput);
+        int fachnummer = Integer.parseInt(userInput);
+        event = new KuchenEvent(this, fachnummer);
+        return event;
+         /*
             boolean result = this.model.editKuchen(fachnummer);
+
             System.out.println(result);
             userInput = scanner.nextLine();
             switch (userInput) {
-                case ":d" -> loeschmodus();
+                case ":d" -> {
+                    String herstellername = scanner.nextLine();
+                    loeschmodus(herstellername);
+                    String kuchendaten = scanner.nextLine();
+                    loeschmodus(kuchendaten);
+                    break;
+                }
                 case ":r" -> anzeigemodus();
-                case ":c" -> einfuegemodus();
+                //case ":c" -> einfuegemodus();
                 case ":p" -> persistieren();
             }
-        }
-    }
 
-    private void persistieren() {
+          */
+        }
+
+    private void persistieren() throws FileNotFoundException {
         final String SAVEJOS = "saveJOS";
         final String LOADJOS = "loadJOS";
         final String SAVEJBP = "saveJBP";
@@ -367,8 +355,14 @@ public class CLI {
             }
             userInput = scanner.nextLine();
             switch (userInput) {
-                case ":c" -> einfuegemodus();
-                case ":d" -> loeschmodus();
+                //case ":c" -> einfuegemodus();
+                case ":d" -> {
+                    String herstellername = scanner.nextLine();
+                    loeschmodus(herstellername);
+                    String kuchendaten = scanner.nextLine();
+                    loeschmodus(kuchendaten);
+                    break;
+                }
                 case ":r" -> anzeigemodus();
                 case ":u" -> aenderungsmodus();
             }
@@ -384,42 +378,22 @@ public class CLI {
 
         System.out.println("Kuchen:");
         model = new Verwaltung(2);
-        for (DekoKuchen kuchen : this.model.readKuchen()) {
+        for (Kuchen kuchen : this.model.readKuchen()) {
             System.out.println("Fachnummer: " + kuchen.getFachnummer() + "\n" +
                     "Einfuegedatum: " + kuchen.getEinfuegedatum() + "\n" +
                     "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                     "Preis: " + kuchen.getPreis() + "\n" +
-                    "Nährwert: " + kuchen.getNaehrwert() + "\n" +
+                    "Naehrwert: " + kuchen.getNaehrwert() + "\n" +
                     "Allergene: " + kuchen.getAllergene());
         }
-
-
-/*
-            for (DekoKuchen kuchen : this.model.readKuchen()) {
-                System.out.println("Preis: " + kuchen.getBoden().getPreis() + "\n" +
-                        "Name: " + kuchen.getBoden().getName() + "\n" +
-                        "Nährwert: " + kuchen.getBoden().getNaehrwert() + "\n" +
-                        "verbleibene Haltbarkeit: " + kuchen.getBoden().gethaltbarkeit() + "\n" +
-                        "Allergene: " + kuchen.getBoden().getAllergen() + "\n");
-            }
-
-            for (DekoKuchen kuchen : this.model.readKuchen()) {
-                for(Kuchenbestandteile belag: kuchen.getBelag()){
-                    System.out.println("Preis: " + belag.getPreis() + "\n" +
-                            "Name: " + belag.getName() + "\n" +
-                            "Nährwert: " + belag.getNaehrwert() + "\n" +
-                            "verbleibene Haltbarkeit: " + belag.gethaltbarkeit() + "\n" +
-                            "Allergene: " + belag.getAllergen() + "\n");
-                }
-            }
- */
     }
 
-    public void automatenzustandmitJBPSpeichern() {
+    public void automatenzustandmitJBPSpeichern() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.xml");
         System.out.println("Automatenzustand vor dem Speichervorgang:");
         System.out.println("Herstellerset: " + this.model.readHersteller().size());
         System.out.println("Kuchenliste: " + this.model.readKuchen().size());
-        ObjektSpeicherungJBP.persistiereAutomaten(this.model, "automaten.xml");
+        ObjektSpeicherungJBP.persistiereAutomaten(this.model, os);
     }
     public void automatenzustandmitJBPLaden() {
         //TODO Wieso werden keine Daten geladen?
