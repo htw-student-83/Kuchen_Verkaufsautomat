@@ -1,11 +1,13 @@
 package eventsystem.controller;
 
+import eventsystem.controller.events.EventHerstellerLoeschen;
+import eventsystem.controller.events.EventKuchenLoeschen;
 import eventsystem.handler.Handler;
 
-public class HerstellerLoeschenEvent implements EventListener {
+public class Handler_Kuchen_loeschen{
     Handler handler;
 
-    public HerstellerLoeschenEvent(Handler handler){
+    public Handler_Kuchen_loeschen(Handler handler){
         this.handler = handler;
     }
 
@@ -13,4 +15,5 @@ public class HerstellerLoeschenEvent implements EventListener {
     public void run(KuchenEvent event) {
         this.handler.distribute(event);
     }
+
 }

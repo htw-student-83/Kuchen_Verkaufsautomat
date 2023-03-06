@@ -17,6 +17,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     List<DekoKuchen> kuchenliste2 = new ArrayList<>();
     Set<Hersteller> herstellerset = new HashSet<>();
     Set<Allergene> allergenset = new HashSet<>();
+    Set<Allergene> alleAllergenenSet = new HashSet<>();
     ArrayList<Kuchenbestandteile> belagliste = new ArrayList<>();
 
     public Verwaltung(int limit){
@@ -154,6 +155,10 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         return false;
     }
 
+    public int getAnzahlBelgeteFaecher(){
+        return this.automat.getAnzahlbelegteFaecher();
+    }
+
 
     private HerstellerStatus checkTablehersteller(Hersteller herstellername){
         if(herstellerset.contains(herstellername)) {
@@ -165,7 +170,6 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     }
 
 
-    //TODO Es werden nicht sofort angegebene Allergene ins Set aufgenommen.
     @Override
     public boolean insertAllergen(Set<Allergene> allergene) {
         int setSize = allergene.size();
@@ -176,6 +180,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
             if(checkTableAllergene(allergen)== AllergenStatus.Allergen_unbekannt){
                 allergenset.add(allergen);
                 groesseAllergenSet++;
+                getNotContinsAllergene(allergene);
                 this.setChanged();
                 this.notifyObservers();
                 if(groesseAllergenSet == setSize){
@@ -194,6 +199,12 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         }
         this.notifyObservers();
         return AllergenStatus.Allergen_unbekannt;
+    }
+
+    private void getNotContinsAllergene(Set<Allergene> allergenes){
+        for(Allergene allergen: allergenes){
+            alleAllergenenSet.remove(allergen);
+        }
     }
 
     @Override
@@ -216,6 +227,18 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         return this.allergenset;
     }
 
+    public Set<Allergene> readAllergeneNotinCakes(){
+        this.notifyObservers();
+        return this.alleAllergenenSet;
+    }
+
+    public void fillAlleAllergeneSet(){
+        alleAllergenenSet.add(Allergene.Sesamsamen);
+        alleAllergenenSet.add(Allergene.Gluten);
+        alleAllergenenSet.add(Allergene.Erdnuss);
+        alleAllergenenSet.add(Allergene.Haselnuss);
+    }
+
 
     public int getHerstellerSetSize (){
         return this.herstellerset.size();
@@ -236,16 +259,13 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
 
     //TODO überarbeiten?
-    public List<Kuchen> readKuchen(List<DekoKuchen> kuchen, String typ){
+    public List<Kuchen> readKuchen(List<Kuchen> kuchen, String typ){
         List<Kuchen> gefiltertekuchenliste = new ArrayList<>();
         if(typ.length()!=0) {
-            for (DekoKuchen kuchenelement : kuchen) {
-               /*
+            for (Kuchen kuchenelement : kuchen) {
                 if (kuchenelement.getTyp().equals(typ)) {
                     gefiltertekuchenliste.add(kuchenelement);
                 }
-
-                */
             }
         }
         this.notifyObservers();
@@ -270,13 +290,13 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
 
     @Override
     public boolean deleteKuchen(int fachnummer){
-        if(kuchenliste2.isEmpty()){
+        if(kuchenliste.isEmpty()){
             this.notifyObservers();
             return false;
         }
-        for(DekoKuchen kuchen: this.kuchenliste2) {
+        for(Kuchen kuchen: this.kuchenliste) {
             if(kuchen.getFachnummer() == fachnummer){
-                kuchenliste2.remove(kuchen);
+                kuchenliste.remove(kuchen);
                 automat.boxdecrement();
                 this.setChanged();
                 this.notifyObservers();

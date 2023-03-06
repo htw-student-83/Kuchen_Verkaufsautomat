@@ -1,4 +1,4 @@
-package eventsystem.controller;
+package eventsystem.controller.events;
 
 public class AllergenAnzeigenEvent {
 }

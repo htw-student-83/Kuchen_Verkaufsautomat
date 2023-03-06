@@ -1,10 +1,10 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.listener.EventListenerHerstellerLoeschen;
+import eventsystem.controller.events.EventHerstellerLoeschen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class DeleteHerstellerListener implements EventListener {
+public class DeleteHerstellerListener implements EventListenerHerstellerLoeschen {
     //Der GL dem Listener bekannt machen
     private Verwaltung model;
 

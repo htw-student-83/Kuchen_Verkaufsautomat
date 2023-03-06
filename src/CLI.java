@@ -1,4 +1,4 @@
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.events.*;
 import eventsystem.handler.Handler;
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
@@ -19,10 +19,15 @@ import java.util.*;
 
 public class CLI {
 
+    //TODO
+    // 1) Wie kann man von einem Modus zum nächsten kommen und dabei immer ein Event auslösen?
+    // 2) Ist das Anzeigen, das Speichern und das Laden von Daten jeweils als ein Event anzusehen?
+
+
     Scanner scanner = new Scanner(System.in);
     Verwaltung model;
     Set<Allergene> newallergeneSet = new HashSet<>();
-    private KuchenEvent event = null;
+    //private Event_Hersteller_Einfuegen event = null;
     private Handler insertHerstellerHandler, insertKuchenHandler, editKuchenHandler, anzeigeKuchenHandler,
                      anzeigeHerstellerHandler, anzeigeAllergeneHandler, speichernAutomatenHandler,
                      ladenAutomatenHandler, deleteHerstellerHandler, deleteKuchenHandler;
@@ -38,9 +43,8 @@ public class CLI {
         this.model = model;
     }
 
-    public void setInsertHerstellerHandler(Handler handler) {
-        this.insertHerstellerHandler = handler;
-    }
+
+    public void setInsertHerstellerHandler(Handler handler) { this.insertHerstellerHandler = handler; }
 
     public void setInsertKuchenHandler(Handler handler) {
         this.insertKuchenHandler = handler;
@@ -80,23 +84,27 @@ public class CLI {
 
 
     public void startCLI() throws FileNotFoundException {
-        System.out.println("Anfang");
         String options = scanner.nextLine();
         switch (options) {
             case EINFUEGEN:
-                if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller());
+                String nameHersteller = scanner.nextLine();
+                if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller(nameHersteller));
                 String kuchendaten = scanner.nextLine();
                 while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
                         kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
                     if (insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
                     kuchendaten = scanner.nextLine();
+                    if(kuchendaten.equals(":u")){
+                        distribute(kuchendaten);
+                    }
                     switch (kuchendaten) {
                         case ":u":
-                            while (!(kuchendaten.equals(":p") || kuchendaten.equals(":r") ||
-                                    kuchendaten.equals(":c") || kuchendaten.equals(":d"))) {
-                                if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus());
-                                kuchendaten = scanner.nextLine();
-                                switch (kuchendaten){
+                            String kuchenID = scanner.nextLine();
+                            while (!(kuchenID.equals(":p") || kuchenID.equals(":r") ||
+                                    kuchenID.equals(":c") || kuchenID.equals(":d"))) {
+                                if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus(kuchenID));
+                                kuchenID = scanner.nextLine();
+                                switch (kuchenID){
                                     case ":r":
                                         anzeigemodus();
                                 }
@@ -106,11 +114,9 @@ public class CLI {
                             String herstellername = scanner.nextLine();
                             while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
                                     herstellername.equals(":r") || herstellername.equals(":p"))) {
-                                if (deleteHerstellerHandler != null)
-                                    deleteHerstellerHandler.distribute(loeschmodus(herstellername));
+                                if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
                                 kuchendaten = scanner.nextLine();
-                                if (deleteKuchenHandler != null)
-                                    deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
+                                if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
                                 herstellername = scanner.nextLine();
                             }
                             break;
@@ -122,21 +128,54 @@ public class CLI {
                 }
                 break;
             case AENDERN:
-                aenderungsmodus();
+                String kuchenID = scanner.nextLine();
+                while (!(kuchenID.equals(":p") || kuchenID.equals(":r") ||
+                        kuchenID.equals(":c") || kuchenID.equals(":d"))) {
+                    if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus(kuchenID));
+                    kuchenID = scanner.nextLine();
+                    switch (kuchenID){
+                        case ":c":
+                            nameHersteller = scanner.nextLine();
+                            if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller(nameHersteller));
+                            kuchendaten = scanner.nextLine();
+                            while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
+                                    kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
+                                if (insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
+                                kuchendaten = scanner.nextLine();
+                            }
+                            break;
+                        case ":d":
+                            String herstellername = scanner.next();
+                            while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
+                                    herstellername.equals(":r") || herstellername.equals(":p"))) {
+                                if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
+                                kuchendaten = scanner.nextLine();
+                                if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
+                                herstellername = scanner.nextLine();
+                            }
+                            break;
+                        case ":r":
+                            //TODO Event erstellen?
+                            anzeigemodus();
+                        case ":p":
+                            //TODO Event erstellen?
+                            persistieren();
+                    }
+                }
                 break;
             case ANZEIGEN:
-                scanner = new Scanner(System.in);
+                //TODO Event erstellen?
                 String kuchentyp = scanner.nextLine();
                 anzeigemodus();
                 break;
             case LOESCHEN:
-                String userinput = scanner.next();
-                while (!(userinput.equals(":c") || userinput.equals(":u") ||
-                        userinput.equals(":r") || userinput.equals(":p"))) {
-                    if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(userinput));
-                    userinput = scanner.nextLine();
-                    if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(userinput));
-                    userinput = scanner.nextLine();
+                String herstellername = scanner.next();
+                while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
+                        herstellername.equals(":r") || herstellername.equals(":p"))) {
+                    if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
+                    kuchendaten = scanner.nextLine();
+                    if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
+                    herstellername = scanner.nextLine();
                 }
                 startCLI();
                 break;
@@ -147,15 +186,24 @@ public class CLI {
     }
 
 
-    public KuchenEvent einfuegenHersteller() {
-        String herstellername = scanner.nextLine();
-        Hersteller hersteller = new Hersteller(herstellername);
-        event = new KuchenEvent(this, hersteller);
-        return event;
+    private void distribute(String befehl) {
+        switch (befehl) {
+            case AENDERN:
+                String kuchenID = "1";
+                aenderungsmodus(kuchenID);
+                break;
+        }
     }
 
 
-    public KuchenEvent einfuegenKuchen(String kuchendaten) {
+
+    public EventHerstellerEinfuegen einfuegenHersteller(String herstellerName) {
+        Hersteller hersteller = new Hersteller(herstellerName);
+        return new EventHerstellerEinfuegen(this, hersteller);
+    }
+
+
+    public EventKuchenEinfuegen einfuegenKuchen(String kuchendaten) {
         Hersteller hersteller = null;
         String obstsorte = "";
         String ksorte = "";
@@ -192,9 +240,9 @@ public class CLI {
                     return event;
                 }else{
                     obstsorte = array[6];
-                    //TODO es wird ein leeren Allergenenset übergeben
-                    //TODO wenn eine Varibale keine Daten beinhaltet, so ist ein diese mit "" zu initialisieren!
-                    event = new KuchenEvent(this, kuchentyp, hersteller, preisd, naehrwertint,
+                    //TODO es wird ein leeres Allergenenset übergeben
+                    // - wenn eine Varibale keine Daten beinhaltet, so ist diese mit "" zu initialisieren!
+                    return new EventKuchenEinfuegen(this, kuchentyp, hersteller, preisd, naehrwertint,
                             haltbarkeit, this.newallergeneSet, obstsorte, ksorte);
                     return event;
                 }
@@ -215,9 +263,13 @@ public class CLI {
 
     public void anzeigemodus() throws FileNotFoundException {
         final String KUCHEN = "kuchen";
-        final String KUCHENFILTER = "kuchen [[Kremkuchen]]";
+        //TODO Wie soll die Eingabe vom User genau aussehen?
+        final String KUCHENFILTER_KREMKUCHEN = "kuchen [Kremkuchen]";
+        final String KUCHENFILTER_OBSTKUCHEN = "kuchen [Obstkuchen]";
+        final String KUCHENFILTER_OBSTTORTE = "kuchen [Obsttorte]";
         final String HERSTELLER = "hersteller";
-        final String ALLERGENE = "allergene i";
+        final String ALLERGENE_PROCESSED = "allergene i";
+        final String ALLERGENE_NICHT_IN_KUCHEN = "allergene e";
 
         Scanner userInput = new Scanner(System.in);
         String eingabeUser = userInput.nextLine();
@@ -227,31 +279,71 @@ public class CLI {
                 case KUCHEN:
                     readKuchen();
                     break;
-                case KUCHENFILTER:
+                case KUCHENFILTER_KREMKUCHEN:
                     //TODO Wie wird die Eingabe vom Kunden erfolgen:
+                    readKuchen("Kremkuchen");
+                    break;
+                case KUCHENFILTER_OBSTKUCHEN:
+                    //TODO Wie wird die Eingabe vom Kunden erfolgen:
+                    readKuchen("Obstkuchen");
+                    break;
+                case KUCHENFILTER_OBSTTORTE:
+                    //TODO Wie wird die Eingabe vom Kunden erfolgen:
+                    readKuchen("Obsttorte");
+                    break;
                 case HERSTELLER:
                     readHersteller();
                     break;
-                case ALLERGENE:
+                case ALLERGENE_PROCESSED:
                     readAllergene();
                     break;
+                case ALLERGENE_NICHT_IN_KUCHEN:
+                    readNotProcessAllergene();
+                    break;
+                default:
             }
 
             eingabeUser = userInput.nextLine();
             switch (eingabeUser) {
-                //case ":c" -> einfuegenKuchen();
-                case ":d" -> {
+                case ":c":
                     String herstellername = scanner.nextLine();
-                    loeschmodus(herstellername);
+                    if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller(herstellername));
                     String kuchendaten = scanner.nextLine();
-                    loeschmodus(kuchendaten);
+                    while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
+                            kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
+                        if (insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
+                        kuchendaten = scanner.nextLine();
+                    }
                     break;
-                }
-                case ":p" -> persistieren();
-                case ":u" -> aenderungsmodus();
+                case ":d":
+                    //TODO Hier wird erneut ein Event erstellt
+                    herstellername = scanner.nextLine();
+                    while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
+                            herstellername.equals(":r") || herstellername.equals(":p"))) {
+                        if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
+                        kuchendaten = scanner.nextLine();
+                        if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
+                        herstellername = scanner.nextLine();
+                    }
+                    break;
+                case ":u":
+                    //TODO Hier wird erneut ein Event erstellt
+                    //TODO bevor die Methode aufgerufen wird, werden die Daten vom User eingeholt!
+                    String kID = scanner.nextLine();
+                    while (!(kID.equals(":p") || kID.equals(":r") ||
+                            kID.equals(":c") || kID.equals(":d"))) {
+                        if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus(kID));
+                        kID = scanner.nextLine();
+                    }
+                    break;
+                case ":p":
+                    persistieren();
+                    break;
+                default:
             }
         }
     }
+
 
     public void readKuchen() {
         for (Kuchen kuchen : this.model.readKuchen()) {
@@ -271,47 +363,43 @@ public class CLI {
         }
     }
 
+    public void readNotProcessAllergene() {
+        for (Allergene allergen : this.model.readAllergeneNotinCakes()) {
+            System.out.println(allergen.name());
+        }
+    }
+
     public void readHersteller() {
         for (Hersteller hersteller : this.model.readHersteller()) {
             System.out.println(hersteller.getName());
         }
     }
 
-/*
     public void readKuchen(String typ){
-        //event = new KuchenEvent(this,...);
         for(Kuchen kuchen: this.model.readKuchen(this.model.readKuchen(), typ)){
             System.out.println( "Fachnummer: " + kuchen.getFachnummer() + "\n" +
                     "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                     "verbleibender Haltbarkeit: " + kuchen.getHaltbarkeit());
         }
-
    }
- */
-
 
     public KuchenEvent loeschmodus(String herstellername) {
         event = new KuchenEvent(this, herstellername);
         return event;
     }
 
-    public KuchenEvent kuchenloeschen(String loeschdaten) {
+    public EventKuchenLoeschen kuchenloeschen(String loeschdaten) {
         int kuchenID = Integer.parseInt(loeschdaten);
         event = new KuchenEvent(this, kuchenID);
         return event;
     }
 
 
-    public KuchenEvent aenderungsmodus() {
-        Scanner scanner = new Scanner(System.in);
-        String userInput = scanner.nextLine();
-        int fachnummer = Integer.parseInt(userInput);
-        event = new KuchenEvent(this, fachnummer);
-        return event;
+    public EventKuchenInspizierung aenderungsmodus(String kuchenID) {
+        int fachnummer = Integer.parseInt(kuchenID);
+        return new EventKuchenInspizierung(this, fachnummer);
          /*
-            boolean result = this.model.editKuchen(fachnummer);
-
-            System.out.println(result);
+             System.out.println(result);
             userInput = scanner.nextLine();
             switch (userInput) {
                 case ":d" -> {
@@ -325,9 +413,8 @@ public class CLI {
                 //case ":c" -> einfuegemodus();
                 case ":p" -> persistieren();
             }
-
           */
-        }
+    }
 
     private void persistieren() throws FileNotFoundException {
         final String SAVEJOS = "saveJOS";
@@ -357,6 +444,7 @@ public class CLI {
             switch (userInput) {
                 //case ":c" -> einfuegemodus();
                 case ":d" -> {
+                    //TODO Hier wird erneut ein Event erstellt
                     String herstellername = scanner.nextLine();
                     loeschmodus(herstellername);
                     String kuchendaten = scanner.nextLine();
@@ -364,7 +452,11 @@ public class CLI {
                     break;
                 }
                 case ":r" -> anzeigemodus();
-                case ":u" -> aenderungsmodus();
+                case ":u" -> {
+                    //TODO Hier wird erneut ein Event erstellt
+                    String kuchenID = scanner.nextLine();
+                    aenderungsmodus(kuchenID);
+                }
             }
         }
     }

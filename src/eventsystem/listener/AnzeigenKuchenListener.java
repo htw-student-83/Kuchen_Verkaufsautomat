@@ -1,9 +1,9 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
+import eventsystem.controller.listener.EventListener;
 import eventsystem.controller.KuchenEvent;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
-
+/*
 public class AnzeigenKuchenListener implements EventListener {
     private Verwaltung model;
 
@@ -17,3 +17,5 @@ public class AnzeigenKuchenListener implements EventListener {
      //  this.model.readKuchen(event.getkuchentyp());
     }
 }
+
+ */

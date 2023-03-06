@@ -1,10 +1,10 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.listener.EventListenerKuchenEinfuegen;
+import eventsystem.controller.events.EventKuchenEinfuegen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class InsertKuchenListener implements EventListener {
+public class InsertKuchenListener implements EventListenerKuchenEinfuegen {
 
     //Der GL dem Listener bekannt machen
     private Verwaltung model;

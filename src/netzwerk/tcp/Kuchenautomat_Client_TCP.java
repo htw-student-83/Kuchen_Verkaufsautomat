@@ -1,5 +1,6 @@
 package netzwerk.tcp;
 
+import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -7,20 +8,19 @@ import java.util.Scanner;
 public class Kuchenautomat_Client_TCP {
     Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Kuchenautomat_Client_TCP clientTCP = new Kuchenautomat_Client_TCP();
         clientTCP.startClient();
     }
 
 
-    public void startClient() throws IOException {
+    public void startClient() throws IOException, ClassNotFoundException {
         try (Socket socket = new Socket("localhost", 5001);
+             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              DataInputStream in=new DataInputStream(socket.getInputStream());
              DataOutputStream out=new DataOutputStream(socket.getOutputStream())) {
             String option = scanner.nextLine();
-
             out.writeUTF(option);
-
             switch (option){
                 case ":c":
                     einfuegeprozessClient(in, out);
@@ -41,7 +41,7 @@ public class Kuchenautomat_Client_TCP {
         }
     }
 
-    private void einfuegeprozessClient(DataInputStream in, DataOutputStream out) throws IOException {
+    private void einfuegeprozessClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
         String herstellername = scanner.nextLine();
         out.writeUTF(herstellername);
         String kuchendaten = scanner.nextLine();
@@ -70,7 +70,7 @@ public class Kuchenautomat_Client_TCP {
         }
     }
 
-    private void aenderungsmodusClient(DataInputStream in, DataOutputStream out) throws IOException {
+    private void aenderungsmodusClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
         String kuchenID = scanner.nextLine();
         while (!(kuchenID.equals(":c") || kuchenID.equals(":r") ||
                 kuchenID.equals(":d") || kuchenID.equals(":p"))){
@@ -98,7 +98,7 @@ public class Kuchenautomat_Client_TCP {
     }
 
 
-    private void loeschmodusClient(DataInputStream in, DataOutputStream out) throws IOException {
+    private void loeschmodusClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
         String herstellername = scanner.nextLine();
         while (!(herstellername.equals(":c") || herstellername.equals(":r") ||
                 herstellername.equals(":u") || herstellername.equals(":p"))) {
@@ -113,7 +113,7 @@ public class Kuchenautomat_Client_TCP {
                 }
                 case ":r" -> {
                     out.writeUTF(herstellername);
-                    anzeigemodusClient(out, in);
+                    //anzeigemodusClient(out, in);
                 }
                 case ":u" -> {
                     out.writeUTF(herstellername);
@@ -128,15 +128,15 @@ public class Kuchenautomat_Client_TCP {
     }
 
 
-    private void anzeigemodusClient(DataOutputStream out, DataInputStream in) throws IOException {
+    private void anzeigemodusClient(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
         String daten = scanner.nextLine();
-        out.writeUTF(daten);
         while (!(daten.equals(":c") || daten.equals(":d") ||
                 daten.equals(":u") || daten.equals(":p"))) {
+            out.writeUTF(daten);
+            System.out.println("Verschickt: " + daten);
             String objektdaten = in.readLine();
             while (in.available()>0) {
-                System.out.println(objektdaten);
-                objektdaten = in.readLine();
+                System.out.println(in.readLine());
             }
             daten = scanner.nextLine();
             switch (daten) {
@@ -161,7 +161,7 @@ public class Kuchenautomat_Client_TCP {
     }
 
 
-    private void persistenzmodusClient(DataOutputStream out, DataInputStream in) throws IOException {
+    private void persistenzmodusClient(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
         String daten = scanner.nextLine();
         while (!(daten.equals(":c") || daten.equals(":r") ||
                 daten.equals(":u") || daten.equals(":p")) ){
@@ -183,7 +183,7 @@ public class Kuchenautomat_Client_TCP {
                 }
                 case ":r" -> {
                     out.writeUTF(daten);
-                    anzeigemodusClient(out, in);
+                   //anzeigemodusClient(out, in);
                 }
                 case ":d" -> {
                     out.writeUTF(daten);

@@ -1,5 +1,5 @@
 package geschaeftslogiktest;
-/*
+
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.*;
@@ -43,7 +43,7 @@ public class GeschaeftslogikTest {
     @DisplayName("Kuchenliste bekommt zwei neue Kuchensorten")
     public void insert2(){
         Verwaltung vw = new Verwaltung(2);
-        vw.setKapazitaet(2);
+      //
         allergeneSet = new HashSet<>();
         allergeneSet.add(Allergene.Gluten);
         allergeneSet.add(Allergene.Erdnuss);
@@ -506,7 +506,7 @@ public class GeschaeftslogikTest {
     }
 
     /***********************Herstellertests**************************/
-/*
+
     @Test
     @DisplayName("Neuer Hersteller wird hinzugefuegt")
     public void insertHersteller(){
@@ -570,5 +570,3 @@ public class GeschaeftslogikTest {
         assertFalse(result);
     }
 }
-
- */

@@ -34,7 +34,7 @@ public class Simulation2Test {
         Verwaltung model = new Verwaltung(3);
         InsertSimulation2 sim = new InsertSimulation2(model, monitor);
         sim.insertForInspection();
-        List<DekoKuchen> kuchen = model.readKuchen();
+        List<Kuchen> kuchen = model.readKuchen();
         Assertions.assertNotNull(kuchen);
     }
 

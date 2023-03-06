@@ -1,4 +1,4 @@
-import eventsystem.controller.EventListener;
+import eventsystem.controller.listener.*;
 import eventsystem.handler.Handler;
 import eventsystem.listener.*;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
@@ -14,8 +14,8 @@ public class Kuchen_VerkaufsautomatRun {
         String argument1 = String.valueOf(args[0]);
         String netzwerk = String.valueOf(args[1]);
         int kapazitaetAutomat = Integer.parseInt(argument1);
-        //Kuchenautomat automat = new Kuchenautomat();
         Verwaltung model = new Verwaltung(kapazitaetAutomat);
+        model.fillAlleAllergeneSet();
         Kuchen_VerkaufsautomatRun automatRun = new Kuchen_VerkaufsautomatRun();
         automatRun.startAutomat(model, netzwerk);
     }
@@ -50,34 +50,38 @@ public class Kuchen_VerkaufsautomatRun {
                 model.addObserver(beobachter);
 
                 handlerInsertHersteller = new Handler();
-                EventListener listenerInsertHersteller = new InsertHerstellerListener(model);
-                EventListener infoListener = new InfoListener();
+                EventListenerHerstellerEinfuegen listenerInsertHersteller = new InsertHerstellerListener(model);
+                EventListenerHerstellerEinfuegen infoListenerHerstellerEinfuegen = new InfoListenerHerstellerEinfuegen();
                 handlerInsertHersteller.add(listenerInsertHersteller);
-                handlerInsertHersteller.add(infoListener);
+                handlerInsertHersteller.add(infoListenerHerstellerEinfuegen);
                 cli.setInsertHerstellerHandler(handlerInsertHersteller);
 
                 handlerInsertKuchen = new Handler();
-                EventListener listenerInsertKuchen = new InsertKuchenListener(model);
+                EventListenerKuchenEinfuegen listenerInsertKuchen = new InsertKuchenListener(model);
+                EventListenerKuchenEinfuegen infoListenerKuchenEinfuegen = new InfoListenerKuchenEinfuegen();
                 handlerInsertKuchen.add(listenerInsertKuchen);
-                handlerInsertKuchen.add(infoListener);
+                handlerInsertKuchen.add(infoListenerKuchenEinfuegen);
                 cli.setInsertKuchenHandler(handlerInsertKuchen);
 
                 handlerHerstellerloeschen = new Handler();
-                EventListener listenerDeleteHersteller = new DeleteHerstellerListener(model);
+                EventListenerHerstellerLoeschen listenerDeleteHersteller = new DeleteHerstellerListener(model);
+                EventListenerHerstellerLoeschen infoListenerHerstellerLoeschen = new InfoListenerHerstellerLoeschen();
                 handlerHerstellerloeschen.add(listenerDeleteHersteller);
-                handlerHerstellerloeschen.add(infoListener);
+                handlerHerstellerloeschen.add(infoListenerHerstellerLoeschen);
                 cli.setDeleteHerstellerHandler(handlerHerstellerloeschen);
 
                 handlerKuchenloeschen = new Handler();
-                EventListener listenerDeleteKuchen = new DeleteKuchenListener(model);
+                EventListenerKuchenLoeschen listenerDeleteKuchen = new DeleteKuchenListener(model);
+                EventListenerKuchenLoeschen infoListenerKuchenLoeschen = new InfoListenerKuchenLoeschen();
                 handlerKuchenloeschen.add(listenerDeleteKuchen);
-                handlerKuchenloeschen.add(infoListener);
+                handlerKuchenloeschen.add(infoListenerKuchenLoeschen);
                 cli.setDeleteKuchenHandler(handlerKuchenloeschen);
 
                 handlerEditKuchen = new Handler();
-                EventListener listenerEditKuchen = new EditKuchenListener(model);
+                EventListener_Kuchen_Inspizierung listenerEditKuchen = new EditKuchenListener(model);
+                EventListener_Kuchen_Inspizierung infoListenerKuchenInspizierung = new InfoListenerKuchenInspizierung();
                 handlerEditKuchen.add(listenerEditKuchen);
-                handlerEditKuchen.add(infoListener);
+                handlerEditKuchen.add(infoListenerKuchenInspizierung);
                 cli.setEditKuchenHandler(handlerEditKuchen);
 
                 cli.startCLI();

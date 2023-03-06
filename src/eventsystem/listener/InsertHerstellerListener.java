@@ -1,10 +1,10 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.events.EventHerstellerEinfuegen;
+import eventsystem.controller.listener.EventListenerHerstellerEinfuegen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class InsertHerstellerListener implements EventListener {
+public class InsertHerstellerListener implements EventListenerHerstellerEinfuegen {
     private Verwaltung model;
 
     //Konstruktor erstellen

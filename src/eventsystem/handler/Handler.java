@@ -15,6 +15,18 @@ public class Handler {
         this.listenerList.remove(listener);
     }
 
+    public void remove(EventListener_Kuchen_Inspizierung listener){
+        this.kuchenInspizierenListener.remove(listener);
+    }
+
+    public void remove(EventListenerKuchenLoeschen listener){
+        this.kuchenLoeschenListener.remove(listener);
+    }
+
+    public void remove(EventListenerHerstellerLoeschen listener){
+        this.herstellerLoeschenListener.remove(listener);
+    }
+
     public void distribute(KuchenEvent event){
         for(EventListener listener: listenerList){
             listener.run(event);

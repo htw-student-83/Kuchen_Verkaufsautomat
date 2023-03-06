@@ -1,10 +1,10 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.listener.EventListenerKuchenLoeschen;
+import eventsystem.controller.events.EventKuchenLoeschen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class DeleteKuchenListener implements EventListener {
+public class DeleteKuchenListener implements EventListenerKuchenLoeschen {
     private Verwaltung model;
 
     //Konstruktor erstellen

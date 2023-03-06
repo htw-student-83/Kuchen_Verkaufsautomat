@@ -1,6 +1,8 @@
-package eventsystem.controller;
+package eventsystem.controller.events;
 
-import eventsystem.handler.Handler;
+import geschaeftslogik.Hersteller;
+
+import java.util.EventObject;
 
 public class AnzeigenHerstellerEvent implements EventListener {
     Handler handler;

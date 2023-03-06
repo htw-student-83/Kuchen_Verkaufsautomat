@@ -1,6 +1,7 @@
 package netzwerk.udp;
 
 import geschaeftslogik.Hersteller;
+import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
@@ -12,6 +13,10 @@ import vertrag.Allergene;
 
 import java.io.*;
 import java.net.*;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Kuchenautomat_Server_UDP {
     private final byte[] inBuffer=new byte[1024];
@@ -19,6 +24,8 @@ public class Kuchenautomat_Server_UDP {
     private DatagramSocket socket;
     DatagramPacket packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
     DatagramPacket packetOut;
+
+    private Set<Allergene> newallergeneSet = new HashSet<>();
 
     public Kuchenautomat_Server_UDP(DatagramSocket socket, Verwaltung model){
         this.model = model;
@@ -49,30 +56,61 @@ public class Kuchenautomat_Server_UDP {
     }
 
     //Quelle: https://stackoverflow.com/questions/66786965/how-can-i-turn-an-int-minutes-into-a-duration-in-java
-    /*
+
     protected String getKuchenObejtData(String kuchendaten){
-        String[] dataArray = kuchendaten.split(" ");
-        // - Aus dem String am Index 0 werden die ersten zwei Zeichen entfernt
-        //String typString = dataArray[0].substring(2);
-        Kuchentyp typ = Kuchentyp.valueOf(dataArray[0]);
-        String hersteller = dataArray[1];
-        Hersteller newhersteller = new Hersteller(hersteller);
-        double preis = Double.parseDouble(dataArray[2]);
-        int naehrwert = Integer.parseInt(dataArray[3]);
-        int haltbarkeitInt = Integer.parseInt(dataArray[4]);
-        Duration haltbarkeitD = Duration.ofMinutes(haltbarkeitInt);
-        //Duration haltbarkeit = Duration.parse(dataArray[4]);
-        Allergene allergene = Allergene.valueOf(dataArray[5]);
-        String sorte = dataArray[6];
-        boolean isdeleted = this.model.insertKuchen2(typ, newhersteller, preis,naehrwert,
-                haltbarkeitD, allergene, sorte);
-        if (isdeleted) {
-            return "Kuchen eingefügt.";
-        } else {
-            return "Kuchen nicht eingefügt.";
-        }
+            Hersteller hersteller = null;
+            String obstsorte = "";
+            String ksorte = "";
+            String typ;
+            String herstellername;
+            String preis;
+            String naehrwert;
+            String haltbarkeitS;
+
+            String[] array = kuchendaten.split(" ");
+            typ = array[0];
+            Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
+            herstellername = array[1];
+            hersteller = new Hersteller(herstellername);
+            preis = array[2];
+            double preisd = Double.parseDouble(preis);
+            naehrwert = array[3];
+            int naehrwertint = Integer.parseInt(naehrwert);
+            haltbarkeitS = array[4];
+            Duration haltbarkeit = Duration.ofDays(Long.parseLong(haltbarkeitS));
+            switch (array.length){
+                case 7:
+                    Set<String> allergens = new HashSet<>(Arrays.asList(array[5].split(",")));
+                    if(allergens.size()>0){
+                        for(String allergenElement: allergens){
+                            Allergene allergen = Allergene.valueOf(allergenElement);
+                            this.newallergeneSet.add(allergen);
+                        }
+                        ksorte = array[6];
+                        boolean result = this.model.insertKuchen(kuchentyp, hersteller, preisd, naehrwertint, haltbarkeit,
+                                this.newallergeneSet, obstsorte, ksorte);
+                        return "Kuchen wurde eingefügt: " + result;
+                    }else{
+                        obstsorte = array[6];
+                        boolean result = this.model.insertKuchen(kuchentyp, hersteller, preisd, naehrwertint, haltbarkeit,
+                                this.newallergeneSet, obstsorte, ksorte);
+                        return "Kuchen wurde eingefügt: " + result;
+                    }
+                case 8:
+                    allergens = new HashSet<>(Arrays.asList(array[5].split(",")));
+                    for(String allergenElement: allergens){
+                        Allergene allergen = Allergene.valueOf(allergenElement);
+                        this.newallergeneSet.add(allergen);
+                    }
+                    obstsorte = array[6];
+                    ksorte = array[7];
+                    boolean result = this.model.insertKuchen(kuchentyp, hersteller, preisd, naehrwertint, haltbarkeit,
+                            this.newallergeneSet, obstsorte, ksorte);
+                    return "Kuchen wurde eingefügt: " + result;
+            }
+            return null;
     }
-     */
+
 
     private void kuchenEinfuegen() throws IOException {
         System.out.println("Einfügeprozess gestartet...");
@@ -89,7 +127,7 @@ public class Kuchenautomat_Server_UDP {
         String received = new String(packetIn.getData(),0,packetIn.getLength());
         while (received.length()>lengthKuchendaten){
             received = new String(packetIn.getData(),0,packetIn.getLength());
-            String result2 = getKuchenObejtData2(received);
+            String result2 = getKuchenObejtData(received);
             System.out.println(result2);
             this.socket.receive(packetIn);
             received = new String(packetIn.getData(),0,packetIn.getLength());
@@ -150,6 +188,7 @@ public class Kuchenautomat_Server_UDP {
     protected void datenlesen() throws IOException {
         System.out.println("Daten lesen");
         packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+        //Hier wird auf einen eingehenden Befehl gewartet
         this.socket.receive(packetIn);
         String received = new String(packetIn.getData(),0,packetIn.getLength());
         while (!(received.equals(":c") || received.equals(":u") ||
@@ -272,31 +311,27 @@ public class Kuchenautomat_Server_UDP {
                 this.socket.send(packetOut);
             }
  */
-
         }
     }
 
 
     protected void kuchendaten() throws IOException {
         System.out.println("Kuchendaten lesen");
-        byte[] kuchendatenInBytes;
             for(Kuchen kuchen: this.model.readKuchen()) {
                 String id = String.valueOf(kuchen.getFachnummer());
                 String naehrwert = String.valueOf(kuchen.getNaehrwert());
+                String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
                 String preis = String.valueOf(kuchen.getPreis());
                 String edatum = String.valueOf(kuchen.getEinfuegedatum());
                 String idatum = String.valueOf(kuchen.getInspektionsdatum());
-                String hersteller = kuchen.getHersteller().getName();
                 String kuchendaten = "KuchenID: " + id + "\nNährwert: " + naehrwert + "\nPreis: " + preis +
-                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHersteller: " + hersteller;
-                kuchendatenInBytes = kuchendaten.getBytes();
-                packetOut = new DatagramPacket(kuchendatenInBytes, kuchendatenInBytes.length, packetIn.getAddress(),
+                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHaltbarkeit: " + haltbarkeit;
+                byte[] objectData = convertObjectToByteArray(kuchendaten);
+                packetOut = new DatagramPacket(objectData, objectData.length, packetIn.getAddress(),
                         packetIn.getPort());
                 this.socket.send(packetOut);
             }
-            System.out.println("Test");
             DatagramPacket packetIn = new DatagramPacket(inBuffer, inBuffer.length);
-            System.out.println("Test0");
             this.socket.receive(packetIn);
             DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
             String received = dis.readUTF();
@@ -395,6 +430,7 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
+    /*
     protected String getKuchenObejtData2(String kuchendaten){
         String[] dataArray = kuchendaten.split(" ");
         String boden = dataArray[0];
@@ -409,6 +445,7 @@ public class Kuchenautomat_Server_UDP {
             return "Kuchen nicht eingefügt.";
         }
     }
+     */
 
     protected String herstellerEinfuegen(String herstellername) {
         Hersteller hersteller = new Hersteller(herstellername);
@@ -420,7 +457,7 @@ public class Kuchenautomat_Server_UDP {
         }
     }
 
-    protected String kuchenInspizieren(int kuchenId) throws IOException {
+    protected String kuchenInspizieren(int kuchenId){
         boolean isput = this.model.editKuchen(kuchenId);
         if (isput) {
             return "Habe den Kuchen inspiziert.";
@@ -463,5 +500,13 @@ public class Kuchenautomat_Server_UDP {
         }
 
         */
+    }
+
+    private static byte[] convertObjectToByteArray(Object object) throws IOException {
+        // Konvertiere das Objekt in ein Byte-Array, um es über das Netzwerk zu übertragen
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutput = new ObjectOutputStream(outputStream);
+        objectOutput.writeObject(object);
+        return outputStream.toByteArray();
     }
 }

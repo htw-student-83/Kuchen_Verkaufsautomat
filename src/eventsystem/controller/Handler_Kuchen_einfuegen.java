@@ -1,11 +1,13 @@
 package eventsystem.controller;
 
+import eventsystem.controller.events.EventKuchenEinfuegen;
 import eventsystem.handler.Handler;
 
-public class KuchenInspizierenEvent implements EventListener {
+public class Handler_Kuchen_einfuegen {
+
     Handler handler;
 
-    public KuchenInspizierenEvent(Handler handler){
+    public Handler_Kuchen_einfuegen(Handler handler){
         this.handler = handler;
     }
 
@@ -13,5 +15,4 @@ public class KuchenInspizierenEvent implements EventListener {
     public void run(KuchenEvent event) {
         this.handler.distribute(event);
     }
-
 }

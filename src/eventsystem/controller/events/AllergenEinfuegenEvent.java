@@ -1,6 +1,6 @@
-package eventsystem.controller;
+package eventsystem.controller.events;
 
-import eventsystem.handler.Handler;
+import java.util.EventObject;
 
 public class AllergenEinfuegenEvent implements EventListener {
     Handler handler;

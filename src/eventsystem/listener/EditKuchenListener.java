@@ -1,10 +1,10 @@
 package eventsystem.listener;
 
-import eventsystem.controller.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.listener.EventListener_Kuchen_Inspizierung;
+import eventsystem.controller.events.EventKuchenInspizierung;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 
-public class EditKuchenListener implements EventListener {
+public class EditKuchenListener implements EventListener_Kuchen_Inspizierung {
     //Der GL dem Listener bekannt machen
     private Verwaltung model;
 
@@ -14,8 +14,7 @@ public class EditKuchenListener implements EventListener {
     }
 
     @Override
-    public void run(KuchenEvent event) {
+    public void run(EventKuchenInspizierung event) {
         this.model.editKuchen(event.getkuchenfachnummer());
     }
-
 }

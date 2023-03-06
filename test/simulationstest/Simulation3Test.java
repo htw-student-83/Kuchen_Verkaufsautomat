@@ -24,7 +24,7 @@ public class Simulation3Test {
         Verwaltung model = new Verwaltung(3);
         InsertSimulation3 sim = new InsertSimulation3(model, monitor);
         sim.insertForInspection();
-        List<DekoKuchen> kuchen = model.readKuchen();
+        List<Kuchen> kuchen = model.readKuchen();
         Assertions.assertNotNull(kuchen);
     }
 

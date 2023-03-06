@@ -21,7 +21,7 @@ public class Kuchenautomat_Client_UDP {
                 InetAddress address = InetAddress.getByName("localhost");
                 Kuchenautomat_Client_UDP client = new Kuchenautomat_Client_UDP(datagramSocket, address, 5001);
                 client.clientStart(dos);
-            } catch (SocketException e) {
+            } catch (SocketException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -33,7 +33,7 @@ public class Kuchenautomat_Client_UDP {
         this.port = serverport;
     }
 
-    public void clientStart(DataOutputStream dos) throws IOException {
+    public void clientStart(DataOutputStream dos) throws IOException, ClassNotFoundException {
         String option = scanner.nextLine();
         byte[] optionInByte = option.getBytes();
         packetOut = new DatagramPacket(optionInByte, optionInByte.length, address, port);
@@ -57,7 +57,7 @@ public class Kuchenautomat_Client_UDP {
         }
     }
 
-    private void einfuegemodus() throws IOException {
+    private void einfuegemodus() throws IOException, ClassNotFoundException {
         String herstellername = scanner.nextLine();
         byte[] herstellernameInByte = herstellername.getBytes();
         packetOut = new DatagramPacket(herstellernameInByte, herstellernameInByte.length, address, port);
@@ -98,7 +98,7 @@ public class Kuchenautomat_Client_UDP {
     }
 
 
-    private void aenderungsmodus() throws IOException {
+    private void aenderungsmodus() throws IOException, ClassNotFoundException {
         System.out.println("Änderungsmodus:");
         String userInput = scanner.nextLine();
         while (!(userInput.equals(":c") || userInput.equals(":d") ||
@@ -135,7 +135,7 @@ public class Kuchenautomat_Client_UDP {
 
 
 
-    private void loeschmodus() throws IOException {
+    private void loeschmodus() throws IOException, ClassNotFoundException {
         System.out.println("Löschmodus:");
         String loeschdaten = scanner.nextLine();
         while (!(loeschdaten.equals(":u") || loeschdaten.equals(":c") ||
@@ -171,7 +171,7 @@ public class Kuchenautomat_Client_UDP {
     }
 
 
-    private void persistieren() throws IOException {
+    private void persistieren() throws IOException, ClassNotFoundException {
         String pBefehl = scanner.nextLine();
         while (!(pBefehl.equals(":u") || pBefehl.equals(":c") ||
                 pBefehl.equals(":d") || pBefehl.equals(":r"))) {
@@ -202,8 +202,7 @@ public class Kuchenautomat_Client_UDP {
 
 
 
-    private void anzeigemodus() throws IOException {
-        System.out.println("Anzeigemodus:");
+    private void anzeigemodus() throws IOException, ClassNotFoundException {
         int cnt = 0;
         String userbefehl = scanner.nextLine();
         while (!(userbefehl.equals(":c") || userbefehl.equals(":u") ||
@@ -212,19 +211,25 @@ public class Kuchenautomat_Client_UDP {
             packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
             this.socket.send(packetOut);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
             //Quelle chatGPT;
-            //TODO Welche Abbruchbedingung kann hier verwendet werden?
-            while (packet.getData().length!=0){
+            this.socket.receive(packet);
+            byte[] objectData = packet.getData();
+            ByteArrayInputStream objectStream = new ByteArrayInputStream(objectData);
+            ObjectInputStream objectInput = new ObjectInputStream(objectStream);
+            Object receivedObject = objectInput.readObject();
+            //TODO Wie kommt man aus dieser Schleife wieder raus?
+            while (true){
+                System.out.println(receivedObject);
+                System.out.println("Ich stehe jetzt hier");
                 this.socket.receive(packet);
-                String cakeData = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(cakeData);
-                /*
-                if(cnt == 6){
-                 break;
-                }else {
-                    cnt++;
+                objectData = packet.getData();
+                objectStream = new ByteArrayInputStream(objectData);
+                objectInput = new ObjectInputStream(objectStream);
+                receivedObject = objectInput.readObject();
+                if (receivedObject.toString().length() == 0) {
+                    break; // Beende die Endlos-Schleife
                 }
-                 */
             }
             System.out.println("Test");
             userbefehl = scanner.nextLine();
