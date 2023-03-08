@@ -27,10 +27,9 @@ public class CLI {
     Scanner scanner = new Scanner(System.in);
     Verwaltung model;
     Set<Allergene> newallergeneSet = new HashSet<>();
-    //private Event_Hersteller_Einfuegen event = null;
-    private Handler insertHerstellerHandler, insertKuchenHandler, editKuchenHandler, anzeigeKuchenHandler,
-                     anzeigeHerstellerHandler, anzeigeAllergeneHandler, speichernAutomatenHandler,
-                     ladenAutomatenHandler, deleteHerstellerHandler, deleteKuchenHandler;
+    private Handler insertHerstellerHandler, insertKuchenHandler, editKuchenHandler, deleteHerstellerHandler, deleteKuchenHandler,
+            anzeigeKuchenHandler, anzeigeHerstellerHandler, anzeigeAllergeneHandler,
+            speichernAutomatenHandler, ladenAutomatenHandler;
 
     private static final String EINFUEGEN = ":c";
     private static final String LOESCHEN = ":d";
@@ -54,6 +53,14 @@ public class CLI {
         this.editKuchenHandler = handler;
     }
 
+    public void setDeleteHerstellerHandler(Handler handler) {
+        this.deleteHerstellerHandler = handler;
+    }
+
+    public void setDeleteKuchenHandler(Handler handler) {
+        this.deleteKuchenHandler = handler;
+    }
+
     public void setAnzeigeKuchenHandler(Handler handler) {
         this.anzeigeKuchenHandler = handler;
     }
@@ -64,14 +71,6 @@ public class CLI {
 
     public void setAnzeigeAllergeneHandler(Handler handler) {
         this.anzeigeAllergeneHandler = handler;
-    }
-
-    public void setDeleteHerstellerHandler(Handler handler) {
-        this.deleteHerstellerHandler = handler;
-    }
-
-    public void setDeleteKuchenHandler(Handler handler) {
-        this.deleteKuchenHandler = handler;
     }
 
     public void setSpeichernAutomatenHandler(Handler handler) {
@@ -186,6 +185,7 @@ public class CLI {
     }
 
 
+
     private void distribute(String befehl) {
         switch (befehl) {
             case AENDERN:
@@ -212,7 +212,6 @@ public class CLI {
         String preis;
         String naehrwert;
         String haltbarkeitS;
-
         String[] array = kuchendaten.split(" ");
         typ = array[0];
         Kuchentyp kuchentyp = Kuchentyp.valueOf(typ);
@@ -224,6 +223,7 @@ public class CLI {
         int naehrwertint = Integer.parseInt(naehrwert);
         haltbarkeitS = array[4];
         Duration haltbarkeit = Duration.ofDays(Long.parseLong(haltbarkeitS));
+
         switch (array.length){
             case 7:
                 Set<String> allergens = new HashSet<>(Arrays.asList(array[5].split(",")));

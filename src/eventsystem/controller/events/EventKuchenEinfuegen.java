@@ -19,13 +19,6 @@ public class EventKuchenEinfuegen extends EventObject {
     private int kuchennaehrwert;
     private Set<Allergene> kuchenallergene;
 
-
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source the object on which the Event initially occurred
-     * @throws IllegalArgumentException if source is null
-     */
     public EventKuchenEinfuegen(Object source, Kuchentyp kuchentyp, Hersteller hersteller, double kuchenpreis,
                                 int kuchennaehrwert, Duration kuchenhaltbarkeit, Set<Allergene> kuchenallergene,
                                 String kuchenobstsorte, String kuchenkrem) {

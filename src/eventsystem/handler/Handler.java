@@ -27,6 +27,8 @@ public class Handler {
         this.herstellerLoeschenListener.remove(listener);
     }
 
+    public void remove(EventListener_Kuchen_Anzeigen listener){ this.kuchenAnzeigenListener.remove(listener); }
+
     public void distribute(KuchenEvent event){
         for(EventListener listener: listenerList){
             listener.run(event);

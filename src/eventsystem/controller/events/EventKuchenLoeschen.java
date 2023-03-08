@@ -6,12 +6,6 @@ public class EventKuchenLoeschen extends EventObject {
 
     private int fachnumer;
 
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source the object on which the Event initially occurred
-     * @throws IllegalArgumentException if source is null
-     */
     public EventKuchenLoeschen(Object source, int kuchenID) {
         super(source);
         this.fachnumer = kuchenID;

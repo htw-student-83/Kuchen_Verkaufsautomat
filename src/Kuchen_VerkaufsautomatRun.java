@@ -26,6 +26,7 @@ public class Kuchen_VerkaufsautomatRun {
         Handler handlerHerstellerloeschen = null;
         Handler handlerKuchenloeschen = null;
         Handler handlerEditKuchen = null;
+        Handler handlerKuchenAnzeigen = null;
 
         switch (netzwerk){
             case "UDP":
@@ -45,7 +46,7 @@ public class Kuchen_VerkaufsautomatRun {
                 }
                 break;
             default:
-                CLI cli = new CLI(model);
+                CLI2 cli = new CLI2(model);
                 Beobachter beobachter = new Beobachter(model);
                 model.addObserver(beobachter);
 
@@ -63,6 +64,20 @@ public class Kuchen_VerkaufsautomatRun {
                 handlerInsertKuchen.add(infoListenerKuchenEinfuegen);
                 cli.setInsertKuchenHandler(handlerInsertKuchen);
 
+                handlerEditKuchen = new Handler();
+                EventListener_Kuchen_Inspizierung listenerEditKuchen = new EditKuchenListener(model);
+                EventListener_Kuchen_Inspizierung infoListenerKuchenInspizierung = new InfoListenerKuchenInspizierung();
+                handlerEditKuchen.add(listenerEditKuchen);
+                handlerEditKuchen.add(infoListenerKuchenInspizierung);
+                cli.setEditKuchenHandler(handlerEditKuchen);
+
+                handlerKuchenAnzeigen = new Handler();
+                EventListener_Kuchen_Anzeigen listener_kuchen_anzeigen = new AnzeigenKuchenListener(model);
+                EventListener_Kuchen_Anzeigen infolistenerKuchenAnzeigen = new InfoListenerKuchenAnzeigen();
+                handlerKuchenAnzeigen.add(listener_kuchen_anzeigen);
+                handlerKuchenAnzeigen.add(infolistenerKuchenAnzeigen);
+                cli.setAnzeigeKuchenHandler(handlerKuchenAnzeigen);
+
                 handlerHerstellerloeschen = new Handler();
                 EventListenerHerstellerLoeschen listenerDeleteHersteller = new DeleteHerstellerListener(model);
                 EventListenerHerstellerLoeschen infoListenerHerstellerLoeschen = new InfoListenerHerstellerLoeschen();
@@ -76,13 +91,6 @@ public class Kuchen_VerkaufsautomatRun {
                 handlerKuchenloeschen.add(listenerDeleteKuchen);
                 handlerKuchenloeschen.add(infoListenerKuchenLoeschen);
                 cli.setDeleteKuchenHandler(handlerKuchenloeschen);
-
-                handlerEditKuchen = new Handler();
-                EventListener_Kuchen_Inspizierung listenerEditKuchen = new EditKuchenListener(model);
-                EventListener_Kuchen_Inspizierung infoListenerKuchenInspizierung = new InfoListenerKuchenInspizierung();
-                handlerEditKuchen.add(listenerEditKuchen);
-                handlerEditKuchen.add(infoListenerKuchenInspizierung);
-                cli.setEditKuchenHandler(handlerEditKuchen);
 
                 cli.startCLI();
         }

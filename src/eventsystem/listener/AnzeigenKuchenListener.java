@@ -1,10 +1,9 @@
 package eventsystem.listener;
 
-import eventsystem.controller.listener.EventListener;
-import eventsystem.controller.KuchenEvent;
+import eventsystem.controller.listener.EventListener_Kuchen_Anzeigen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
-/*
-public class AnzeigenKuchenListener implements EventListener {
+
+public class AnzeigenKuchenListener implements EventListener_Kuchen_Anzeigen {
     private Verwaltung model;
 
     //Konstruktor erstellen
@@ -13,9 +12,7 @@ public class AnzeigenKuchenListener implements EventListener {
     }
 
     @Override
-    public void run(KuchenEvent event) {
-     //  this.model.readKuchen(event.getkuchentyp());
+    public void run(EventListener_Kuchen_Anzeigen event) {
+        this.model.readKuchen();
     }
 }
-
- */
