@@ -42,7 +42,7 @@ public class SpeicherTest {
 
     @Test
     @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
-    public void automatenSpeichern() throws FileNotFoundException {
+    public void mashineStatusSaveTest() throws FileNotFoundException {
         OutputStream os = new FileOutputStream("automaten.txt");
         model = new Verwaltung(1);
         Hersteller hersteller1 = new Hersteller("hersteller1");
@@ -55,14 +55,35 @@ public class SpeicherTest {
         ObjektSpeicherungJBP.persistiereAutomaten(model, os);
     }
 
-/*
     @Test
-    @DisplayName("Zustand des Kuchenautomaten mit JBP speichern")
-    public void automatenzustandLaden(){
-        this.model = ObjektLadenJOS.reloadAutomt();
-        List<Kuchen> kuchen = this.model.readKuchen();
-
+    @DisplayName("Zustand des Kuchenautomaten mit JOS speichern")
+    public void mashineStatusSaveTest2() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten3.txt");
+        model = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        allergeneSet = new HashSet<>();
+        allergeneSet.add(Allergene.Gluten);
+        allergeneSet.add(Allergene.Erdnuss);
+        model.insertHersteller(hersteller1);
+        model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
+                Duration.ofDays(23), allergeneSet, "","Butter");
+        ObjektSpeicherungJOS.persistiereAutomaten(model, os);
     }
- */
 
+    @Test
+    @DisplayName("Zustand des Kuchenautomaten mit JOS laden")
+    public void loadTest() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.txt");
+        model = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        allergeneSet = new HashSet<>();
+        allergeneSet.add(Allergene.Gluten);
+        allergeneSet.add(Allergene.Erdnuss);
+        model.insertHersteller(hersteller1);
+        model.insertKuchen(Kuchentyp.Kremkuchen, hersteller1, 2.45,123,
+                Duration.ofDays(23), allergeneSet, "","Butter");
+        ObjektSpeicherungJOS.persistiereAutomaten(model, os);
+        Verwaltung model = ObjektLadenJOS.reloadAutomt("automaten.txt");
+        Assertions.assertNotNull(model);
+    }
 }

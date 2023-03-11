@@ -428,7 +428,7 @@ public class CLI {
                 userInput.equals(":u") || userInput.equals(":d"))) {
             switch (userInput) {
                 case SAVEJOS:
-                    ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+                    //ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
                     break;
                 case LOADJOS:
                     ladeAutomaten();

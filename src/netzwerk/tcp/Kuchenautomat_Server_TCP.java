@@ -343,7 +343,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
         String userInput = "";
         while (befehlPersistierung.equals("saveJOS")){
             System.out.println("In der while-Schleife");
-            ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+            //ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
             userInput = in.readUTF();
             switch (userInput) {
                 case ":c" -> einfuegeprozess(in, out);

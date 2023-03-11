@@ -231,7 +231,7 @@ public class Kuchenautomat_Server_UDP {
     protected void automatenspeichernMitJOS() throws IOException {
         System.out.println("Der aktuelle Zustand des Automaten wird gespeichert...");
         //TODO Wie soll die Angabe über den Speicherort erfolgen - Frage ins Forum!
-        ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+        //ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
         packetIn = new DatagramPacket(inBuffer, inBuffer.length);
         this.socket.receive(packetIn);
         String received = new String(packetIn.getData(),0,packetIn.getLength());

@@ -10,6 +10,7 @@ import jos.ObjektLadenJOS;
 import jos.ObjektSpeicherungJOS;
 import vertrag.Allergene;
 
+import javax.sound.midi.Soundbank;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -23,9 +24,7 @@ import java.util.Set;
 public class CLI2 {
 
     //TODO
-    // 1) Wie kann man von einem Modus zum nächsten kommen und dabei immer ein Event auslösen?
     // 2) Ist das Anzeigen, das Speichern und das Laden von Daten jeweils als ein Event anzusehen?
-
 
     Scanner scanner = new Scanner(System.in);
     Verwaltung model;
@@ -59,23 +58,18 @@ public class CLI2 {
     public void setDeleteKuchenHandler(Handler handler) {
         this.deleteKuchenHandler = handler;
     }
-
     public void setAnzeigeKuchenHandler(Handler handler) {
         this.anzeigeKuchenHandler = handler;
     }
-
     public void setAnzeigeHerstellerHandler(Handler handler) {
         this.anzeigeHerstellerHandler = handler;
     }
-
     public void setAnzeigeAllergeneHandler(Handler handler) {
         this.anzeigeAllergeneHandler = handler;
     }
-
     public void setSpeichernAutomatenHandler(Handler handler) {
         this.speichernAutomatenHandler = handler;
     }
-
     public void setLadenAutomatenHandler(Handler handler) {
         this.ladenAutomatenHandler = handler;
     }
@@ -91,8 +85,6 @@ public class CLI2 {
                 kuchendatenForInspizierung();
                 break;
             case ANZEIGEN:
-                //TODO Event erstellen?
-                String kuchentyp = scanner.nextLine();
                 anzeigemodus();
                 break;
             case LOESCHEN:
@@ -106,16 +98,14 @@ public class CLI2 {
         }
     }
 
-    private void checkHerstellerdatenForInserting() {
-        System.out.println("Hersteller einfügen");
+    private void checkHerstellerdatenForInserting() throws FileNotFoundException {
         String nameHersteller = scanner.nextLine();
         if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller(nameHersteller));
         checkKuchendatenForInserting();
     }
 
 
-    private void checkKuchendatenForInserting() {
-        System.out.println("Kuchen einfügen");
+    private void checkKuchendatenForInserting() throws FileNotFoundException {
         String kuchendaten = scanner.nextLine();
         while(!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
                 kuchendaten.equals(":r") ||  kuchendaten.equals(":p"))){
@@ -129,18 +119,17 @@ public class CLI2 {
                     kuchendatenForDeleting();
                     break;
                 case ":r":
-                    //TODO Event erstellen?
-                    //anzeigemodus();
+                    anzeigemodus();
+                    break;
                 case ":p":
-                    //TODO Event erstellen?
-                    //persistieren();
+                    persistieren();
+                    break;
             }
         }
     }
 
     //TODO einen besseren Namen für die Methode wählen
-    private void kuchendatenForInspizierung() {
-        System.out.println("Kuchen inspezieren");
+    private void kuchendatenForInspizierung() throws FileNotFoundException {
         String kuchenId = scanner.nextLine();
         while (!(kuchenId.equals(":c") || kuchenId.equals(":d") ||
                 kuchenId.equals(":r") || kuchenId.equals(":p"))) {
@@ -154,22 +143,20 @@ public class CLI2 {
                     kuchendatenForDeleting();
                     break;
                 case ":r":
-                    //TODO Event erstellen?
-                    //anzeigemodus();
+                    anzeigemodus();
+                    break;
                 case ":p":
-                    //TODO Event erstellen?
-                    //persistieren();
+                    persistieren();
+                    break;
             }
         }
     }
 
-    private void kuchendatenForDeleting() {
-        System.out.println("Hersteller löschen");
+    private void kuchendatenForDeleting() throws FileNotFoundException {
         String herstellername = scanner.nextLine();
         while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
                 herstellername.equals(":r") || herstellername.equals(":p"))) {
             if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
-            System.out.println("Kuchen löschen");
             String kuchenID = scanner.nextLine();
             if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchenID));
             herstellername = scanner.nextLine();
@@ -181,11 +168,11 @@ public class CLI2 {
                     kuchendatenForInspizierung();
                     break;
                 case ":r":
-                    //TODO Event erstellen?
-                    //anzeigemodus();
+                    anzeigemodus();
+                    break;
                 case ":p":
-                    //TODO Event erstellen?
-                    //persistieren();
+                    persistieren();
+                    break;
             }
         }
     }
@@ -292,46 +279,21 @@ public class CLI2 {
                 case ALLERGENE_NICHT_IN_KUCHEN:
                     readNotProcessAllergene();
                     break;
-                default:
             }
-
             eingabeUser = userInput.nextLine();
             switch (eingabeUser) {
                 case ":c":
-                    String herstellername = scanner.nextLine();
-                    if (insertHerstellerHandler != null) insertHerstellerHandler.distribute(einfuegenHersteller(herstellername));
-                    String kuchendaten = scanner.nextLine();
-                    while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
-                            kuchendaten.equals(":p") || kuchendaten.equals(":r"))) {
-                        if (insertKuchenHandler != null) insertKuchenHandler.distribute(einfuegenKuchen(kuchendaten));
-                        kuchendaten = scanner.nextLine();
-                    }
+                    checkHerstellerdatenForInserting();
                     break;
                 case ":d":
-                    //TODO Hier wird erneut ein Event erstellt
-                    herstellername = scanner.nextLine();
-                    while (!(herstellername.equals(":c") || herstellername.equals(":u") ||
-                            herstellername.equals(":r") || herstellername.equals(":p"))) {
-                        if (deleteHerstellerHandler != null) deleteHerstellerHandler.distribute(loeschmodus(herstellername));
-                        kuchendaten = scanner.nextLine();
-                        if (deleteKuchenHandler != null) deleteKuchenHandler.distribute(kuchenloeschen(kuchendaten));
-                        herstellername = scanner.nextLine();
-                    }
+                    kuchendatenForDeleting();
                     break;
                 case ":u":
-                    //TODO Hier wird erneut ein Event erstellt
-                    //TODO bevor die Methode aufgerufen wird, werden die Daten vom User eingeholt!
-                    String kID = scanner.nextLine();
-                    while (!(kID.equals(":p") || kID.equals(":r") ||
-                            kID.equals(":c") || kID.equals(":d"))) {
-                        if (editKuchenHandler != null) editKuchenHandler.distribute(aenderungsmodus(kID));
-                        kID = scanner.nextLine();
-                    }
+                    kuchendatenForInspizierung();
                     break;
                 case ":p":
                     persistieren();
                     break;
-                default:
             }
         }
     }
@@ -343,6 +305,7 @@ public class CLI2 {
                     "Einfügedatum: " + kuchen.getEinfuegedatum() + "\n" +
                     "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
                     "Preis: " + kuchen.getPreis() + "\n" +
+                    "Sorte: " + kuchen.getKremsorte() + "\n" +
                     "Nährwert: " + kuchen.getNaehrwert() + "\n" +
                     "Haltbarkeit: " + kuchen.getHaltbarkeit());
             System.out.println("---------------------------");
@@ -362,8 +325,17 @@ public class CLI2 {
     }
 
     public void readHersteller() {
+        int cnt  = 0;
         for (Hersteller hersteller : this.model.readHersteller()) {
-            System.out.println(hersteller.getName());
+            //TODO prüfen, ob der Hersteller in der Kuchenliste vorhanden ist
+           /* for(int i = 0; i<this.model.getKuchenlisteSize(); i++){
+                if(hersteller.getName().contains(this.model.)){
+                   cnt++;
+                }
+            }
+
+            */
+            System.out.println(hersteller.getName() + cnt + " Kuchen");
         }
     }
 
@@ -402,7 +374,7 @@ public class CLI2 {
                 userInput.equals(":u") || userInput.equals(":d"))) {
             switch (userInput) {
                 case SAVEJOS:
-                    ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+                    automatenzustandmitJOSspeichern();
                     break;
                 case LOADJOS:
                     ladeAutomaten();
@@ -416,21 +388,10 @@ public class CLI2 {
             }
             userInput = scanner.nextLine();
             switch (userInput) {
-                //case ":c" -> einfuegemodus();
-                case ":d" -> {
-                    //TODO Hier wird erneut ein Event erstellt
-                    String herstellername = scanner.nextLine();
-                    loeschmodus(herstellername);
-                    String kuchendaten = scanner.nextLine();
-                    loeschmodus(kuchendaten);
-                    break;
-                }
+                case ":c" -> checkHerstellerdatenForInserting();
+                case ":u" -> kuchendatenForInspizierung();
+                case ":d" -> kuchendatenForDeleting();
                 case ":r" -> anzeigemodus();
-                case ":u" -> {
-                    //TODO Hier wird erneut ein Event erstellt
-                    String kuchenID = scanner.nextLine();
-                    aenderungsmodus(kuchenID);
-                }
             }
         }
     }
@@ -441,26 +402,41 @@ public class CLI2 {
         for (Hersteller hersteller : this.model.readHersteller()) {
             System.out.println(hersteller.getName());
         }
-
+        System.out.println();
         System.out.println("Kuchen:");
-        model = new Verwaltung(2);
-        for (Kuchen kuchen : this.model.readKuchen()) {
-            System.out.println("Fachnummer: " + kuchen.getFachnummer() + "\n" +
-                    "Einfuegedatum: " + kuchen.getEinfuegedatum() + "\n" +
-                    "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
-                    "Preis: " + kuchen.getPreis() + "\n" +
-                    "Naehrwert: " + kuchen.getNaehrwert() + "\n" +
-                    "Allergene: " + kuchen.getAllergene());
+        if(this.model!=null){
+            for (Kuchen kuchen : this.model.readKuchen()) {
+                System.out.println("Fachnummer: " + kuchen.getFachnummer() + "\n" +
+                                    "Einfuegedatum: " + kuchen.getEinfuegedatum() + "\n" +
+                                    "Inspektionsdatum: " + kuchen.getInspektionsdatum() + "\n" +
+                                    "Preis: " + kuchen.getPreis() + "\n" +
+                                    "Naehrwert: " + kuchen.getNaehrwert() + "\n" +
+                                    "Haltbarkeit: " + kuchen.getHaltbarkeit());
+            }
+            System.out.println();
+            System.out.println("Vorhandene Allergene:");
+            for (Allergene allergen : this.model.readAllergener()) {
+                System.out.println(allergen.name());
+            }
+            System.out.println();
+            System.out.println("Nichtvorhandene Allergene:");
+            for (Allergene allergen : this.model.readAllergeneNotinCakes()) {
+                System.out.println(allergen.name());
+            }
         }
     }
 
-    public void automatenzustandmitJBPSpeichern() throws FileNotFoundException {
+    private void automatenzustandmitJOSspeichern() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.txt");
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model, os);
+    }
+
+    private void automatenzustandmitJBPSpeichern() throws FileNotFoundException {
         OutputStream os = new FileOutputStream("automaten.xml");
         System.out.println("Automatenzustand vor dem Speichervorgang:");
-        System.out.println("Herstellerset: " + this.model.readHersteller().size());
-        System.out.println("Kuchenliste: " + this.model.readKuchen().size());
         ObjektSpeicherungJBP.persistiereAutomaten(this.model, os);
     }
+    
     public void automatenzustandmitJBPLaden() {
         //TODO Wieso werden keine Daten geladen?
         ObjektLadenJBP.automatenzustandLaden("automaten.xml");

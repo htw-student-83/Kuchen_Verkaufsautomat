@@ -8,15 +8,12 @@ public class ObjektSpeicherungJOS {
 
     //Von außen muss noch die Info des Speicherplatzes erfolgen
     //Quelle chatGPT
-    public static void persistiereAutomaten(Verwaltung model, String filename) {
-        //TODO wenn nicht über das Netzwerk, wie können über Stream Daten übertragen werden?
-        try (OutputStream fous=new FileOutputStream(filename)){
-            ObjectOutputStream outputStream = new ObjectOutputStream(fous);{
-                outputStream.writeObject(model);
-            }
+    public static void persistiereAutomaten(Verwaltung model, OutputStream os){
+        try {ObjectOutputStream oOutputStream = new ObjectOutputStream(os);
+            oOutputStream.writeObject(model);
+            oOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
