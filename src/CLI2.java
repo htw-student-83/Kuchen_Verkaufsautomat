@@ -15,10 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 
 public class CLI2 {
@@ -326,16 +323,16 @@ public class CLI2 {
 
     public void readHersteller() {
         int cnt  = 0;
-        for (Hersteller hersteller : this.model.readHersteller()) {
+        for (Hersteller hersteller: this.model.readHersteller()) {
             //TODO prüfen, ob der Hersteller in der Kuchenliste vorhanden ist
-           /* for(int i = 0; i<this.model.getKuchenlisteSize(); i++){
-                if(hersteller.getName().contains(this.model.)){
-                   cnt++;
+            String herstellernameAusDerist = hersteller.getName();
+            for(Kuchen kuchen: this.model.readKuchen()){
+                String herstellername = kuchen.getHersteller().getName();
+                if(herstellernameAusDerist.equals(herstellername)){
+                    cnt++;
                 }
             }
-
-            */
-            System.out.println(hersteller.getName() + cnt + " Kuchen");
+            System.out.println(hersteller.getName() + ": " + cnt + " Kuchen");
         }
     }
 
@@ -396,7 +393,12 @@ public class CLI2 {
         }
     }
 
-    public void ladeAutomaten() {
+    private void automatenzustandmitJOSspeichern() throws FileNotFoundException {
+        OutputStream os = new FileOutputStream("automaten.txt");
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model, os);
+    }
+
+    private void ladeAutomaten() {
         this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
         System.out.println("Hersteller:");
         for (Hersteller hersteller : this.model.readHersteller()) {
@@ -426,17 +428,12 @@ public class CLI2 {
         }
     }
 
-    private void automatenzustandmitJOSspeichern() throws FileNotFoundException {
-        OutputStream os = new FileOutputStream("automaten.txt");
-        ObjektSpeicherungJOS.persistiereAutomaten(this.model, os);
-    }
-
     private void automatenzustandmitJBPSpeichern() throws FileNotFoundException {
         OutputStream os = new FileOutputStream("automaten.xml");
         System.out.println("Automatenzustand vor dem Speichervorgang:");
         ObjektSpeicherungJBP.persistiereAutomaten(this.model, os);
     }
-    
+
     public void automatenzustandmitJBPLaden() {
         //TODO Wieso werden keine Daten geladen?
         ObjektLadenJBP.automatenzustandLaden("automaten.xml");

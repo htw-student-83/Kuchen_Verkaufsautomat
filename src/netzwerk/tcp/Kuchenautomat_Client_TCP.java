@@ -1,6 +1,5 @@
 package netzwerk.tcp;
 
-import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -113,7 +112,7 @@ public class Kuchenautomat_Client_TCP {
                 }
                 case ":r" -> {
                     out.writeUTF(herstellername);
-                    //anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in);
                 }
                 case ":u" -> {
                     out.writeUTF(herstellername);
@@ -164,17 +163,9 @@ public class Kuchenautomat_Client_TCP {
     private void persistenzmodusClient(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
         String daten = scanner.nextLine();
         while (!(daten.equals(":c") || daten.equals(":r") ||
-                daten.equals(":u") || daten.equals(":p")) ){
+                daten.equals(":u") || daten.equals(":d") ||
+                daten.equals("loadJOS") || daten.equals("loadJBP"))){
             out.writeUTF(daten);
-            String pBefehl = scanner.nextLine();
-            out.writeUTF(pBefehl);
-            daten = scanner.nextLine();
-            out.writeUTF(daten);
-            out.writeUTF("loadJOS");
-            while ((daten = in.readLine())!=null) {
-                System.out.println(daten);
-            }
-            in.close();
             daten = scanner.nextLine();
             switch (daten) {
                 case ":c" -> {
@@ -183,7 +174,7 @@ public class Kuchenautomat_Client_TCP {
                 }
                 case ":r" -> {
                     out.writeUTF(daten);
-                   //anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in);
                 }
                 case ":d" -> {
                     out.writeUTF(daten);
@@ -193,7 +184,43 @@ public class Kuchenautomat_Client_TCP {
                     out.writeUTF(daten);
                     aenderungsmodusClient(in, out);
                 }
+                case "loadJOS"-> {
+                    out.writeUTF(daten);
+                    getObjektData(out, in);
+                }
             }
+        }
+    }
+
+    private void getObjektData(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+        String data = in.readLine();
+        while (in.available()>0){
+            System.out.println(in.readLine());
+        }
+        System.out.println("test");
+        data = scanner.nextLine();
+        switch (data) {
+            case ":c" -> {
+                out.writeUTF(data);
+                einfuegeprozessClient(in, out);
+            }
+            case ":r" -> {
+                out.writeUTF(data);
+                anzeigemodusClient(out, in);
+            }
+            case ":u" -> {
+                out.writeUTF(data);
+                aenderungsmodusClient(in, out);
+            }
+            case ":d" -> {
+                out.writeUTF(data);
+                loeschmodusClient(in, out);
+            }
+            case "loadJOS"-> {
+                out.writeUTF(data);
+                getObjektData(out, in);
+            }
+            case "saveJOS"-> out.writeUTF(data);
         }
     }
 }

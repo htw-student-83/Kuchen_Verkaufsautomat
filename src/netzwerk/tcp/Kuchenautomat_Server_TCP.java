@@ -327,71 +327,87 @@ public class Kuchenautomat_Server_TCP implements Runnable{
     private void persistenzmodus(DataInputStream in, PrintWriter out) throws IOException {
         System.out.println("Der Persistenzprozess wurde gestartet..");
         String pBefehl = in.readUTF();
-        switch (pBefehl) {
-            case "saveJOS":
-                saveStatusOfSystem(in, out, pBefehl);
-                break;
-            case "loadJOS":
-                loadStatusOfSystem(in, out, pBefehl);
-                break;
-        }
-    }
-
-
-    private void saveStatusOfSystem(DataInputStream in, PrintWriter out, String befehlPersistierung) throws IOException {
-        System.out.println("saveMode");
-        String userInput = "";
-        while (befehlPersistierung.equals("saveJOS")){
-            System.out.println("In der while-Schleife");
-            //ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
-            userInput = in.readUTF();
-            switch (userInput) {
-                case ":c" -> einfuegeprozess(in, out);
-                case ":r" -> anzeigemodus(in);
-                case ":u" -> aenderungsmodus(in, out);
-                case ":d" -> loeschmodus(in, out);
-                case ":p" -> persistenzmodus(in, out);
+        while (!(pBefehl.equals(":c") || pBefehl.equals(":d") || pBefehl.equals(":u") ||
+                pBefehl.equals(":r"))) {
+            switch (pBefehl) {
+                case "saveJOS":
+                    saveStatusOfSystem(in, out);
+                    break;
+                case "loadJOS":
+                    loadStatusOfSystem(in, out);
+                    break;
             }
         }
     }
 
 
-    private void loadStatusOfSystem(DataInputStream in, PrintWriter out, String persistierungsbefehl) throws IOException {
-        System.out.println("Ladevorgang mit JOS");
+    private void saveStatusOfSystem(DataInputStream in, PrintWriter out) throws IOException {
+        OutputStream outputStream = new FileOutputStream("automaten.txt");
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model, outputStream);
+        String pBefehl = in.readUTF();
+        switch (pBefehl) {
+            case ":c" -> einfuegeprozess(in, out);
+            case ":r" -> anzeigemodus(in);
+            case ":u" -> aenderungsmodus(in, out);
+            case ":d" -> loeschmodus(in, out);
+            case "loadJOS"-> loadStatusOfSystem(in, out);
+        }
+    }
+
+
+    private void loadStatusOfSystem(DataInputStream in, PrintWriter out) throws IOException {
         String userInput = "";
-        while (persistierungsbefehl.equals("loadJOS")){
            this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
            if (this.model != null) {
                for (Kuchen kuchen : this.model.readKuchen()) {
-                   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                   SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                    String fachnummer = String.valueOf(kuchen.getFachnummer());
                    Date eDate = kuchen.getEinfuegedatum();
                    String date = dateFormat.format(eDate);
-
                    Date iDate = kuchen.getInspektionsdatum();
-                   String idate = dateFormat.format(iDate);
-                   out.println("Einfuegedatum: " + date + "Inspektionsdatum: " + idate +  " ID: " + fachnummer);
+                   if(iDate == null){
+                       Date inspektion = null;
+                       out.println("\nKuchenID: " + fachnummer+
+                               "\nEinfuegedatum: " + date +
+                               "\nInspekionsdatum: " + inspektion +
+                               "\nPreis:" + kuchen.getPreis() +
+                               "\nNaehrwert: " + kuchen.getNaehrwert() +
+                               "\nHaltbarkeit: " + kuchen.getHaltbarkeit());
+                   }else {
+                       String idate = dateFormat.format(iDate);
+                       out.println("\nKuchenID: " + fachnummer +
+                               "\nEinfuegedatum: " + date +
+                               "\nInspekionsdatum: " + idate +
+                               "\nPreis: " + kuchen.getPreis() +
+                               "\nNaehrwert: " + kuchen.getNaehrwert()  +
+                               "\nHaltbarkeit: " + kuchen.getHaltbarkeit());
+                   }
                }
-
-
+               out.println("");
+               out.println("Hersteller");
                for (Hersteller hersteller : this.model.readHersteller()) {
                    String herstellername = hersteller.getName();
                    out.println(herstellername);
                }
-
-
+               out.println("");
+               out.println("Allergene i");
                for (Allergene allergen : this.model.readAllergener()) {
                    out.println(allergen);
                }
+               out.println("");
+               out.println("Allergene e");
+               for (Allergene allergen : this.model.readAllergeneNotinCakes()) {
+                   out.println(allergen);
+               }
+
                userInput = in.readUTF();
                switch (userInput) {
                    case ":c" -> einfuegeprozess(in, out);
                    case ":r" -> anzeigemodus(in);
                    case ":u" -> aenderungsmodus(in, out);
                    case ":d" -> loeschmodus(in, out);
-                   case ":p" -> persistenzmodus(in, out);
+                   case "saveJOS" -> saveStatusOfSystem(in, out);
                }
-           }
        }
     }
 }

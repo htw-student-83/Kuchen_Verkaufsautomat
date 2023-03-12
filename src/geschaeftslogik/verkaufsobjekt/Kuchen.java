@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.Set;
 
 public abstract class Kuchen implements Obsttorte, Serializable {
-    private Kuchenboden boden;
-    private Kuchenbelag belag;
     private int naehrwert;
     private int fachnummer;
     private Duration haltbarkeit;
@@ -44,12 +42,6 @@ public abstract class Kuchen implements Obsttorte, Serializable {
         this.hersteller = hersteller;
         this.preis = preis;
         this.typ = kuchentyp;
-    }
-
-    public Kuchen(Kuchenboden boden, Hersteller hersteller, Kuchenbelag belag){
-        this.boden = boden;
-        this.hersteller = hersteller;
-        this.belag = belag;
     }
 
 
@@ -92,9 +84,7 @@ public abstract class Kuchen implements Obsttorte, Serializable {
     protected void setPreis(BigDecimal preis) {
         this.preis = preis;
     }
-    public Date getInspektionsdatum() {
-        return this.inspektionsdatum;
-    }
+    public Date getInspektionsdatum() { return this.inspektionsdatum; }
     protected void setInspektionsdatum(Date iDatum) {
         this.inspektionsdatum = iDatum;
     }
