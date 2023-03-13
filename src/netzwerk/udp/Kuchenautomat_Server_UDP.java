@@ -23,7 +23,7 @@ public class Kuchenautomat_Server_UDP {
     Verwaltung model;
     private DatagramSocket socket;
     DatagramPacket packetIn = new DatagramPacket(this.inBuffer, this.inBuffer.length);
-    DatagramPacket packetOut;
+    DatagramPacket packetOut, packetOut2;
 
     private Set<Allergene> newallergeneSet = new HashSet<>();
 
@@ -151,6 +151,7 @@ public class Kuchenautomat_Server_UDP {
             System.out.println(isChecked);
             this.socket.receive(packetIn);
             received = new String(packetIn.getData(),0,packetIn.getLength());
+            System.out.println("Empfangener Befehl: " + received);
             switch (received) {
                 case ":c" -> this.kuchenEinfuegen();
                 case ":d" -> this.loeschung();
@@ -165,12 +166,12 @@ public class Kuchenautomat_Server_UDP {
         System.out.println("Löschprozess gestartet...");
         this.socket.receive(packetIn);
         String received = new String(packetIn.getData(),0,packetIn.getLength());
-        String herstellerisDeleted = herstellerloeschen(received);
-        System.out.println(herstellerisDeleted);
-        this.socket.receive(packetIn);
-        received = new String(packetIn.getData(),0,packetIn.getLength());
         while (!(received.equals(":c") || received.equals(":u") ||
                 received.equals(":r")|| received.equals(":p"))){
+            String herstellerisDeleted = herstellerloeschen(received);
+            System.out.println(herstellerisDeleted);
+            this.socket.receive(packetIn);
+            received = new String(packetIn.getData(),0,packetIn.getLength());
             int kuchenid = Integer.parseInt(received);
             String isdeleted = kuchenloeschen(kuchenid);
             System.out.println(isdeleted);
@@ -187,8 +188,6 @@ public class Kuchenautomat_Server_UDP {
 
     protected void datenlesen() throws IOException {
         System.out.println("Daten lesen");
-        packetIn = new DatagramPacket(inBuffer, inBuffer.length);
-        //Hier wird auf einen eingehenden Befehl gewartet
         this.socket.receive(packetIn);
         String received = new String(packetIn.getData(),0,packetIn.getLength());
         while (!(received.equals(":c") || received.equals(":u") ||
@@ -202,6 +201,9 @@ public class Kuchenautomat_Server_UDP {
                     break;
                 case "allergene i":
                     allergenendaten();
+                    break;
+                case "allergene e":
+                    //allergenendaten();
                     break;
             }
         }
@@ -231,7 +233,8 @@ public class Kuchenautomat_Server_UDP {
     protected void automatenspeichernMitJOS() throws IOException {
         System.out.println("Der aktuelle Zustand des Automaten wird gespeichert...");
         //TODO Wie soll die Angabe über den Speicherort erfolgen - Frage ins Forum!
-        //ObjektSpeicherungJOS.persistiereAutomaten(this.model, "automaten.txt");
+        OutputStream outputStream = new FileOutputStream("automaten.txt");
+        ObjektSpeicherungJOS.persistiereAutomaten(this.model, outputStream);
         packetIn = new DatagramPacket(inBuffer, inBuffer.length);
         this.socket.receive(packetIn);
         String received = new String(packetIn.getData(),0,packetIn.getLength());
@@ -316,32 +319,40 @@ public class Kuchenautomat_Server_UDP {
 
 
     protected void kuchendaten() throws IOException {
+        String endOFData = "\nEnde";
+        byte[] endArray = endOFData.getBytes();
         System.out.println("Kuchendaten lesen");
             for(Kuchen kuchen: this.model.readKuchen()) {
                 String id = String.valueOf(kuchen.getFachnummer());
                 String naehrwert = String.valueOf(kuchen.getNaehrwert());
+                String sorte = String.valueOf(kuchen.getKremsorte());
                 String haltbarkeit = String.valueOf(kuchen.getHaltbarkeit());
                 String preis = String.valueOf(kuchen.getPreis());
                 String edatum = String.valueOf(kuchen.getEinfuegedatum());
                 String idatum = String.valueOf(kuchen.getInspektionsdatum());
                 String kuchendaten = "KuchenID: " + id + "\nNährwert: " + naehrwert + "\nPreis: " + preis +
-                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHaltbarkeit: " + haltbarkeit;
+                        "\nEinfügedatum: " + edatum + "\nInpekstionsdatum: " + idatum + "\nHaltbarkeit: " + haltbarkeit
+                        +"\nSorte: " + sorte;
                 byte[] objectData = convertObjectToByteArray(kuchendaten);
                 packetOut = new DatagramPacket(objectData, objectData.length, packetIn.getAddress(),
                         packetIn.getPort());
                 this.socket.send(packetOut);
             }
+            packetOut2 = new DatagramPacket(endArray, endArray.length, packetIn.getAddress(), packetIn.getPort());
+            this.socket.send(packetOut2);
             DatagramPacket packetIn = new DatagramPacket(inBuffer, inBuffer.length);
             this.socket.receive(packetIn);
-            DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packetIn.getData()));
-            String received = dis.readUTF();
-            System.out.println(received);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            System.out.println("Neuer Befehl: " + received);
             switch (received){
                 case "hersteller":
                     herstellerdaten();
                     break;
                 case "allergene i":
                     allergenendaten();
+                    break;
+                case "allergene e":
+                    notProccedallergene();
                     break;
                 case ":c":
                     kuchenEinfuegen();
@@ -360,17 +371,22 @@ public class Kuchenautomat_Server_UDP {
                     datenlesen();
                     break;
             }
-
     }
 
 
     protected void herstellerdaten() throws IOException {
+        String endOFData = "\nEnde";
+        byte[] endArray = endOFData.getBytes();
         for(Hersteller hersteller: this.model.readHersteller()){
             String herstellerName = hersteller.getName();
+            System.out.println(herstellerName);
             byte[] nameherstellerInBytes = herstellerName.getBytes();
             packetOut = new DatagramPacket(nameherstellerInBytes, nameherstellerInBytes.length, packetIn.getAddress(), packetIn.getPort());
             this.socket.send(packetOut);
-            packetIn = new DatagramPacket(inBuffer, inBuffer.length);
+            packetOut2 = new DatagramPacket(endArray, endArray.length, packetIn.getAddress(), packetIn.getPort());
+            this.socket.send(packetOut2);
+
+            DatagramPacket packetIn = new DatagramPacket(inBuffer, inBuffer.length);
             this.socket.receive(packetIn);
             String received = new String(packetIn.getData(),0,packetIn.getLength());
             switch (received){
@@ -379,6 +395,9 @@ public class Kuchenautomat_Server_UDP {
                     break;
                 case "allergene i":
                     allergenendaten();
+                    break;
+                case "allergene e":
+                    notProccedallergene();
                     break;
                 case ":c":
                     kuchenEinfuegen();
@@ -401,31 +420,90 @@ public class Kuchenautomat_Server_UDP {
 
 
     protected void allergenendaten() throws IOException {
-        System.out.println("Allergene lesen");
+        String endOFData = "\nEnde";
+        byte[] endArray = endOFData.getBytes();
+        System.out.println("Proceed allergene read");
         //TODO Wie kann man sich alle Allergene vom Dekoratorkuchen ausgeben lassen?
         for(Allergene allergene: this.model.readAllergener()){
             String nameAllergen = String.valueOf(allergene);
             byte[] nameAllergenInBytes = nameAllergen.getBytes();
             packetOut = new DatagramPacket(nameAllergenInBytes, nameAllergenInBytes.length, packetIn.getAddress(), packetIn.getPort());
+            packetOut2= new DatagramPacket(endArray, endArray.length, packetIn.getAddress(), packetIn.getPort());
             this.socket.send(packetOut);
+            this.socket.send(packetOut2);
+            System.out.println("Ich stehe hier");
+            this.socket.receive(packetIn);
+            String received = new String(packetIn.getData(),0,packetIn.getLength());
+            System.out.println("Empfangen: " + received);
+            switch (received){
+                case "kuchen":
+                    kuchendaten();
+                    break;
+                case "hersteller":
+                    herstellerdaten();
+                    break;
+                case "allergene e":
+                    notProccedallergene();
+                    break;
+                case ":c":
+                    kuchenEinfuegen();
+                    break;
+                case ":u":
+                    inspizierung();
+                    break;
+                case ":d":
+                    loeschung();
+                    break;
+                case ":p":
+                    persistenzmodus();
+                    break;
+                case ":r":
+                    datenlesen();
+                    break;
+            }
+        }
+    }
+
+    protected void notProccedallergene() throws IOException {
+        String endOFData = "\nEnde";
+        byte[] endArray = endOFData.getBytes();
+        System.out.println("Not proceed allergene read");
+        //TODO Wie kann man sich alle Allergene vom Dekoratorkuchen ausgeben lassen?
+        for(Allergene allergene: this.model.readAllergeneNotinCakes()){
+            String nameAllergen = String.valueOf(allergene);
+            byte[] nameAllergenInBytes = nameAllergen.getBytes();
+            packetOut = new DatagramPacket(nameAllergenInBytes, nameAllergenInBytes.length, packetIn.getAddress(), packetIn.getPort());
+            packetOut2= new DatagramPacket(endArray, endArray.length, packetIn.getAddress(), packetIn.getPort());
+            this.socket.send(packetOut);
+            this.socket.send(packetOut2);
             packetIn = new DatagramPacket(inBuffer, inBuffer.length);
             this.socket.receive(packetIn);
             String received = new String(packetIn.getData(),0,packetIn.getLength());
             switch (received){
                 case "kuchen":
                     kuchendaten();
+                    break;
                 case "hersteller":
                     herstellerdaten();
+                    break;
+                case "allergene i":
+                    allergenendaten();
+                    break;
                 case ":c":
                     kuchenEinfuegen();
+                    break;
                 case ":u":
                     inspizierung();
+                    break;
                 case ":d":
                     loeschung();
+                    break;
                 case ":p":
                     persistenzmodus();
+                    break;
                 case ":r":
                     datenlesen();
+                    break;
             }
         }
     }

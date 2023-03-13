@@ -132,7 +132,6 @@ public class Kuchenautomat_Client_TCP {
         while (!(daten.equals(":c") || daten.equals(":d") ||
                 daten.equals(":u") || daten.equals(":p"))) {
             out.writeUTF(daten);
-            System.out.println("Verschickt: " + daten);
             String objektdaten = in.readLine();
             while (in.available()>0) {
                 System.out.println(in.readLine());
@@ -155,6 +154,45 @@ public class Kuchenautomat_Client_TCP {
                     out.writeUTF(daten);
                     persistenzmodusClient(out, in);
                 }
+            }
+        }
+    }
+
+    private void getKuchenData(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+        String data = in.readLine();
+        while (in.available()>0){
+            System.out.println(in.readLine());
+        }
+        System.out.println("test");
+        data = scanner.nextLine();
+        switch (data) {
+            case ":c" -> {
+                out.writeUTF(data);
+                einfuegeprozessClient(in, out);
+            }
+            case ":r" -> {
+                out.writeUTF(data);
+                anzeigemodusClient(out, in);
+            }
+            case ":u" -> {
+                out.writeUTF(data);
+                aenderungsmodusClient(in, out);
+            }
+            case ":d" -> {
+                out.writeUTF(data);
+                loeschmodusClient(in, out);
+            }
+            case "allergene e" -> {
+                out.writeUTF(data);
+                getAllergene_e(out, in);
+            }
+            case "allergene i" -> {
+                out.writeUTF(data);
+                getAllergene_i(out, in);
+            }
+            case "hersteller" -> {
+                out.writeUTF(data);
+                getHerstellerdata(out, in);
             }
         }
     }
@@ -221,6 +259,117 @@ public class Kuchenautomat_Client_TCP {
                 getObjektData(out, in);
             }
             case "saveJOS"-> out.writeUTF(data);
+        }
+    }
+
+    private void getHerstellerdata(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+        System.out.println("Herstellerdaten ausgeben");
+        String data = in.readLine();
+        while (in.available()>0) {
+            System.out.println(in.readLine());
+        }
+        data = scanner.nextLine();
+        switch (data) {
+            case ":c" -> {
+                out.writeUTF(data);
+                einfuegeprozessClient(in, out);
+            }
+            case ":u" -> {
+                out.writeUTF(data);
+                aenderungsmodusClient(in, out);
+            }
+            case ":d" -> {
+                out.writeUTF(data);
+                loeschmodusClient(in, out);
+            }
+            case ":p" -> {
+                out.writeUTF(data);
+                persistenzmodusClient(out, in);
+            }
+            case "allergene e" -> {
+                out.writeUTF(data);
+                getAllergene_e(out, in);
+            }
+            case "allergene i" -> {
+                out.writeUTF(data);
+                getAllergene_i(out, in);
+            }
+            case "hersteller" -> {
+                out.writeUTF(data);
+                getHerstellerdata(out, in);
+            }
+        }
+    }
+
+    private void getAllergene_i(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+        String vorhandeneAllergendaten = in.readLine();
+        while (in.available()>0) {
+            System.out.println(in.readLine());
+        }
+        String daten = scanner.nextLine();
+        switch (daten) {
+            case ":c" -> {
+                out.writeUTF(daten);
+                einfuegeprozessClient(in, out);
+            }
+            case ":u" -> {
+                out.writeUTF(daten);
+                aenderungsmodusClient(in, out);
+            }
+            case ":d" -> {
+                out.writeUTF(daten);
+                loeschmodusClient(in, out);
+            }
+            case ":p" -> {
+                out.writeUTF(daten);
+                persistenzmodusClient(out, in);
+            }
+            case "allergene e" -> {
+                out.writeUTF(daten);
+                getAllergene_e(out, in);
+            }
+            case "allergene i" -> {
+                out.writeUTF(daten);
+                getAllergene_i(out, in);
+            }
+        }
+    }
+
+    private void getAllergene_e(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+        String data = in.readLine();
+        while (in.available()>0) {
+            System.out.println(in.readLine());
+        }
+        data = scanner.nextLine();
+        switch (data) {
+            case ":c" -> {
+                out.writeUTF(data);
+                einfuegeprozessClient(in, out);
+            }
+            case ":u" -> {
+                out.writeUTF(data);
+                aenderungsmodusClient(in, out);
+            }
+            case ":d" -> {
+                out.writeUTF(data);
+                loeschmodusClient(in, out);
+            }
+            case ":p" -> {
+                out.writeUTF(data);
+                persistenzmodusClient(out, in);
+            }
+            case "allergene e" -> {
+                out.writeUTF(data);
+                getAllergene_e(out, in);
+            }
+            case "allergene i" -> {
+                out.writeUTF(data);
+                getAllergene_i(out, in);
+            }
+            case "hersteller" -> {
+                out.writeUTF(data);
+                getHerstellerdata(out, in);
+            }
         }
     }
 }

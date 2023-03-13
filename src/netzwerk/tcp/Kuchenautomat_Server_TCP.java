@@ -18,13 +18,9 @@ import java.util.Set;
 
 public class Kuchenautomat_Server_TCP implements Runnable{
     Verwaltung model;
-
-    Set<Allergene> allergeneSet = new HashSet<>();
     private Socket socket;
 
     Socket getData;
-
-    ObjectInputStream ois = null;
     private Set<Allergene> newallergeneSet = new HashSet<>();
 
     public Kuchenautomat_Server_TCP(Socket socket, Verwaltung model)  {
@@ -57,7 +53,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
                         loeschmodus(in, out);
                         break;
                     case ":r":
-                        anzeigemodus(in);
+                        anzeigemodus(in, out);
                         break;
                     case ":p":
                         persistenzmodus(in, out);
@@ -83,102 +79,87 @@ public class Kuchenautomat_Server_TCP implements Runnable{
             kuchendata = in.readUTF();
             switch (kuchendata) {
                 case ":u" -> aenderungsmodus(in, out);
-                case ":r" -> anzeigemodus(in);
+                case ":r" -> anzeigemodus(in, out);
                 case ":d" -> loeschmodus(in, out);
                 case ":p" -> persistenzmodus(in, out);
             }
         }
     }
 
-    private void anzeigemodus(DataInputStream in) throws IOException {
+    private void anzeigemodus(DataInputStream in, PrintWriter out) throws IOException {
         System.out.println("Anzeigemodus");
         String input = in.readUTF();
         switch (input) {
-            case "kuchen" -> {
-                kuchendatenlsen(in, input);
-            }
-            case "hersteller"-> {
-                getHerstellerDaten(in);
-            }
-            case "allergene i" -> {
-                getKnownAllergene(in);
-            }
-            case "allergene e" -> {
-                getNotProcessedAllergene(in);
-            }
-            default->{}
+            case "kuchen":
+                kuchendatenlsen(in, out, input);
+                break;
+            case "hersteller":
+                getHerstellerDaten(in, out, input);
+                break;
+            case "allergene i":
+                getKnownAllergene(in, out);
+                break;
+            case "allergene e":
+                getNotProcessedAllergene(in, out);
+                break;
         }
     }
 
 
-    private void getHerstellerDaten(DataInputStream in) throws IOException {
-        String userInput = "";
-        PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
-        while (!(userInput.equals(":c") || userInput.equals(":r") ||
-                userInput.equals(":d") || userInput.equals(":p") ||
-                userInput.equals("allergene i") || userInput.equals("allergene e") ||
-                userInput.equals("kuchen"))) {
-            for (Hersteller hersteller : this.model.readHersteller()) {
-                String herstellername = hersteller.getName();
-                outP.println(herstellername);
+    private void getHerstellerDaten(DataInputStream in, PrintWriter out, String input) throws IOException {
+        System.out.println("Herstellerdaten auslesen");
+        String userInput = input;
+        while (!(userInput.equals(":c") || userInput.equals(":r") || userInput.equals(":d") || userInput.equals(":p") ||
+                userInput.equals("allergene i") || userInput.equals("allergene e") || userInput.equals("kuchen"))) {
+            for (Hersteller hersteller: this.model.readHersteller()) {
+                out.println(hersteller);
             }
-            userInput = in.readUTF();
-            switch (userInput) {
-                case ":c" -> einfuegeprozess(in, outP);
-                case ":u" -> aenderungsmodus(in, outP);
-                case ":d" -> loeschmodus(in, outP);
-                case ":p" -> persistenzmodus(in, outP);
-                case "allergene i" -> getKnownAllergene(in);
-                case "allergene e" -> getNotProcessedAllergene(in);
-                case "kuchen" -> kuchendatenlsen(in, userInput);
-                default -> {}
-            }
+            System.out.println("Ich warte 002");
+            input = in.readUTF();
         }
     }
 
-    private void getKnownAllergene(DataInputStream in) throws IOException {
+    private void getKnownAllergene(DataInputStream in, PrintWriter out) throws IOException {
         System.out.println("Bekannte Allergene");
         String userInput = "";
-        PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
+        //PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
         while (!(userInput.equals(":c") || userInput.equals(":r") || userInput.equals(":d") ||
                 userInput.equals(":p") || userInput.equals("allergene e") || userInput.equals("kuchen"))) {
             for (Allergene allergen : this.model.readAllergener()) {
-                outP.println(allergen.name());
+                out.println(allergen.name());
             }
             userInput = in.readUTF();
             switch (userInput) {
-                case ":c" -> einfuegeprozess(in, outP);
-                case ":u" -> aenderungsmodus(in, outP);
-                case ":d" -> loeschmodus(in, outP);
-                case ":p" -> persistenzmodus(in, outP);
-                case "allergene e" -> getNotProcessedAllergene(in);
-                case "kuchen" -> kuchendatenlsen(in, userInput);
+                case ":c" -> einfuegeprozess(in, out);
+                case ":u" -> aenderungsmodus(in, out);
+                case ":d" -> loeschmodus(in, out);
+                case ":p" -> persistenzmodus(in, out);
+                case "allergene e" -> getNotProcessedAllergene(in, out);
+                case "kuchen" -> kuchendatenlsen(in, out, userInput);
                 default -> {
                 }
             }
         }
     }
 
-    private void getNotProcessedAllergene(DataInputStream in) throws IOException {
+    private void getNotProcessedAllergene(DataInputStream in, PrintWriter out) throws IOException {
         String userInput = "";
-        PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
+        //PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
         while (!(userInput.equals(":c") || userInput.equals(":r") || userInput.equals(":d") ||
                 userInput.equals(":p") || userInput.equals("kuchen") || userInput.equals("allergene i") ||
                 userInput.equals("hersteller"))) {
             for (Allergene allergen : this.model.readAllergeneNotinCakes()) {
-                outP.println(allergen.name());
+                out.println(allergen.name());
             }
             userInput = in.readUTF();
             switch (userInput) {
-                case ":c" -> einfuegeprozess(in, outP);
-                case ":u" -> aenderungsmodus(in, outP);
-                case ":d" -> loeschmodus(in, outP);
-                case ":p" -> persistenzmodus(in, outP);
-                case "allergene i" -> getKnownAllergene(in);
-                case "kuchen" -> kuchendatenlsen(in, userInput);
-                case "hersteller" -> getHerstellerDaten(in);
-                default -> {
-                }
+                case ":c" -> einfuegeprozess(in, out);
+                case ":u" -> aenderungsmodus(in, out);
+                case ":d" -> loeschmodus(in, out);
+                case ":p" -> persistenzmodus(in, out);
+                case "allergene i" -> getKnownAllergene(in, out);
+                case "kuchen" -> kuchendatenlsen(in, out, userInput);
+                case "hersteller" -> getHerstellerDaten(in, out, userInput);
             }
         }
     }
@@ -249,7 +230,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
             userInput = in.readUTF();
             switch (userInput) {
                 case ":c" -> einfuegeprozess(in, out);
-                case ":r" -> anzeigemodus(in);
+                case ":r" -> anzeigemodus(in, out);
                 case ":d" -> loeschmodus(in, out);
                 case ":p" -> persistenzmodus(in, out);
             }
@@ -270,27 +251,28 @@ public class Kuchenautomat_Server_TCP implements Runnable{
             herstellername = in.readUTF();
             switch (herstellername) {
                 case ":c" -> einfuegeprozess(in, out);
-                case ":r" -> anzeigemodus(in);
+                case ":r" -> anzeigemodus(in, out);
                 case ":u" -> aenderungsmodus(in, out);
                 case ":p" -> persistenzmodus(in, out);
             }
         }
     }
 
-    private void kuchendatenlsen(DataInputStream in, String userinput) throws IOException {
-        PrintWriter outP = new PrintWriter(this.socket.getOutputStream(), true);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+    private void kuchendatenlsen(DataInputStream in, PrintWriter out, String userinput) throws IOException {
+        System.out.println("Kuchendaten auslesen");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss ");
         String input = userinput;
         while (!(input.equals(":c") || input.equals(":d") || input.equals(":u") ||
-                input.equals(":r") || input.equals(":hersteller") || input.equals(":allergene e") ||
-                input.equals(":allergene i"))){
+                input.equals(":r") || input.equals("hersteller") || input.equals("allergene e") ||
+                input.equals("allergene i"))){
             for (Kuchen kuchen : this.model.readKuchen()) {
                 Date eDate = kuchen.getEinfuegedatum();
                 String edate = dateFormat.format(eDate);
                 Date iDate = kuchen.getInspektionsdatum();
                 if(iDate == null){
                     Date inspektion = null;
-                    outP.println("\nKuchenID: " + kuchen.getFachnummer() +
+                    out.println("\nKuchenID: " + kuchen.getFachnummer() +
+                            "\nSorte: " + kuchen.getKremsorte() +
                             "\nEinfuegedatum: " + edate +
                             "\nInspekionsdatum: " + inspektion +
                             "\nPreis:" + kuchen.getPreis() +
@@ -298,7 +280,8 @@ public class Kuchenautomat_Server_TCP implements Runnable{
                             "\nHaltbarkeit: " + kuchen.getHaltbarkeit());
                 }else {
                     String idate = dateFormat.format(iDate);
-                    outP.println("\nKuchenID: " + kuchen.getFachnummer() +
+                    out.println("\nKuchenID: " + kuchen.getFachnummer() +
+                            "\nSorte: " + kuchen.getKremsorte() +
                             "\nEinfuegedatum: " + edate +
                             "\nInspekionsdatum: " + idate +
                             "\nPreis: " + kuchen.getPreis() +
@@ -309,17 +292,31 @@ public class Kuchenautomat_Server_TCP implements Runnable{
             //TODO ermöglichen, dass bei einem Befehl wie "hersteller" die Namen aller bekannten Hersteller angezeigt werden
             // wenn die Befehle "hersteller" , "allergene i" oder "allergene e" folgen, gehören diese in
             // separate Funktionen
+            System.out.println("Ich warte 001");
             input = in.readUTF();
             System.out.println("Empfangen: " + input);
             switch (input) {
-                case ":c" -> einfuegeprozess(in, outP);
-                case ":u" -> aenderungsmodus(in,outP);
-                case ":d" -> loeschmodus(in, outP);
-                case ":p" -> persistenzmodus(in, outP);
-                case "hersteller" -> getHerstellerDaten(in);
-                case "allergene i" -> getKnownAllergene(in);
-                case "allergene e" -> getNotProcessedAllergene(in);
-                default -> {}
+                case ":c":
+                    einfuegeprozess(in, out);
+                    break;
+                case ":u":
+                    aenderungsmodus(in,out);
+                    break;
+                case ":d":
+                    loeschmodus(in, out);
+                    break;
+                case ":p":
+                    persistenzmodus(in, out);
+                    break;
+                case "hersteller":
+                    getHerstellerDaten(in, out, input);
+                    break;
+                case "allergene i":
+                    getKnownAllergene(in, out);
+                    break;
+                case "allergene e":
+                    getNotProcessedAllergene(in, out);
+                    break;
             }
         }
     }
@@ -347,7 +344,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
         String pBefehl = in.readUTF();
         switch (pBefehl) {
             case ":c" -> einfuegeprozess(in, out);
-            case ":r" -> anzeigemodus(in);
+            case ":r" -> anzeigemodus(in, out);
             case ":u" -> aenderungsmodus(in, out);
             case ":d" -> loeschmodus(in, out);
             case "loadJOS"-> loadStatusOfSystem(in, out);
@@ -356,6 +353,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
 
 
     private void loadStatusOfSystem(DataInputStream in, PrintWriter out) throws IOException {
+        System.out.println("Gespeicherte Daten ausgeben.");
         String userInput = "";
            this.model = ObjektLadenJOS.reloadAutomt("automaten.txt");
            if (this.model != null) {
@@ -403,7 +401,7 @@ public class Kuchenautomat_Server_TCP implements Runnable{
                userInput = in.readUTF();
                switch (userInput) {
                    case ":c" -> einfuegeprozess(in, out);
-                   case ":r" -> anzeigemodus(in);
+                   case ":r" -> anzeigemodus(in, out);
                    case ":u" -> aenderungsmodus(in, out);
                    case ":d" -> loeschmodus(in, out);
                    case "saveJOS" -> saveStatusOfSystem(in, out);
