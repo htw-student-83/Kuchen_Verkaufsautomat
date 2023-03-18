@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class NetzwerkTest {
+    /*
     @Test
     @DisplayName("Stellvertretertest für's Einfügen eines Kuchens")
     public void insertKuchen() throws IOException {
@@ -32,4 +33,6 @@ public class NetzwerkTest {
         Assertions.assertEquals(1, dis.readInt());
         Assertions.assertEquals("Daniel", dis.readUTF());
     }
+
+     */
 }

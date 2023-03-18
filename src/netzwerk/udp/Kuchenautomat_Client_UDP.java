@@ -2,7 +2,6 @@ package netzwerk.udp;
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Kuchenautomat_Client_UDP {
@@ -61,42 +60,28 @@ public class Kuchenautomat_Client_UDP {
         String herstellername = scanner.nextLine();
         byte[] herstellernameInByte = herstellername.getBytes();
         sendMessage(herstellernameInByte);
-        //packetOut = new DatagramPacket(herstellernameInByte, herstellernameInByte.length, address, port);
-        //this.socket.send(packetOut);
-        //packetOut = new DatagramPacket(herstellernameInByte, herstellername.length(), address, port);
-        //this.socket.send(packetOut);
         String kuchendaten = scanner.nextLine();
         while (!(kuchendaten.equals(":u") || kuchendaten.equals(":d") ||
                 kuchendaten.equals(":r") || kuchendaten.equals(":p"))) {
             byte[] kuchendatenInByte = kuchendaten.getBytes();
             sendMessage(kuchendatenInByte);
-            //packetOut = new DatagramPacket(kuchendatenInByte, kuchendatenInByte.length, address, port);
-            //this.socket.send(packetOut);
             kuchendaten = scanner.nextLine();
             byte[] befehl = kuchendaten.getBytes();
             switch (kuchendaten) {
                 case ":d" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     loeschmodus();
                 }
                 case ":p" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     persistieren();
                 }
                 case ":u" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     aenderungsmodus();
                 }
                 case ":r" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     anzeigemodus();
                 }
             }
@@ -110,33 +95,23 @@ public class Kuchenautomat_Client_UDP {
                 userInput.equals(":p") || userInput.equals(":r"))) {
             byte[] userinputInByte = userInput.getBytes();
             sendMessage(userinputInByte);
-            //packetOut = new DatagramPacket(userinputInByte, userinputInByte.length, address, port);
-            //this.socket.send(packetOut);
             userInput = scanner.nextLine();
             byte[] befehl = userInput.getBytes();
             switch (userInput) {
                 case ":c" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     einfuegemodus();
                 }
                 case ":d" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     loeschmodus();
                 }
                 case ":p" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     persistieren();
                 }
                 case ":r" -> {
                     sendMessage(befehl);
-                    //packetOut = new DatagramPacket(befehl, befehl.length, address, port);
-                    //this.socket.send(packetOut);
                     anzeigemodus();
                 }
             }
@@ -151,40 +126,26 @@ public class Kuchenautomat_Client_UDP {
                 loeschdaten.equals(":p") || loeschdaten.equals(":r"))) {
             byte[] herstellername_bekanntInBytes = loeschdaten.getBytes();
             sendMessage(herstellername_bekanntInBytes);
-            //packetOut = new DatagramPacket(herstellername_bekanntInBytes, herstellername_bekanntInBytes.length, address, port);
-            //this.socket.send(packetOut);
             loeschdaten = scanner.nextLine();
             byte[] zuloeschenderKuchen = loeschdaten.getBytes();
             sendMessage(zuloeschenderKuchen);
-            //packetOut = new DatagramPacket(zuloeschenderKuchen, zuloeschenderKuchen.length, address, port);
-            //this.socket.send(packetOut);
             loeschdaten = scanner.nextLine();
             byte[] userbefehlInBytes = loeschdaten.getBytes();
             switch (loeschdaten) {
                 case ":c":
                     sendMessage(userbefehlInBytes);
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     einfuegemodus();
                 case ":d":
                     sendMessage(userbefehlInBytes);
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     loeschmodus();
                 case ":p":
                     sendMessage(userbefehlInBytes);
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     persistieren();
                 case ":u":
                     sendMessage(userbefehlInBytes);
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     aenderungsmodus();
                 case ":r":
                     sendMessage(userbefehlInBytes);
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     anzeigemodus();
             }
         }
@@ -197,40 +158,23 @@ public class Kuchenautomat_Client_UDP {
                 pBefehl.equals(":d") || pBefehl.equals(":r"))) {
             byte[] userbefehlInBytes = pBefehl.getBytes();
             sendMessage(userbefehlInBytes);
-            //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-            //this.socket.send(packetOut);
             pBefehl = scanner.nextLine();
             byte[] userbefehlPersistierenInBytes = pBefehl.getBytes();
             switch (pBefehl) {
                 case ":c":
                     sendMessage(userbefehlPersistierenInBytes);
-                    //userbefehlInBytes = pBefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     einfuegemodus();
                 case ":d":
                     sendMessage(userbefehlPersistierenInBytes);
-                    //userbefehlInBytes = pBefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     loeschmodus();
                 case ":p":
                     sendMessage(userbefehlPersistierenInBytes);
-                    //userbefehlInBytes = pBefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     persistieren();
                 case ":u":
                     sendMessage(userbefehlPersistierenInBytes);
-                    //userbefehlInBytes = pBefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     aenderungsmodus();
                 case "loadJOS":
                     sendMessage(userbefehlPersistierenInBytes);
-                    //userbefehlInBytes = pBefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefehlInBytes, userbefehlInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     loadStatusAutomatenWithJOS(pBefehl);
             }
         }
@@ -244,8 +188,6 @@ public class Kuchenautomat_Client_UDP {
                 userbefehl.equals(":d") || userbefehl.equals(":p"))){
             byte[] userbefelInBytes = userbefehl.getBytes();
             sendMessage(userbefelInBytes);
-            //packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
-            //this.socket.send(packetOut);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             //Quelle chatGPT;
             //this.socket.receive(packet);
@@ -263,10 +205,6 @@ public class Kuchenautomat_Client_UDP {
                     break;
                 }
                 System.out.println(data);
-                //objectData = packet.getData();
-                //objectStream = new ByteArrayInputStream(objectData);
-                //objectInput = new ObjectInputStream(objectStream);
-                //receivedObject = objectInput.readObject();
             }
             System.out.println("Test");
             userbefehl = scanner.nextLine();
@@ -274,30 +212,18 @@ public class Kuchenautomat_Client_UDP {
             switch (userbefehl){
                 case ":u":
                     sendMessage(userBefehlDatenAuslesen);
-                    //userbefelInBytes = userbefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     aenderungsmodus();
                     break;
                 case ":c":
                     sendMessage(userBefehlDatenAuslesen);
-                    //userbefelInBytes = userbefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     einfuegemodus();
                     break;
                 case ":d":
                     sendMessage(userBefehlDatenAuslesen);
-                    //userbefelInBytes = userbefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     loeschmodus();
                     break;
                 case ":p":
                     sendMessage(userBefehlDatenAuslesen);
-                    //userbefelInBytes = userbefehl.getBytes();
-                    //packetOut = new DatagramPacket(userbefelInBytes, userbefelInBytes.length, address, port);
-                    //this.socket.send(packetOut);
                     persistieren();
                     break;
             }
@@ -320,18 +246,22 @@ public class Kuchenautomat_Client_UDP {
             //ObjectInputStream objectInput = new ObjectInputStream(objectStream);
             //Object receivedObject = objectInput.readObject();
             while (true){
-                this.socket.receive(packet);
-                ByteArrayInputStream objectStream = new ByteArrayInputStream(packet.getData());
-                ObjectInputStream objectInput = new ObjectInputStream(objectStream);
-                Object receivedObject = objectInput.readObject();
-                String data = new String(packet.getData());
-                System.out.println(receivedObject.toString());
-                //objectData = packet.getData();
-                //objectStream = new ByteArrayInputStream(objectData);
-                //objectInput = new ObjectInputStream(objectStream);
-                //receivedObject = objectInput.readObject();
-                if (receivedObject.toString().contains("Ende")) {
-                    break;
+                try {
+                    this.socket.receive(packet);
+                    //ByteArrayInputStream objectStream = new ByteArrayInputStream(packet.getData());
+                    //ObjectInputStream objectInput = new ObjectInputStream(objectStream);
+                    //Object receivedObject = objectInput.readObject();
+                    String data = new String(packet.getData());
+                    System.out.println(data);
+                    //objectData = packet.getData();
+                    //objectStream = new ByteArrayInputStream(objectData);
+                    //objectInput = new ObjectInputStream(objectStream);
+                    //receivedObject = objectInput.readObject();
+                    if (data.contains("Ende")) {
+                        break;
+                    }
+                }catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             System.out.println("Test");

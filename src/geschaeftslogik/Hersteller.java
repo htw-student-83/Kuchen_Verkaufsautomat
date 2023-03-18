@@ -9,6 +9,9 @@ public class Hersteller implements vertrag.Hersteller, Serializable {
     public Hersteller(String herstellername){
         this.name = herstellername;
     }
+
+    public Hersteller(){}
+
     public String getName() {
         return this.name;
     }
@@ -24,5 +27,10 @@ public class Hersteller implements vertrag.Hersteller, Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString(){
+        return "Name: " + this.getName() + "\n";
     }
 }

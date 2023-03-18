@@ -1,6 +1,5 @@
 package simulation3;
 
-import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 import java.text.ParseException;

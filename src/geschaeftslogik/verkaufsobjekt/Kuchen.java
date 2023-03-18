@@ -44,6 +44,8 @@ public abstract class Kuchen implements Obsttorte, Serializable {
         this.typ = kuchentyp;
     }
 
+    public Kuchen(){}
+
 
     //Konstruktor für die Wiederherstellung von Daten
     public Kuchen(int fachnummer, int naehrwert, Hersteller hersteller,
@@ -102,4 +104,8 @@ public abstract class Kuchen implements Obsttorte, Serializable {
     }
     public abstract String getKremsorte();
     public String getName(){return this.name;}
+    public String toString(){
+        return "\nEinfuegedatum: " + getEinfuegedatum() + "\nKuchenID: " + getFachnummer() + "\nSorte: " + getKremsorte() +
+                "\nInspektionsdatum: " + getInspektionsdatum() + "\nHaltbarkeit: " + getHaltbarkeit();
+    }
 }

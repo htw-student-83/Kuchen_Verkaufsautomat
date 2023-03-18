@@ -3,7 +3,6 @@ package vertrag;
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.IKuchen;
 import geschaeftslogik.Kuchentyp;
-import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 
 import java.time.Duration;

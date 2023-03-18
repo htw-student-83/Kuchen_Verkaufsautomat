@@ -305,7 +305,7 @@ public class CLI2 {
                     "Sorte: " + kuchen.getKremsorte() + "\n" +
                     "Nährwert: " + kuchen.getNaehrwert() + "\n" +
                     "Haltbarkeit: " + kuchen.getHaltbarkeit());
-            System.out.println("---------------------------");
+            System.out.println(" ");
         }
     }
 

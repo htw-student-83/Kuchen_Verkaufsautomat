@@ -99,6 +99,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
         return false;
     }
 
+
     protected void setAutomatenLimit(int newLimit){
         this.automat.setKapazitaet(newLimit);
     }
@@ -251,6 +252,7 @@ public class Verwaltung extends Observable implements KuchenlistManagement, Seri
     public int getKuchenlisteSize2 (){
         return this.kuchenliste2.size();
     }
+
 
     public int getAllergenenSetSize (){
         return this.allergenset.size();

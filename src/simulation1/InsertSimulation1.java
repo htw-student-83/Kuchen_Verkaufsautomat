@@ -44,6 +44,7 @@ public class InsertSimulation1 extends Thread implements Runnable{
                     System.out.println("Thread1 hat einen Kremkuchen eingefügt.");
                     break;
                 case 2:
+                    allergeneSet = new HashSet<>();
                     allergeneSet.add(Allergene.Gluten);
                     allergeneSet.add(Allergene.Erdnuss);
                     this.model.insertHersteller(hersteller2);
@@ -52,8 +53,9 @@ public class InsertSimulation1 extends Thread implements Runnable{
                     System.out.println("Thread1 hat einen Obstkuchen eingefügt.");
                     break;
                 case 3:
-                    this.model.insertHersteller(hersteller3);
+                    allergeneSet = new HashSet<>();
                     allergeneSet.add(Allergene.Gluten);
+                    this.model.insertHersteller(hersteller3);
                     this.model.insertKuchen(Kuchentyp.Obsttorte, hersteller3, 1.44, 330,
                             Duration.ofDays(44), allergeneSet, "Banane","Sahne");
                     System.out.println("Thread1 hat eine Obsttorte eingefügt.");

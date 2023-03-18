@@ -505,6 +505,58 @@ public class GeschaeftslogikTest {
         assertFalse(result);
     }
 
+    @Test
+    @DisplayName("Zu Beginn ist die Kapazität unverändert")
+    public void capazityTest() {
+        Verwaltung vw = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        vw.insertHersteller(hersteller1);
+        Assertions.assertEquals(1, vw.getKapazity());
+    }
+
+    @Test
+    @DisplayName("Nach einfügen eines Kuchens verändert sich das urspr. allergenSet.")
+    public void originAllertSetTest() {
+        Set<Allergene> newList = new HashSet<>();
+        newList.add(Allergene.Sesamsamen);
+        newList.add(Allergene.Haselnuss);
+        Verwaltung vw = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        allergeneSet = new HashSet<>();
+        allergeneSet.add(Allergene.Gluten);
+        allergeneSet.add(Allergene.Erdnuss);
+        vw.fillAlleAllergeneSet();
+        vw.insertHersteller(hersteller1);
+        vw.insertKuchen(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), allergeneSet, "", "Sahne");
+        Assertions.assertEquals(newList, vw.readAllergeneNotinCakes());
+    }
+
+    @Test
+    @DisplayName("Es wird kein Kuchen eingefügt.")
+    public void NumberOfBoxexTest() {
+        Verwaltung vw = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        vw.fillAlleAllergeneSet();
+        vw.insertHersteller(hersteller1);
+        Assertions.assertEquals(0, vw.getAnzahlBelgeteFaecher());
+    }
+
+    @Test
+    @DisplayName("Ein Kuchen wird eingefügt.")
+    public void NumberOfBoxexTest2() {
+        Verwaltung vw = new Verwaltung(1);
+        Hersteller hersteller1 = new Hersteller("hersteller1");
+        allergeneSet = new HashSet<>();
+        allergeneSet.add(Allergene.Gluten);
+        allergeneSet.add(Allergene.Erdnuss);
+        vw.fillAlleAllergeneSet();
+        vw.insertHersteller(hersteller1);
+        vw.insertKuchen(Kuchentyp.Kremkuchen, hersteller1,1.34,120,
+                Duration.ofDays(12), allergeneSet, "", "Sahne");
+        Assertions.assertEquals(1, vw.getAnzahlBelgeteFaecher());
+    }
+
     /***********************Herstellertests**************************/
 
     @Test

@@ -1,7 +1,6 @@
 package simulation2;
 
 import geschaeftslogik.IKuchen;
-import geschaeftslogik.verkaufsobjekt.DekoKuchen;
 import geschaeftslogik.verkaufsobjekt.Kuchen;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
 

@@ -22,25 +22,26 @@ public class Kuchenautomat_Client_TCP {
             out.writeUTF(option);
             switch (option){
                 case ":c":
-                    einfuegeprozessClient(in, out);
+                    einfuegeprozessClient(in, out, br);
                     break;
                 case ":u":
-                    aenderungsmodusClient(in, out);
+                    aenderungsmodusClient(in, out, br);
                     break;
                 case ":d":
-                    loeschmodusClient(in, out);
+                    loeschmodusClient(in, out, br);
                     break;
                 case ":r":
-                    anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in, br);
                     break;
                 case ":p":
-                    persistenzmodusClient(out, in);
+                    persistenzmodusClient(out, in, br);
                     break;
             }
         }
     }
 
-    private void einfuegeprozessClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
+    private void einfuegeprozessClient(DataInputStream in, DataOutputStream out, BufferedReader br)
+            throws IOException, ClassNotFoundException {
         String herstellername = scanner.nextLine();
         out.writeUTF(herstellername);
         String kuchendaten = scanner.nextLine();
@@ -51,25 +52,26 @@ public class Kuchenautomat_Client_TCP {
             switch (kuchendaten) {
                 case ":d" -> {
                     out.writeUTF(kuchendaten);
-                    loeschmodusClient(in, out);
+                    loeschmodusClient(in, out, br);
                 }
                 case ":r" -> {
                     out.writeUTF(kuchendaten);
-                    anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in, br);
                 }
                 case ":u" -> {
                     out.writeUTF(kuchendaten);
-                    aenderungsmodusClient(in, out);
+                    aenderungsmodusClient(in, out, br);
                 }
                 case ":p" -> {
                     out.writeUTF(kuchendaten);
-                    persistenzmodusClient(out, in);
+                    persistenzmodusClient(out, in, br);
                 }
             }
         }
     }
 
-    private void aenderungsmodusClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
+    private void aenderungsmodusClient(DataInputStream in, DataOutputStream out, BufferedReader br)
+            throws IOException, ClassNotFoundException {
         String kuchenID = scanner.nextLine();
         while (!(kuchenID.equals(":c") || kuchenID.equals(":r") ||
                 kuchenID.equals(":d") || kuchenID.equals(":p"))){
@@ -78,26 +80,27 @@ public class Kuchenautomat_Client_TCP {
             switch (kuchenID) {
                 case ":c" -> {
                     out.writeUTF(kuchenID);
-                    einfuegeprozessClient(in, out);
+                    einfuegeprozessClient(in, out, br);
                 }
                 case ":r" -> {
                     out.writeUTF(kuchenID);
-                    anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in, br);
                 }
                 case ":d" -> {
                     out.writeUTF(kuchenID);
-                    loeschmodusClient(in, out);
+                    loeschmodusClient(in, out, br);
                 }
                 case ":p" -> {
                     out.writeUTF(kuchenID);
-                    persistenzmodusClient(out, in);
+                    persistenzmodusClient(out, in, br);
                 }
             }
         }
     }
 
 
-    private void loeschmodusClient(DataInputStream in, DataOutputStream out) throws IOException, ClassNotFoundException {
+    private void loeschmodusClient(DataInputStream in, DataOutputStream out, BufferedReader br)
+            throws IOException, ClassNotFoundException {
         String herstellername = scanner.nextLine();
         while (!(herstellername.equals(":c") || herstellername.equals(":r") ||
                 herstellername.equals(":u") || herstellername.equals(":p"))) {
@@ -108,97 +111,63 @@ public class Kuchenautomat_Client_TCP {
             switch (herstellername) {
                 case ":c" -> {
                     out.writeUTF(herstellername);
-                    einfuegeprozessClient(in, out);
+                    einfuegeprozessClient(in, out, br);
                 }
                 case ":r" -> {
                     out.writeUTF(herstellername);
-                    anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in, br);
                 }
                 case ":u" -> {
                     out.writeUTF(herstellername);
-                    aenderungsmodusClient(in, out);
+                    aenderungsmodusClient(in, out, br);
                 }
                 case ":p" -> {
                     out.writeUTF(herstellername);
-                    persistenzmodusClient(out, in);
+                    persistenzmodusClient(out,in, br);
                 }
             }
         }
     }
 
 
-    private void anzeigemodusClient(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+    private void anzeigemodusClient(DataOutputStream out, DataInputStream in, BufferedReader br)
+            throws IOException, ClassNotFoundException {
         String daten = scanner.nextLine();
         while (!(daten.equals(":c") || daten.equals(":d") ||
                 daten.equals(":u") || daten.equals(":p"))) {
             out.writeUTF(daten);
-            String objektdaten = in.readLine();
-            while (in.available()>0) {
-                System.out.println(in.readLine());
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if(line.equals(" ")){
+                    break;
+                }
             }
             daten = scanner.nextLine();
             switch (daten) {
                 case ":c" -> {
                     out.writeUTF(daten);
-                    einfuegeprozessClient(in, out);
+                    einfuegeprozessClient(in, out, br);
                 }
                 case ":u" -> {
                     out.writeUTF(daten);
-                    aenderungsmodusClient(in, out);
+                    aenderungsmodusClient(in, out, br);
                 }
                 case ":d" -> {
                     out.writeUTF(daten);
-                    loeschmodusClient(in, out);
+                    loeschmodusClient(in, out, br);
                 }
                 case ":p" -> {
                     out.writeUTF(daten);
-                    persistenzmodusClient(out, in);
+                    persistenzmodusClient(out, in, br);
                 }
             }
         }
     }
 
-    private void getKuchenData(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
-        String data = in.readLine();
-        while (in.available()>0){
-            System.out.println(in.readLine());
-        }
-        System.out.println("test");
-        data = scanner.nextLine();
-        switch (data) {
-            case ":c" -> {
-                out.writeUTF(data);
-                einfuegeprozessClient(in, out);
-            }
-            case ":r" -> {
-                out.writeUTF(data);
-                anzeigemodusClient(out, in);
-            }
-            case ":u" -> {
-                out.writeUTF(data);
-                aenderungsmodusClient(in, out);
-            }
-            case ":d" -> {
-                out.writeUTF(data);
-                loeschmodusClient(in, out);
-            }
-            case "allergene e" -> {
-                out.writeUTF(data);
-                getAllergene_e(out, in);
-            }
-            case "allergene i" -> {
-                out.writeUTF(data);
-                getAllergene_i(out, in);
-            }
-            case "hersteller" -> {
-                out.writeUTF(data);
-                getHerstellerdata(out, in);
-            }
-        }
-    }
 
-
-    private void persistenzmodusClient(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
+    private void persistenzmodusClient(DataOutputStream out, DataInputStream in, BufferedReader br)
+            throws IOException, ClassNotFoundException {
         String daten = scanner.nextLine();
         while (!(daten.equals(":c") || daten.equals(":r") ||
                 daten.equals(":u") || daten.equals(":d") ||
@@ -208,168 +177,60 @@ public class Kuchenautomat_Client_TCP {
             switch (daten) {
                 case ":c" -> {
                     out.writeUTF(daten);
-                    einfuegeprozessClient(in, out);
+                    einfuegeprozessClient(in, out, br);
                 }
                 case ":r" -> {
                     out.writeUTF(daten);
-                    anzeigemodusClient(out, in);
+                    anzeigemodusClient(out, in, br);
                 }
                 case ":d" -> {
                     out.writeUTF(daten);
-                    loeschmodusClient(in, out);
+                    loeschmodusClient(in, out, br);
                 }
                 case ":u" -> {
                     out.writeUTF(daten);
-                    aenderungsmodusClient(in, out);
+                    aenderungsmodusClient(in, out, br);
                 }
                 case "loadJOS"-> {
                     out.writeUTF(daten);
-                    getObjektData(out, in);
+                    getObjektData(out, in, br);
                 }
             }
         }
     }
 
-    private void getObjektData(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
-        String data = in.readLine();
-        while (in.available()>0){
-            System.out.println(in.readLine());
+    private void getObjektData(DataOutputStream out, DataInputStream in, BufferedReader br)
+            throws IOException, ClassNotFoundException {
+        String line = "";
+        while ((line = br.readLine())!=null){
+            System.out.println(line);
+            if(line.equals(" ")){
+                break;
+            }
         }
-        System.out.println("test");
-        data = scanner.nextLine();
+        String data = scanner.nextLine();
         switch (data) {
             case ":c" -> {
                 out.writeUTF(data);
-                einfuegeprozessClient(in, out);
+                einfuegeprozessClient(in, out, br);
             }
             case ":r" -> {
                 out.writeUTF(data);
-                anzeigemodusClient(out, in);
+                anzeigemodusClient(out, in, br);
             }
             case ":u" -> {
                 out.writeUTF(data);
-                aenderungsmodusClient(in, out);
+                aenderungsmodusClient(in, out, br);
             }
             case ":d" -> {
                 out.writeUTF(data);
-                loeschmodusClient(in, out);
+                loeschmodusClient(in, out, br);
             }
             case "loadJOS"-> {
                 out.writeUTF(data);
-                getObjektData(out, in);
+                getObjektData(out, in, br);
             }
             case "saveJOS"-> out.writeUTF(data);
-        }
-    }
-
-    private void getHerstellerdata(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
-        System.out.println("Herstellerdaten ausgeben");
-        String data = in.readLine();
-        while (in.available()>0) {
-            System.out.println(in.readLine());
-        }
-        data = scanner.nextLine();
-        switch (data) {
-            case ":c" -> {
-                out.writeUTF(data);
-                einfuegeprozessClient(in, out);
-            }
-            case ":u" -> {
-                out.writeUTF(data);
-                aenderungsmodusClient(in, out);
-            }
-            case ":d" -> {
-                out.writeUTF(data);
-                loeschmodusClient(in, out);
-            }
-            case ":p" -> {
-                out.writeUTF(data);
-                persistenzmodusClient(out, in);
-            }
-            case "allergene e" -> {
-                out.writeUTF(data);
-                getAllergene_e(out, in);
-            }
-            case "allergene i" -> {
-                out.writeUTF(data);
-                getAllergene_i(out, in);
-            }
-            case "hersteller" -> {
-                out.writeUTF(data);
-                getHerstellerdata(out, in);
-            }
-        }
-    }
-
-    private void getAllergene_i(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
-        String vorhandeneAllergendaten = in.readLine();
-        while (in.available()>0) {
-            System.out.println(in.readLine());
-        }
-        String daten = scanner.nextLine();
-        switch (daten) {
-            case ":c" -> {
-                out.writeUTF(daten);
-                einfuegeprozessClient(in, out);
-            }
-            case ":u" -> {
-                out.writeUTF(daten);
-                aenderungsmodusClient(in, out);
-            }
-            case ":d" -> {
-                out.writeUTF(daten);
-                loeschmodusClient(in, out);
-            }
-            case ":p" -> {
-                out.writeUTF(daten);
-                persistenzmodusClient(out, in);
-            }
-            case "allergene e" -> {
-                out.writeUTF(daten);
-                getAllergene_e(out, in);
-            }
-            case "allergene i" -> {
-                out.writeUTF(daten);
-                getAllergene_i(out, in);
-            }
-        }
-    }
-
-    private void getAllergene_e(DataOutputStream out, DataInputStream in) throws IOException, ClassNotFoundException {
-        String data = in.readLine();
-        while (in.available()>0) {
-            System.out.println(in.readLine());
-        }
-        data = scanner.nextLine();
-        switch (data) {
-            case ":c" -> {
-                out.writeUTF(data);
-                einfuegeprozessClient(in, out);
-            }
-            case ":u" -> {
-                out.writeUTF(data);
-                aenderungsmodusClient(in, out);
-            }
-            case ":d" -> {
-                out.writeUTF(data);
-                loeschmodusClient(in, out);
-            }
-            case ":p" -> {
-                out.writeUTF(data);
-                persistenzmodusClient(out, in);
-            }
-            case "allergene e" -> {
-                out.writeUTF(data);
-                getAllergene_e(out, in);
-            }
-            case "allergene i" -> {
-                out.writeUTF(data);
-                getAllergene_i(out, in);
-            }
-            case "hersteller" -> {
-                out.writeUTF(data);
-                getHerstellerdata(out, in);
-            }
         }
     }
 }
