@@ -1,5 +1,6 @@
 package gui;
 
+import eventsystem.controller.events.EventKuchenEinfuegen;
 import geschaeftslogik.Hersteller;
 import geschaeftslogik.Kuchentyp;
 import geschaeftslogik.verkaufsobjekt.Verwaltung;
@@ -20,10 +21,7 @@ import vertrag.Allergene;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Controller implements Initializable {
     //Hier muss das Verhalten der jeweiligen Buttons programmiert werden
@@ -59,6 +57,7 @@ public class Controller implements Initializable {
 
     ObservableList<Hersteller> herstellerlist = FXCollections.observableArrayList();
     ObservableList<Allergene> allergenelist = FXCollections.observableArrayList();
+    Set<Allergene> newallergeneSet = new HashSet<>();
     ObservableList<Kuchen> kuchenlist = FXCollections.observableArrayList();
     Verwaltung model = new Verwaltung(3);
     Hersteller newhersteller = null;
@@ -100,20 +99,12 @@ public class Controller implements Initializable {
             }
         }
     }
-/*
-    @FXML
-    private void allergeneeinfuegen(ActionEvent actionEvent, Allergene allergene) {
-        if(!allergenelist.contains(allergene)){
-            allergenelist.add(allergene);
-        }
-    }
-
- */
-
 
     @FXML
     private void kucheneinfuegen(ActionEvent actionEvent) {
         // Create the custom dialog.
+        String obstsorte = "";
+        String ksorte = "";
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Neues Element");
         dialog.setHeaderText("Einen Kuchen einfügen");
@@ -159,23 +150,53 @@ public class Controller implements Initializable {
         int kuchennaehrwert = Integer.parseInt(naehrwert);
         String haltbarkeit = data[4];
         int kuchenhaltbarkeit = Integer.parseInt(haltbarkeit);
-        String kuchenallergene = data[5];
-        Allergene allergen = Allergene.valueOf(kuchenallergene);
-        String kuchensorte = data[6];
         Hersteller newhersteller = new Hersteller(kuchenhersteller);
 
+        switch (data.length){
+            case 7:
+                Set<String> allergens = new HashSet<>(Arrays.asList(data[5].split(",")));
+                if(allergens.size()>0){
+                    for(String allergenElement: allergens){
+                        Allergene newallergen = Allergene.valueOf(allergenElement);
+                        this.newallergeneSet.add(newallergen);
+                    }
+                    ksorte = data[6];
+                    this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
+                            Duration.ofDays(kuchenhaltbarkeit), this.newallergeneSet, obstsorte, ksorte);
+                    List<Kuchen> kuchen = this.model.readKuchen();
+                    allergenelist.addAll(this.newallergeneSet);
+                    kuchenlist.addAll(kuchen);
+                }else{
+                    obstsorte = data[6];
+                    this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
+                            Duration.ofDays(kuchenhaltbarkeit), this.newallergeneSet, obstsorte, ksorte);
+                    List<Kuchen> kuchen = this.model.readKuchen();
+                    allergenelist.addAll(this.newallergeneSet);
+                    kuchenlist.addAll(kuchen);
+                }
+            case 8:
+                allergens = new HashSet<>(Arrays.asList(data[5].split(",")));
+                for(String allergenElement: allergens){
+                    Allergene newallergen = Allergene.valueOf(allergenElement);
+                    this.newallergeneSet.add(newallergen);
+                }
+                obstsorte = data[6];
+                ksorte = data[7];
+
+                this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert,
+                        Duration.ofDays(kuchenhaltbarkeit), this.newallergeneSet, obstsorte, ksorte);
+                List<Kuchen> kuchen = this.model.readKuchen();
+                allergenelist.addAll(this.newallergeneSet);
+                kuchenlist.addAll(kuchen);
+        }
         dialog.getDialogPane().setContent(grid);
 
         //Die Einfüg-Methode der GL soll verwendet werden nicht die Bestandteile der Methode!!!!
-        //this.model.insertKuchen(kuchentyp, newhersteller, kuchenpreis, kuchennaehrwert, Duration.ofDays(kuchenhaltbarkeit), allergen, kuchensorte);
-       // List<Kuchen> kuchen = this.model.readKuchen();
-        //TODO Wie kann nur jeweils ein Objekt von Kuchen geladen werden?
-        //kuchenlist.addAll(kuchen);
-        //this.model.insertAllergen(allergen);
-        allergenelist.add(allergen);
+        //this.model.insertAllergen(this.newallergeneSet);
         System.out.println("Listengroeße Allergene: " + allergenelist.size());
         System.out.println("Listengröße Kuchen: " + kuchenlist.size());
     }
+
 
 
     //Quelle: https://www.youtube.com/watch?v=qQcr_JMxWRw
